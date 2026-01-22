@@ -31,7 +31,10 @@
     "assistant": "Assistente",
     "settings": "Configurações",
     "profile": "Perfil",
-    "messages": "Mensagens"
+    "messages": "Mensagens",
+    "automation": "Automação",
+    "reports": "Relatórios",
+    "logout": "Sair"
   },
   "settings": {
     "appearance": "Aparência",
