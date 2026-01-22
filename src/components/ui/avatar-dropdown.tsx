@@ -13,10 +13,9 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { Link } from "react-router-dom";
-import { User, LogOut, Settings, MessageSquare } from "lucide-react";
+import { User, Settings } from "lucide-react";
 
 export function AvatarDropdown() {
-  const { signOut } = useAuth();
   const { profile } = useProfile();
 
   const getInitials = (name: string = "") => {
@@ -43,7 +42,7 @@ export function AvatarDropdown() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56 rounded-2xl" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{profile?.name || "Usuário"}</p>
@@ -61,23 +60,12 @@ export function AvatarDropdown() {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/mensagens" className="flex w-full cursor-pointer">
-              <MessageSquare className="mr-2 h-4 w-4" />
-              <span>Mensagens</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
             <Link to="/dashboard/configuracoes" className="flex w-full cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>Configurações</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()} className="text-red-600 cursor-pointer">
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Sair</span>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

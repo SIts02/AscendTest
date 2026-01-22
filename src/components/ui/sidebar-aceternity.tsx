@@ -222,44 +222,55 @@ export const SidebarLink = ({
 export const Logo = () => {
   const { open, animate } = useSidebarAceternity();
   return (
-    <Link
-      to="/dashboard"
-      className="flex items-center gap-3 px-1 py-2 relative z-20"
-    >
-      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-        <img
-          src={ascendLogo}
-          alt="Ascend"
-          className="h-5 w-auto"
-        />
-      </div>
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        transition={{ duration: 0.2 }}
-        className="font-semibold text-sidebar-foreground whitespace-pre text-lg"
+    <div className="relative px-1 py-3 mb-2">
+      {/* Barra decorativa superior */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-primary/40 rounded-full" />
+      
+      {/* Container arredondado */}
+      <Link
+        to="/dashboard"
+        className="flex items-center gap-3 p-3 rounded-2xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
       >
-        Ascend
-      </motion.span>
-    </Link>
+        <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+          <img
+            src={ascendLogo}
+            alt="Ascend"
+            className="h-5 w-auto"
+          />
+        </div>
+        <motion.span
+          animate={{
+            display: animate ? (open ? "inline-block" : "none") : "inline-block",
+            opacity: animate ? (open ? 1 : 0) : 1,
+          }}
+          transition={{ duration: 0.2 }}
+          className="font-semibold text-sidebar-foreground whitespace-pre text-lg"
+        >
+          Ascend
+        </motion.span>
+      </Link>
+    </div>
   );
 };
 
 export const LogoIcon = () => {
   return (
-    <Link
-      to="/dashboard"
-      className="flex items-center px-1 py-2 relative z-20"
-    >
-      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-        <img
-          src={ascendLogo}
-          alt="Ascend"
-          className="h-5 w-auto"
-        />
-      </div>
-    </Link>
+    <div className="relative px-1 py-3 mb-2">
+      {/* Barra decorativa superior */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary/40 rounded-full" />
+      
+      <Link
+        to="/dashboard"
+        className="flex items-center justify-center p-2 rounded-xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
+      >
+        <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+          <img
+            src={ascendLogo}
+            alt="Ascend"
+            className="h-5 w-auto"
+          />
+        </div>
+      </Link>
+    </div>
   );
 };
