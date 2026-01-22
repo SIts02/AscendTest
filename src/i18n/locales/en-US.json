@@ -1,0 +1,106 @@
+
+{
+  "dashboard": {
+    "welcome": "Hello",
+    "welcome_back": "Welcome back",
+    "overview": "Overview",
+    "current_balance": "Current Balance",
+    "monthly_expenses": "Monthly Expenses",
+    "savings": "Savings",
+    "since_last_month": "since last month",
+    "of_current_balance": "of your current balance",
+    "ai_assistant": {
+      "title": "New! FinAI - Your Intelligent Financial Advisor",
+      "description": "FinAI is an advanced artificial intelligence that works as your personalized digital financial advisor.",
+      "features": "Check out some of the main features:",
+      "spending_analysis": "Spending Analysis",
+      "smart_budget": "Smart Budget",
+      "investment_suggestions": "Investment Suggestions",
+      "risk_prediction": "Risk Prediction",
+      "learn_more": "Learn More"
+    }
+  },
+  "sidebar": {
+    "navigation": "Navigation",
+    "user": "User",
+    "dashboard": "Dashboard",
+    "budget": "Budget",
+    "investments": "Investments",
+    "transactions": "Transactions",
+    "goals": "Goals", 
+    "assistant": "Assistant",
+    "settings": "Settings",
+    "profile": "Profile",
+    "messages": "Messages"
+  },
+  "settings": {
+    "appearance": "Appearance",
+    "appearance_desc": "Configure how the application will be displayed",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "show_balance": "Show balance",
+    "show_values": "Show values",
+    "show_values_desc": "Show or hide monetary values in the interface",
+    "localization": "Localization",
+    "localization_desc": "Configure your preferred language and currency",
+    "language": "Language",
+    "select_language": "Select language",
+    "currency": "Currency",
+    "select_currency": "Select currency",
+    "date_format": "Date format",
+    "select_date_format": "Select date format",
+    "security": "Security",
+    "security_desc": "Configure your account security options",
+    "security_options": "Security options",
+    "security_options_desc": "Advanced security options are available in the Profile screen",
+    "save_preferences": "Save preferences",
+    "saving": "Saving...",
+    "restore_defaults": "Restore defaults",
+    "defaults_restored": "Settings restored to defaults",
+    "unsaved_changes": "Unsaved changes",
+    "unsaved_changes_desc": "You have made changes to your preferences. Click \"Save preferences\" to apply them."
+  },
+  "categories": {
+    "food": "Food",
+    "transport": "Transport",
+    "housing": "Housing",
+    "entertainment": "Entertainment",
+    "others": "Others"
+  },
+  "common": {
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Get Started",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "onboarding": {
+    "welcome_title": "Welcome to MoMoney",
+    "welcome_description": "Your intelligent personal financial assistant. Let's explore the main features.",
+    "dashboard_title": "Personalized Dashboard",
+    "dashboard_description": "View your expenses, investments, and finances in one place. Interactive charts make it easy to understand your data.",
+    "assistant_title": "AI Assistant",
+    "assistant_description": "Our AI analyzes your financial data and offers personalized tips to save and invest better.",
+    "planning_title": "Financial Planning",
+    "planning_description": "Set financial goals, track your progress, and receive guidance to reach them faster.",
+    "customize_title": "Customize Your Experience",
+    "customize_description": "Adjust settings in the profile options to customize MoMoney to your needs."
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "heading_start": "See what our",
+    "heading_highlight": "users",
+    "heading_end": "are saying",
+    "description": "Thousands of people have already transformed their financial life with MoMoney. Check out some of their stories!",
+    "join_users": "Join thousands of satisfied users",
+    "tag_trust": "Trust",
+    "tag_innovation": "Innovation",
+    "tag_accuracy": "Accuracy",
+    "tag_security": "Security",
+    "tag_support": "24/7 Support"
+  }
+}

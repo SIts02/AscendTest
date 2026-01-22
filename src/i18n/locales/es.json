@@ -1,0 +1,106 @@
+
+{
+  "dashboard": {
+    "welcome": "Hola",
+    "welcome_back": "Bienvenido de nuevo",
+    "overview": "Vista General",
+    "current_balance": "Saldo Actual",
+    "monthly_expenses": "Gastos Mensuales",
+    "savings": "Ahorros",
+    "since_last_month": "desde el mes pasado",
+    "of_current_balance": "de tu saldo actual",
+    "ai_assistant": {
+      "title": "¡Nuevo! FinAI - Tu Asesor Financiero Inteligente",
+      "description": "FinAI es una inteligencia artificial avanzada que funciona como tu asesor financiero digital personalizado.",
+      "features": "Conoce algunas de las principales características:",
+      "spending_analysis": "Análisis de Gastos",
+      "smart_budget": "Presupuesto Inteligente",
+      "investment_suggestions": "Sugerencias de Inversión",
+      "risk_prediction": "Predicción de Riesgos",
+      "learn_more": "Conocer más"
+    }
+  },
+  "sidebar": {
+    "navigation": "Navegación",
+    "user": "Usuario",
+    "dashboard": "Dashboard",
+    "budget": "Presupuesto",
+    "investments": "Inversiones",
+    "transactions": "Transacciones",
+    "goals": "Metas",
+    "assistant": "Asistente",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "messages": "Mensajes"
+  },
+  "settings": {
+    "appearance": "Apariencia",
+    "appearance_desc": "Configura cómo se mostrará la aplicación",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "show_balance": "Mostrar saldo",
+    "show_values": "Mostrar valores",
+    "show_values_desc": "Mostrar u ocultar valores monetarios en la interfaz",
+    "localization": "Regionalización",
+    "localization_desc": "Configura tu idioma y moneda preferidos",
+    "language": "Idioma",
+    "select_language": "Selecciona el idioma",
+    "currency": "Moneda",
+    "select_currency": "Selecciona la moneda",
+    "date_format": "Formato de fecha",
+    "select_date_format": "Selecciona el formato de fecha",
+    "security": "Seguridad",
+    "security_desc": "Configura las opciones de seguridad de tu cuenta",
+    "security_options": "Opciones de seguridad",
+    "security_options_desc": "Las opciones avanzadas de seguridad están disponibles en la pantalla de Perfil",
+    "save_preferences": "Guardar preferencias",
+    "saving": "Guardando...",
+    "restore_defaults": "Restaurar valores predeterminados",
+    "defaults_restored": "Configuraciones restauradas a valores predeterminados",
+    "unsaved_changes": "Cambios no guardados",
+    "unsaved_changes_desc": "Has realizado cambios en tus preferencias. Haz clic en \"Guardar preferencias\" para aplicarlos."
+  },
+  "categories": {
+    "food": "Alimentación",
+    "transport": "Transporte",
+    "housing": "Vivienda",
+    "entertainment": "Entretenimiento",
+    "others": "Otros"
+  },
+  "common": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "finish": "Comenzar",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar"
+  },
+  "onboarding": {
+    "welcome_title": "Bienvenido a MoMoney",
+    "welcome_description": "Tu asistente financiero personal inteligente. Exploremos las principales características.",
+    "dashboard_title": "Panel Personalizado",
+    "dashboard_description": "Visualiza tus gastos, inversiones y finanzas en un solo lugar. Los gráficos interactivos facilitan la comprensión de tus datos.",
+    "assistant_title": "Asistente de IA",
+    "assistant_description": "Nuestra IA analiza tus datos financieros y ofrece consejos personalizados para ahorrar e invertir mejor.",
+    "planning_title": "Planificación Financiera",
+    "planning_description": "Establece metas financieras, sigue tu progreso y recibe orientación para alcanzarlas más rápido.",
+    "customize_title": "Personaliza Tu Experiencia",
+    "customize_description": "Ajusta la configuración en las opciones de perfil para personalizar MoMoney a tus necesidades."
+  },
+  "testimonials": {
+    "title": "Testimonios",
+    "heading_start": "Mira lo que nuestros",
+    "heading_highlight": "usuarios",
+    "heading_end": "están diciendo",
+    "description": "Miles de personas ya han transformado su vida financiera con MoMoney. ¡Mira algunas de sus historias!",
+    "join_users": "Únete a miles de usuarios satisfechos",
+    "tag_trust": "Confianza",
+    "tag_innovation": "Innovación",
+    "tag_accuracy": "Precisión",
+    "tag_security": "Seguridad",
+    "tag_support": "Soporte 24/7"
+  }
+}
