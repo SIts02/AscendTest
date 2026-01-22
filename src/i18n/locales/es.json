@@ -31,7 +31,10 @@
     "assistant": "Asistente",
     "settings": "Configuración",
     "profile": "Perfil",
-    "messages": "Mensajes"
+    "messages": "Mensajes",
+    "automation": "Automatización",
+    "reports": "Informes",
+    "logout": "Salir"
   },
   "settings": {
     "appearance": "Apariencia",

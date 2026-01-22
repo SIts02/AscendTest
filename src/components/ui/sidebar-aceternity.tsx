@@ -5,7 +5,7 @@ import { Link, LinkProps, useLocation } from "react-router-dom";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import ascendLogo from "@/assets/ascend-logo.png";
+import ascendTextLogo from "@/assets/ascend-text-logo.png";
 
 interface Links {
   label: string;
@@ -131,7 +131,7 @@ export const MobileSidebar = ({
       >
         <div className="flex items-center gap-3">
           <img
-            src={ascendLogo}
+            src={ascendTextLogo}
             alt="Ascend"
             className="h-6 w-auto"
           />
@@ -231,23 +231,18 @@ export const Logo = () => {
         to="/dashboard"
         className="flex items-center gap-3 p-3 rounded-2xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
       >
-        <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
-          <img
-            src={ascendLogo}
-            alt="Ascend"
-            className="h-5 w-auto"
-          />
-        </div>
-        <motion.span
+        <motion.div
           animate={{
-            display: animate ? (open ? "inline-block" : "none") : "inline-block",
-            opacity: animate ? (open ? 1 : 0) : 1,
+            justifyContent: animate ? (open ? "flex-start" : "center") : "flex-start",
           }}
-          transition={{ duration: 0.2 }}
-          className="font-semibold text-sidebar-foreground whitespace-pre text-lg"
+          className="flex items-center w-full"
         >
-          Ascend
-        </motion.span>
+          <img
+            src={ascendTextLogo}
+            alt="Ascend"
+            className="h-6 w-auto"
+          />
+        </motion.div>
       </Link>
     </div>
   );
@@ -263,13 +258,11 @@ export const LogoIcon = () => {
         to="/dashboard"
         className="flex items-center justify-center p-2 rounded-xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
       >
-        <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
-          <img
-            src={ascendLogo}
-            alt="Ascend"
-            className="h-5 w-auto"
-          />
-        </div>
+        <img
+          src={ascendTextLogo}
+          alt="Ascend"
+          className="h-5 w-auto"
+        />
       </Link>
     </div>
   );
