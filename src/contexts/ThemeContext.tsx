@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 interface ThemeContextType {
-  theme: string | undefined;
-  setTheme: (theme: string) => void;
+  theme: "light" | "dark" | "system" | undefined;
+  setTheme: (theme: string) => Promise<void>;
   themes: string[];
   systemTheme: string | undefined;
 }
@@ -27,19 +27,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setTheme = async (theme: string) => {
+    // Apply theme immediately to the DOM
+    const root = window.document.documentElement;
+    
+    let themeToApply = theme;
+    if (theme === "system") {
+      themeToApply = systemTheme === "dark" ? "dark" : "light";
+    }
+    
+    if (themeToApply === "dark") {
+      root.classList.add("dark");
+      root.classList.remove("light");
+    } else {
+      root.classList.add("light");
+      root.classList.remove("dark");
+    }
+
+    // Save to preferences
     await savePreferences({
       ...preferences,
       theme: theme as "light" | "dark" | "system",
     });
   };
 
-  const resolvedTheme =
-    preferences.theme === "system" ? systemTheme : preferences.theme;
-
   return (
     <ThemeContext.Provider
       value={{
-        theme: resolvedTheme,
+        theme: preferences.theme,
         setTheme,
         themes: ["light", "dark", "system"],
         systemTheme,

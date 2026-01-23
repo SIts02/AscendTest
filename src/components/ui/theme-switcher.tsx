@@ -1,7 +1,7 @@
 "use client";
 
 import { MonitorIcon, MoonStarIcon, SunIcon } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { JSX } from "react";
 import React, { useEffect, useState } from "react";
@@ -11,88 +11,130 @@ import { cn } from "@/lib/utils";
 function ThemeOption({
   icon,
   value,
+  label,
   isActive,
   onClick,
 }: {
   icon: JSX.Element;
   value: string;
+  label: string;
   isActive?: boolean;
   onClick: (value: string) => void;
 }) {
   return (
-    <button
+    <motion.button
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ type: "spring", bounce: 0.5, duration: 0.3 }}
       className={cn(
-        "relative flex size-8 cursor-pointer items-center justify-center rounded-full transition-all pointer-events-auto [&_svg]:size-4",
+        "relative flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-all pointer-events-auto",
         isActive
-          ? "text-zinc-950 dark:text-zinc-50"
-          : "text-zinc-400 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-50"
+          ? "text-zinc-950 dark:text-zinc-50 bg-zinc-100 dark:bg-zinc-800"
+          : "text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800"
       )}
       role="radio"
       aria-checked={isActive}
-      aria-label={`Switch to ${value} theme`}
+      aria-label={`Switch to ${label} theme`}
       onClick={() => onClick(value)}
       type="button"
     >
-      {icon}
+      <span className="[&_svg]:size-4">{icon}</span>
+      <span className="text-sm font-medium">{label}</span>
 
       {isActive && (
         <motion.div
-          layoutId="theme-option"
+          layoutId="theme-option-bg"
           transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
-          className="absolute inset-0 rounded-full border border-zinc-200 dark:border-zinc-700"
+          className="absolute inset-0 rounded-lg border border-zinc-300 dark:border-zinc-600 -z-10"
         />
       )}
-    </button>
+    </motion.button>
   );
 }
 
 const THEME_OPTIONS = [
   {
-    icon: <MonitorIcon />,
-    value: "system",
-  },
-  {
     icon: <SunIcon />,
     value: "light",
+    label: "Light",
   },
   {
     icon: <MoonStarIcon />,
     value: "dark",
+    label: "Dark",
+  },
+  {
+    icon: <MonitorIcon />,
+    value: "system",
+    label: "System",
   },
 ];
 
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
-
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return <div className="flex h-8 w-24" />;
+  const currentThemeOption = THEME_OPTIONS.find((opt) => opt.value === theme);
+
+  if (!isMounted || !currentThemeOption) {
+    return <div className="flex h-8 w-8" />;
   }
 
+  const handleThemeChange = async (newTheme: string) => {
+    await setTheme(newTheme);
+    setIsExpanded(false);
+  };
+
   return (
-    <motion.div
-      key={String(isMounted)}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="inline-flex items-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200 ring-inset dark:bg-zinc-950 dark:ring-zinc-700 pointer-events-auto"
-      role="radiogroup"
-    >
-      {THEME_OPTIONS.map((option) => (
-        <ThemeOption
-          key={option.value}
-          icon={option.icon}
-          value={option.value}
-          isActive={theme === option.value}
-          onClick={setTheme}
+    <div className="relative">
+      <motion.button
+        className="relative flex size-8 cursor-pointer items-center justify-center rounded-lg transition-all pointer-events-auto bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+        onClick={() => setIsExpanded(!isExpanded)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        type="button"
+        aria-label="Theme switcher"
+      >
+        <span className="[&_svg]:size-4">{currentThemeOption.icon}</span>
+      </motion.button>
+
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+            transition={{ type: "spring", bounce: 0.4, duration: 0.3 }}
+            className="absolute bottom-12 right-0 flex flex-col gap-2 p-3 bg-white dark:bg-zinc-900 rounded-xl shadow-lg ring-1 ring-zinc-200 dark:ring-zinc-700 pointer-events-auto z-50"
+          >
+            {THEME_OPTIONS.map((option) => (
+              <ThemeOption
+                key={option.value}
+                icon={option.icon}
+                value={option.value}
+                label={option.label}
+                isActive={theme === option.value}
+                onClick={handleThemeChange}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Close on outside click */}
+      {isExpanded && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setIsExpanded(false)}
         />
-      ))}
-    </motion.div>
+      )}
+    </div>
   );
 }
 

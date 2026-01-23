@@ -131,17 +131,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* Theme switcher and avatar */}
             <div className="flex items-center justify-between px-1 pointer-events-auto">
               <AvatarDropdown />
-              {open && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="pointer-events-auto"
-                >
-                  <ThemeSwitcher />
-                </motion.div>
-              )}
+              {open && <ThemeSwitcher />}
             </div>
           </div>
         </SidebarBody>
