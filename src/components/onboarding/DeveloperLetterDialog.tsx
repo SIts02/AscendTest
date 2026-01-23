@@ -26,13 +26,17 @@ const DeveloperLetterDialog: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+      localStorage.setItem(STORAGE_KEY, 'true');
+    }
+  }, [open]);
+
   const handleClose = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
     setOpen(false);
   };
 
   const handleGoToAssistant = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
     setOpen(false);
     navigate('/dashboard/assistente');
   };
@@ -45,7 +49,7 @@ const DeveloperLetterDialog: React.FC = () => {
   ];
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-lg md:max-w-xl p-0 overflow-hidden bg-card border-border rounded-3xl shadow-2xl">
         {/* Decorative header */}
         <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-transparent pt-8 pb-6 px-6">
