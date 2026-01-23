@@ -195,7 +195,7 @@ export const SidebarLink = ({
     >
       <span className={cn(
         "icon transition-colors duration-200",
-        isActive ? "text-primary" : "text-sidebar-foreground/60 group-hover:text-sidebar-foreground"
+        isActive ? "text-sidebar-accent-foreground" : "text-sidebar-foreground/60 group-hover:text-sidebar-foreground"
       )}>
         {link.icon}
       </span>
