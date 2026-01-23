@@ -203,7 +203,7 @@ export function useMFA() {
   };
 
   // Unenroll a factor
-  const unenrollFactor = async (factorId: string) => {
+  const unenrollFactor = async (factorId: string, verificationCode?: string) => {
     const result = await executeSecurely(
       {
         endpoint: 'mfa/unenroll',
@@ -213,6 +213,23 @@ export function useMFA() {
         windowMinutes: 1
       },
       async () => {
+        // If verification code is provided, verify it first
+        if (verificationCode) {
+          const { data: challengeData, error: challengeError } = 
+            await supabase.auth.mfa.challenge({ factorId });
+
+          if (challengeError) throw challengeError;
+
+          const { data: verifyData, error: verifyError } = 
+            await supabase.auth.mfa.verify({
+              factorId,
+              challengeId: challengeData.id,
+              code: verificationCode,
+            });
+
+          if (verifyError) throw verifyError;
+        }
+
         const { error } = await supabase.auth.mfa.unenroll({ factorId });
         if (error) throw error;
 

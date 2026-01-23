@@ -37,6 +37,7 @@ export function TwoFactorSetup() {
   } = useMFA();
 
   const [verificationCode, setVerificationCode] = useState('');
+  const [disableCode, setDisableCode] = useState('');
   const [showSetup, setShowSetup] = useState(false);
   const [showDisableConfirm, setShowDisableConfirm] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
@@ -59,10 +60,12 @@ export function TwoFactorSetup() {
   };
 
   const handleDisable = async () => {
+    if (disableCode.length !== 6) return;
     if (verifiedFactors.length > 0) {
-      const result = await unenrollFactor(verifiedFactors[0].id);
+      const result = await unenrollFactor(verifiedFactors[0].id, disableCode);
       if (result.success) {
         setShowDisableConfirm(false);
+        setDisableCode('');
       }
     }
   };
@@ -159,14 +162,14 @@ export function TwoFactorSetup() {
               </Label>
               
               {qrCode ? (
-                <div className="flex justify-center p-4 bg-white rounded-lg border">
+                <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto">
                   <div 
                     dangerouslySetInnerHTML={{ __html: qrCode }} 
-                    className="w-48 h-48 [&>svg]:w-full [&>svg]:h-full"
+                    className="w-56 h-56 [&>svg]:w-full [&>svg]:h-full"
                   />
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-48 bg-muted rounded-lg">
+                <div className="flex items-center justify-center h-56 bg-muted rounded-lg">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
               )}
@@ -204,7 +207,7 @@ export function TwoFactorSetup() {
                 Digite o código de 6 dígitos
               </Label>
               
-              <div className="flex justify-center">
+              <div className="flex justify-center p-6 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                 <InputOTP 
                   maxLength={6} 
                   value={verificationCode}
@@ -240,7 +243,7 @@ export function TwoFactorSetup() {
 
       {/* Disable Confirmation Dialog */}
       <Dialog open={showDisableConfirm} onOpenChange={setShowDisableConfirm}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
@@ -250,13 +253,51 @@ export function TwoFactorSetup() {
               Isso removerá a proteção adicional da sua conta. Você terá que configurar novamente se quiser reativar.
             </DialogDescription>
           </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <Alert variant="default" className="border-destructive/50 bg-destructive/10">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Confirmação de Segurança</AlertTitle>
+              <AlertDescription>
+                Para desativar o 2FA, insira o código do seu autenticador:
+              </AlertDescription>
+            </Alert>
+            
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <span className="text-sm">Código de 6 dígitos</span>
+              </Label>
+              
+              <div className="flex justify-center p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-800">
+                <InputOTP 
+                  maxLength={6} 
+                  value={disableCode}
+                  onChange={setDisableCode}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+            </div>
+          </div>
+          
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setShowDisableConfirm(false)}>
+            <Button variant="outline" onClick={() => {
+              setShowDisableConfirm(false);
+              setDisableCode('');
+            }}>
               Cancelar
             </Button>
             <Button 
               variant="destructive"
               onClick={handleDisable}
+              disabled={disableCode.length !== 6}
             >
               Desativar 2FA
             </Button>
