@@ -70,8 +70,8 @@ export function TwoFactorSetup() {
     }
   };
 
-  const handleCancelSetup = () => {
-    cancelEnrollment();
+  const handleCancelSetup = async () => {
+    await cancelEnrollment();
     setShowSetup(false);
     setVerificationCode('');
   };

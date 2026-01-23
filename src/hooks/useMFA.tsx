@@ -118,34 +118,39 @@ export function useMFA() {
       async () => {
         setState(prev => ({ ...prev, isVerifying: true }));
 
-        // Create a challenge
-        const { data: challengeData, error: challengeError } = 
-          await supabase.auth.mfa.challenge({ factorId: state.factorId! });
+        try {
+          // Create a challenge
+          const { data: challengeData, error: challengeError } = 
+            await supabase.auth.mfa.challenge({ factorId: state.factorId! });
 
-        if (challengeError) throw challengeError;
+          if (challengeError) throw challengeError;
 
-        // Verify the code
-        const { data: verifyData, error: verifyError } = 
-          await supabase.auth.mfa.verify({
-            factorId: state.factorId!,
-            challengeId: challengeData.id,
-            code,
-          });
+          // Verify the code
+          const { data: verifyData, error: verifyError } = 
+            await supabase.auth.mfa.verify({
+              factorId: state.factorId!,
+              challengeId: challengeData.id,
+              code,
+            });
 
-        if (verifyError) throw verifyError;
+          if (verifyError) throw verifyError;
 
-        // Reset enrollment state and refresh factors
-        setState(prev => ({
-          ...prev,
-          qrCode: null,
-          secret: null,
-          factorId: null,
-          isVerifying: false,
-        }));
+          // Reset enrollment state and refresh factors
+          setState(prev => ({
+            ...prev,
+            qrCode: null,
+            secret: null,
+            factorId: null,
+            isVerifying: false,
+          }));
 
-        await fetchMFAStatus();
-        toast.success('Autenticação de dois fatores ativada com sucesso!');
-        return { success: true };
+          await fetchMFAStatus();
+          toast.success('Autenticação de dois fatores ativada com sucesso!');
+          return { success: true };
+        } catch (error: any) {
+          setState(prev => ({ ...prev, isVerifying: false }));
+          throw error;
+        }
       },
       {}
     );
@@ -253,7 +258,7 @@ export function useMFA() {
       try {
         await supabase.auth.mfa.unenroll({ factorId: state.factorId });
       } catch (e) {
-        // Ignore errors on cancel
+        console.error('Error canceling enrollment:', e);
       }
     }
     setState(prev => ({
@@ -263,6 +268,8 @@ export function useMFA() {
       factorId: null,
       isEnrolling: false,
     }));
+    // Refresh status after canceling
+    await fetchMFAStatus();
   };
 
   return {
