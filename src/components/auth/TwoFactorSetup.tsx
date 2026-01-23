@@ -162,10 +162,10 @@ export function TwoFactorSetup() {
               </Label>
               
               {qrCode ? (
-                <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto">
+                <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto overflow-hidden">
                   <div 
                     dangerouslySetInnerHTML={{ __html: qrCode }} 
-                    className="w-56 h-56 [&>svg]:w-full [&>svg]:h-full"
+                    className="w-56 h-56 [&>svg]:w-full [&>svg]:h-full [&>*]:hidden [&>svg]:block"
                   />
                 </div>
               ) : (
@@ -177,7 +177,7 @@ export function TwoFactorSetup() {
 
             {/* Manual entry */}
             {secret && (
-              <div className="space-y-2">
+              <div className="space-y-2 pt-4 border-t border-muted">
                 <Label className="text-xs text-muted-foreground">
                   Ou insira este código manualmente:
                 </Label>

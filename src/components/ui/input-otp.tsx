@@ -24,7 +24,7 @@ const InputOTPGroup = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex items-center", className)} {...props} />
+  <div ref={ref} className={cn("flex items-center gap-3", className)} {...props} />
 ))
 InputOTPGroup.displayName = "InputOTPGroup"
 
@@ -39,8 +39,9 @@ const InputOTPSlot = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
-        isActive && "z-10 ring-2 ring-ring ring-offset-background",
+        "relative flex h-12 w-12 items-center justify-center border-2 border-gray-300 dark:border-slate-600 rounded-lg text-sm font-semibold transition-all bg-white dark:bg-slate-800",
+        isActive && "z-10 ring-2 ring-blue-500 dark:ring-blue-400 border-blue-500 dark:border-blue-400",
+        char && "border-blue-400 dark:border-blue-500",
         className
       )}
       {...props}
