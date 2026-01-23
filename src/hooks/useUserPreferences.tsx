@@ -53,35 +53,23 @@ export function useUserPreferences() {
             .eq('user_id', user.id)
             .maybeSingle();
 
-          if (error && error.message.includes('not found')) {
-            // No preferences stored yet, create default ones
-            try {
-              const { error: insertError } = await supabase
-                .from('user_preferences')
-                .insert({
-                  ...defaultPreferences,
-                  user_id: user.id
-                });
-                
-              if (insertError) {
-                console.error('Error creating default preferences:', insertError);
-              } else {
-                setInitialized(true);
-                // Save default preferences to localStorage too
-                localStorage.setItem('user_preferences', JSON.stringify(defaultPreferences));
-              }
-            } catch (err) {
-              console.error('Failed to create default preferences:', err);
-            }
-          } else if (data) {
+          if (!error && data) {
+            // Preferences exist
             setPreferences(data as UserPreferences);
             setInitialized(true);
             // Update localStorage with server data
             localStorage.setItem('user_preferences', JSON.stringify(data));
+          } else if (error && error.code === 'PGRST116') {
+            // No preferences stored yet (PGRST116 = no rows found)
+            setInitialized(false);
+          } else {
+            // Some other error, mark as not initialized so we can try to create on save
+            setInitialized(false);
           }
         }
       } catch (error) {
         console.error('Failed to load preferences:', error);
+        setInitialized(false);
       } finally {
         setLoading(false);
       }
@@ -102,54 +90,35 @@ export function useUserPreferences() {
       // If logged in, also update in Supabase
       if (user) {
         const prefsToSave = {
-          ...newPreferences,
-          user_id: user.id
+          user_id: user.id,
+          theme: newPreferences.theme,
+          language: newPreferences.language,
+          currency: newPreferences.currency,
+          show_balance: newPreferences.show_balance,
+          date_format: newPreferences.date_format,
+          notifications_enabled: newPreferences.notifications_enabled,
+          email_notifications: newPreferences.email_notifications,
+          updated_at: new Date().toISOString()
         };
         
         console.log('Saving preferences for user:', user.id, prefsToSave);
         
-        if (initialized) {
-          // Update existing preferences
-          console.log('Updating existing preferences');
-          const { data, error } = await supabase
-            .from('user_preferences')
-            .update({
-              theme: prefsToSave.theme,
-              language: prefsToSave.language,
-              currency: prefsToSave.currency,
-              show_balance: prefsToSave.show_balance,
-              date_format: prefsToSave.date_format,
-              notifications_enabled: prefsToSave.notifications_enabled,
-              email_notifications: prefsToSave.email_notifications,
-              updated_at: new Date().toISOString()
-            })
-            .eq('user_id', user.id)
-            .select();
-            
-          console.log('Update response:', { data, error });
+        // Use upsert to handle both insert and update cases
+        const { data, error } = await supabase
+          .from('user_preferences')
+          .upsert(prefsToSave, { 
+            onConflict: 'user_id'
+          })
+          .select();
           
-          if (error) {
-            console.error('Update error:', error);
-            throw error;
-          }
-        } else {
-          // Insert new preferences
-          console.log('Inserting new preferences');
-          const { data, error } = await supabase
-            .from('user_preferences')
-            .insert({
-              ...prefsToSave,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .select();
-            
-          console.log('Insert response:', { data, error });
-          
-          if (error) {
-            console.error('Insert error:', error);
-            throw error;
-          }
+        console.log('Upsert response:', { data, error });
+        
+        if (error) {
+          console.error('Upsert error:', error);
+          throw error;
+        }
+        
+        if (data && data.length > 0) {
           setInitialized(true);
         }
       } else {

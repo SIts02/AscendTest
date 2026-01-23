@@ -12,33 +12,26 @@ export function useConvertedFinancialData() {
   const { user } = useAuth();
   const { transactions, summary, loading, error } = useFinancialData();
   const { preferences } = useUserPreferences();
-  const { convertFinancialSummary, convertTransactions, currentCurrency } = useCurrencyConversion();
+  const { convertFinancialSummary, convertTransactions } = useCurrencyConversion();
 
-  // Armazenar moeda usada para os dados atuais
+  // Armazenar dados convertidos
   const [convertedSummary, setConvertedSummary] = useState(summary);
   const [convertedTransactions, setConvertedTransactions] = useState(transactions);
   const [isConverting, setIsConverting] = useState(false);
-  const [lastConvertedCurrency, setLastConvertedCurrency] = useState(currentCurrency);
-
-  // Detectar mudança de moeda
-  const currencyChanged = useMemo(
-    () => currentCurrency !== lastConvertedCurrency,
-    [currentCurrency, lastConvertedCurrency]
-  );
 
   /**
-   * Converter dados quando a moeda muda
+   * Converter dados quando a moeda muda ou dados mudam
    */
   useEffect(() => {
     const convertData = async () => {
-      if (!user || loading || !transactions.length) {
+      if (!user || loading) {
         setConvertedSummary(summary);
         setConvertedTransactions(transactions);
         return;
       }
 
-      // Se a moeda não mudou, usar dados como estão (já em BRL no banco)
-      if (!currencyChanged && lastConvertedCurrency === preferences.currency) {
+      // Se a moeda é BRL (padrão), não precisa converter
+      if (preferences.currency === 'BRL') {
         setConvertedSummary(summary);
         setConvertedTransactions(transactions);
         return;
@@ -47,8 +40,10 @@ export function useConvertedFinancialData() {
       try {
         setIsConverting(true);
         
+        console.log(`Converting from BRL to ${preferences.currency}`);
+        
         // Os dados no banco estão em BRL por padrão, então converter de BRL
-        const originalCurrency = 'BRL'; // Moeda padrão no banco
+        const originalCurrency = 'BRL';
 
         // Converter summary
         const newSummary = await convertFinancialSummary(summary, originalCurrency);
@@ -60,9 +55,8 @@ export function useConvertedFinancialData() {
           originalCurrency
         );
         setConvertedTransactions(newTransactions as any);
-
-        // Atualizar moeda atual
-        setLastConvertedCurrency(preferences.currency);
+        
+        console.log(`Conversion to ${preferences.currency} completed`);
       } catch (err) {
         console.error('Erro ao converter dados financeiros:', err);
         // Fallback: usar dados originais
@@ -80,10 +74,8 @@ export function useConvertedFinancialData() {
     preferences.currency,
     user,
     loading,
-    currencyChanged,
     convertFinancialSummary,
-    convertTransactions,
-    lastConvertedCurrency
+    convertTransactions
   ]);
 
   return {

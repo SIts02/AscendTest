@@ -14,30 +14,23 @@ export function useConvertedTransactions() {
   const { user } = useAuth();
   const originalTransactions = useTransactions();
   const { preferences } = useUserPreferences();
-  const { convertTransactions, currentCurrency } = useCurrencyConversion();
+  const { convertTransactions } = useCurrencyConversion();
 
   const [convertedTrans, setConvertedTrans] = useState<Transaction[]>([]);
   const [isConverting, setIsConverting] = useState(false);
-  const [lastConvertedCurrency, setLastConvertedCurrency] = useState(currentCurrency);
-
-  // Detectar mudança de moeda
-  const currencyChanged = useMemo(
-    () => currentCurrency !== lastConvertedCurrency,
-    [currentCurrency, lastConvertedCurrency]
-  );
 
   /**
    * Converter transações quando a moeda muda
    */
   useEffect(() => {
     const convertData = async () => {
-      if (!user || originalTransactions.loading || !originalTransactions.transactions.length) {
+      if (!user || originalTransactions.loading) {
         setConvertedTrans(originalTransactions.transactions);
         return;
       }
 
-      // Se a moeda não mudou, usar dados como estão
-      if (!currencyChanged && lastConvertedCurrency === preferences.currency) {
+      // Se a moeda é BRL (padrão), não precisa converter
+      if (preferences.currency === 'BRL') {
         setConvertedTrans(originalTransactions.transactions);
         return;
       }
@@ -55,7 +48,6 @@ export function useConvertedTransactions() {
         );
         
         setConvertedTrans(newTransactions as Transaction[]);
-        setLastConvertedCurrency(preferences.currency);
       } catch (err) {
         console.error('Erro ao converter transações:', err);
         // Fallback: usar dados originais
@@ -71,9 +63,7 @@ export function useConvertedTransactions() {
     originalTransactions.loading,
     preferences.currency,
     user,
-    currencyChanged,
-    convertTransactions,
-    lastConvertedCurrency
+    convertTransactions
   ]);
 
   return {
