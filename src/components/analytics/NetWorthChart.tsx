@@ -16,7 +16,7 @@ import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 
 const NetWorthChart = () => {
-  const { summary } = useFinancialData();
+  const { summary } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
 
   // Calculate cumulative net worth over time
