@@ -5,7 +5,6 @@ import { Link, LinkProps, useLocation } from "react-router-dom";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import ascendTextLogo from "@/assets/ascend-text-logo.png";
 
 interface Links {
   label: string;
@@ -130,11 +129,9 @@ export const MobileSidebar = ({
         {...props}
       >
         <div className="flex items-center gap-3">
-          <img
-            src={ascendTextLogo}
-            alt="Ascend"
-            className="h-6 w-auto"
-          />
+          <span className="text-sidebar-foreground font-medium tracking-wide text-sm">
+            ascend.<sup className="text-[8px] ml-0.5 text-sidebar-foreground/60">®</sup>
+          </span>
         </div>
         <button
           onClick={() => setOpen(!open)}
@@ -237,11 +234,9 @@ export const Logo = () => {
           }}
           className="flex items-center w-full"
         >
-          <img
-            src={ascendTextLogo}
-            alt="Ascend"
-            className="h-6 w-auto"
-          />
+          <span className="text-sidebar-foreground font-medium tracking-wide text-sm">
+            ascend.<sup className="text-[8px] ml-0.5 text-sidebar-foreground/60">®</sup>
+          </span>
         </motion.div>
       </Link>
     </div>
@@ -258,11 +253,9 @@ export const LogoIcon = () => {
         to="/dashboard"
         className="flex items-center justify-center p-2 rounded-xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
       >
-        <img
-          src={ascendTextLogo}
-          alt="Ascend"
-          className="h-5 w-auto"
-        />
+        <span className="text-sidebar-foreground font-medium tracking-wide text-sm">
+          ascend.<sup className="text-[8px] ml-0.5 text-sidebar-foreground/60">®</sup>
+        </span>
       </Link>
     </div>
   );
