@@ -2,7 +2,7 @@ import React, { ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { AvatarDropdown } from "@/components/ui/avatar-dropdown";
 import { motion } from "framer-motion";
 import { 
@@ -128,10 +128,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </motion.span>
             </button>
             
-            {/* Theme toggle and avatar */}
-            <div className="flex items-center justify-between px-1">
+            {/* Theme switcher and avatar */}
+            <div className="flex items-center justify-between px-1 pointer-events-auto">
               <AvatarDropdown />
-              {open && <ThemeToggle />}
+              {open && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="pointer-events-auto"
+                >
+                  <ThemeSwitcher />
+                </motion.div>
+              )}
             </div>
           </div>
         </SidebarBody>

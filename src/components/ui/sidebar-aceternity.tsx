@@ -96,7 +96,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-3 py-4 hidden md:flex md:flex-col glass-sidebar",
+        "h-full px-3 py-4 hidden md:flex md:flex-col glass-sidebar pointer-events-auto",
         className
       )}
       animate={{

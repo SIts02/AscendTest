@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import { useThemeEffect } from "./hooks/useThemeEffect";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -92,8 +93,10 @@ const App = () => {
       <TooltipProvider>
         <BrowserRouter>
           <AuthProvider>
-            <AppRoutes />
-            <Toaster />
+            <ThemeProvider>
+              <AppRoutes />
+              <Toaster />
+            </ThemeProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
