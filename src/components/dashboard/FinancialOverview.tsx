@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useFinancialData } from "@/hooks/useFinancialData";
+import { useConvertedFinancialData } from "@/hooks/useConvertedFinancialData";
 import { useFormatters } from "@/hooks/useFormatters";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,7 +7,7 @@ import { useTheme } from "next-themes";
 
 const FinancialOverview = () => {
   const { t } = useTranslation();
-  const { summary, loading } = useFinancialData();
+  const { summary, loading } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
   const { resolvedTheme } = useTheme();
   

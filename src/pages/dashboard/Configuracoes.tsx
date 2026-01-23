@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Bell, 
   Settings, 
@@ -10,10 +11,12 @@ import {
   PaintBucket, 
   Save,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  TrendingUp
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -22,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 import { TwoFactorSetup } from "@/components/auth/TwoFactorSetup";
 
 const Configuracoes = () => {
@@ -30,6 +34,7 @@ const Configuracoes = () => {
   }, []);
 
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   
   const { 
     preferences, 
@@ -39,7 +44,18 @@ const Configuracoes = () => {
     saving 
   } = useUserPreferences();
 
+  const { 
+    convertCurrency, 
+    getSupportedCurrencies,
+    formatCurrency,
+    isLoading: isConverting 
+  } = useCurrencyConverter();
+
   const [isModified, setIsModified] = useState(false);
+  const [converterAmount, setConverterAmount] = useState('100');
+  const [fromCurrency, setFromCurrency] = useState('BRL');
+  const [toCurrency, setToCurrency] = useState('USD');
+  const [conversionResult, setConversionResult] = useState<any>(null);
 
   const handlePreferenceChange = (key: string, value: any) => {
     setPreferences({
@@ -60,6 +76,30 @@ const Configuracoes = () => {
     if (success) {
       setIsModified(false);
     }
+  };
+
+  const handleConvertCurrency = async () => {
+    if (!converterAmount || parseFloat(converterAmount) <= 0) {
+      toast.error('Digite um valor válido');
+      return;
+    }
+
+    const result = await convertCurrency(
+      fromCurrency,
+      toCurrency,
+      parseFloat(converterAmount),
+      user?.id
+    );
+
+    if (result) {
+      setConversionResult(result);
+    }
+  };
+
+  const handleSwapCurrencies = () => {
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+    setConversionResult(null);
   };
 
   const handleResetSettings = () => {
@@ -211,8 +251,101 @@ const Configuracoes = () => {
                       <SelectItem value="BRL">Real (R$)</SelectItem>
                       <SelectItem value="USD">Dólar ($)</SelectItem>
                       <SelectItem value="EUR">Euro (€)</SelectItem>
+                      <SelectItem value="GBP">Libra (£)</SelectItem>
+                      <SelectItem value="JPY">Iene (¥)</SelectItem>
+                      <SelectItem value="AUD">Dólar Australiano (A$)</SelectItem>
+                      <SelectItem value="CAD">Dólar Canadense (C$)</SelectItem>
+                      <SelectItem value="CHF">Franco Suíço (CHF)</SelectItem>
+                      <SelectItem value="CNY">Yuan (¥)</SelectItem>
+                      <SelectItem value="INR">Rúpia (₹)</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Currency Converter */}
+                <div className="space-y-4 pt-4 border-t border-muted">
+                  <Label className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    Conversor de Moedas
+                  </Label>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* From Currency */}
+                    <div className="space-y-2">
+                      <Label className="text-xs">De</Label>
+                      <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                        <SelectTrigger className="bg-white dark:bg-gray-800">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white dark:bg-gray-800">
+                          {Object.entries(getSupportedCurrencies()).map(([code, name]) => (
+                            <SelectItem key={code} value={code}>
+                              {code} - {name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Amount Input */}
+                    <div className="space-y-2">
+                      <Label className="text-xs">Valor</Label>
+                      <Input
+                        type="number"
+                        placeholder="100"
+                        value={converterAmount}
+                        onChange={(e) => setConverterAmount(e.target.value)}
+                        className="bg-white dark:bg-gray-800"
+                      />
+                    </div>
+
+                    {/* To Currency */}
+                    <div className="space-y-2">
+                      <Label className="text-xs">Para</Label>
+                      <Select value={toCurrency} onValueChange={setToCurrency}>
+                        <SelectTrigger className="bg-white dark:bg-gray-800">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white dark:bg-gray-800">
+                          {Object.entries(getSupportedCurrencies()).map(([code, name]) => (
+                            <SelectItem key={code} value={code}>
+                              {code} - {name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handleConvertCurrency}
+                      disabled={isConverting}
+                      className="flex-1"
+                    >
+                      {isConverting ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
+                      Converter
+                    </Button>
+                    <Button 
+                      onClick={handleSwapCurrencies}
+                      variant="outline"
+                    >
+                      ⇄
+                    </Button>
+                  </div>
+
+                  {conversionResult && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                        {formatCurrency(conversionResult.amount, conversionResult.from)} = {formatCurrency(conversionResult.convertedAmount, conversionResult.to)}
+                      </p>
+                      <p className="text-xs text-blue-700/70 dark:text-blue-300/70 mt-1">
+                        Taxa: 1 {conversionResult.from} = {conversionResult.rate.toFixed(4)} {conversionResult.to}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-4">

@@ -12,7 +12,7 @@ import {
   AreaChart
 } from 'recharts';
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 
 const NetWorthChart = () => {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowUpRight, Filter, FileBarChart, Calendar } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useFinancialData } from "@/hooks/useFinancialData";
+import { useConvertedFinancialData } from "@/hooks/useConvertedFinancialData";
 import { useFormatters } from "@/hooks/useFormatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
@@ -53,7 +53,7 @@ const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: an
 
 const SpendingAnalysis = () => {
   const [tabView, setTabView] = useState<'categories' | 'merchants'>('categories');
-  const { summary, loading } = useFinancialData();
+  const { summary, loading } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
   const { resolvedTheme } = useTheme();
   

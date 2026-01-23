@@ -97,6 +97,7 @@ export function useUserPreferences() {
       
       // Always update localStorage for immediate feedback
       localStorage.setItem('user_preferences', JSON.stringify(newPreferences));
+      setPreferences(newPreferences);
       
       // If logged in, also update in Supabase
       if (user) {
@@ -105,33 +106,56 @@ export function useUserPreferences() {
           user_id: user.id
         };
         
+        console.log('Saving preferences for user:', user.id, prefsToSave);
+        
         if (initialized) {
           // Update existing preferences
-          const { error } = await supabase
+          console.log('Updating existing preferences');
+          const { data, error } = await supabase
             .from('user_preferences')
             .update({
-              ...prefsToSave,
+              theme: prefsToSave.theme,
+              language: prefsToSave.language,
+              currency: prefsToSave.currency,
+              show_balance: prefsToSave.show_balance,
+              date_format: prefsToSave.date_format,
+              notifications_enabled: prefsToSave.notifications_enabled,
+              email_notifications: prefsToSave.email_notifications,
               updated_at: new Date().toISOString()
             })
-            .eq('user_id', user.id);
+            .eq('user_id', user.id)
+            .select();
             
+          console.log('Update response:', { data, error });
+          
           if (error) {
+            console.error('Update error:', error);
             throw error;
           }
         } else {
           // Insert new preferences
-          const { error } = await supabase
+          console.log('Inserting new preferences');
+          const { data, error } = await supabase
             .from('user_preferences')
-            .insert(prefsToSave);
+            .insert({
+              ...prefsToSave,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .select();
             
+          console.log('Insert response:', { data, error });
+          
           if (error) {
+            console.error('Insert error:', error);
             throw error;
           }
           setInitialized(true);
         }
+      } else {
+        console.warn('User not authenticated, preferences saved to localStorage only');
       }
 
-      setPreferences(newPreferences);
       toast.success('Preferências salvas com sucesso');
       return true;
     } catch (error: any) {

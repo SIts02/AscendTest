@@ -12,11 +12,11 @@ import {
 import FinancialScore from './FinancialScore';
 import FinancialInsights from './FinancialInsights';
 import PredictiveAnalysis from './PredictiveAnalysis';
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 
 const ExecutiveDashboard = () => {
-  const { summary } = useFinancialData();
+  const { summary } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
 
   const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });

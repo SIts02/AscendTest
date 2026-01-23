@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { Skeleton } from "@/components/ui/skeleton";
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 import { Button } from "@/components/ui/button";
 import { PieChart as PieChartIcon, BarChart3 } from "lucide-react";
@@ -10,7 +10,7 @@ import { useTheme } from "next-themes";
 
 const SpendingCategories = () => {
   const { t } = useTranslation();
-  const { summary, loading } = useFinancialData();
+  const { summary, loading } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const { resolvedTheme } = useTheme();
