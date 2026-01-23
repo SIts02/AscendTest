@@ -11,7 +11,7 @@ import { MotionButton } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import OnboardingDialog from "@/components/onboarding/OnboardingDialog";
+import DeveloperLetterDialog from "@/components/onboarding/DeveloperLetterDialog";
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout activePage="Dashboard">
-      <OnboardingDialog />
+      <DeveloperLetterDialog />
       
       <motion.div
         variants={containerVariants}
