@@ -15,7 +15,8 @@ import {
   Copy,
   Check,
   AlertTriangle,
-  QrCode
+  QrCode,
+  X
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
@@ -143,7 +144,7 @@ export function TwoFactorSetup() {
       {/* Setup Dialog */}
       <Dialog open={showSetup} onOpenChange={(open) => !open && handleCancelSetup()}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
+          <DialogHeader className="relative">
             <DialogTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
               Configurar Autenticação de Dois Fatores
@@ -151,6 +152,13 @@ export function TwoFactorSetup() {
             <DialogDescription>
               Use um aplicativo autenticador como Google Authenticator ou Authy
             </DialogDescription>
+            <button
+              onClick={handleCancelSetup}
+              className="absolute right-0 top-0 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Fechar"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -162,10 +170,10 @@ export function TwoFactorSetup() {
               </Label>
               
               {qrCode ? (
-                <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto overflow-hidden">
+                <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto">
                   <div 
                     dangerouslySetInnerHTML={{ __html: qrCode }} 
-                    className="w-56 h-56 [&>svg]:w-full [&>svg]:h-full [&>*]:hidden [&>svg]:block"
+                    className="w-56 h-56 [&]:contents [&>svg]:w-56 [&>svg]:h-56"
                   />
                 </div>
               ) : (

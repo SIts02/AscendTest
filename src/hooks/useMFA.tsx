@@ -60,6 +60,23 @@ export function useMFA() {
     fetchMFAStatus();
   }, [fetchMFAStatus]);
 
+  // Handle page visibility to clean up enrollment if user leaves
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.hidden && state.factorId && state.isEnrolling && !state.isVerifying) {
+        // Page became hidden and enrollment is in progress, clean it up
+        try {
+          await supabase.auth.mfa.unenroll({ factorId: state.factorId });
+        } catch (e) {
+          console.error('Error cleaning up enrollment on page hidden:', e);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [state.factorId, state.isEnrolling, state.isVerifying]);
+
   // Get verified factors
   const verifiedFactors = state.factors.filter(f => f.status === 'verified');
   const hasMFAEnabled = verifiedFactors.length > 0;
@@ -256,19 +273,25 @@ export function useMFA() {
   const cancelEnrollment = async () => {
     if (state.factorId) {
       try {
-        await supabase.auth.mfa.unenroll({ factorId: state.factorId });
+        // Only unenroll if factor exists and is unverified
+        const response = await supabase.auth.mfa.unenroll({ factorId: state.factorId });
+        if (!response.error) {
+          console.log('Unverified factor removed successfully');
+        }
       } catch (e) {
         console.error('Error canceling enrollment:', e);
       }
     }
+    // Clear local state
     setState(prev => ({
       ...prev,
       qrCode: null,
       secret: null,
       factorId: null,
       isEnrolling: false,
+      isVerifying: false,
     }));
-    // Refresh status after canceling
+    // Refresh status to ensure factors list is up to date
     await fetchMFAStatus();
   };
 
