@@ -60,23 +60,6 @@ export function useMFA() {
     fetchMFAStatus();
   }, [fetchMFAStatus]);
 
-  // Handle page visibility to clean up enrollment if user leaves
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (document.hidden && state.factorId && state.isEnrolling && !state.isVerifying) {
-        // Page became hidden and enrollment is in progress, clean it up
-        try {
-          await supabase.auth.mfa.unenroll({ factorId: state.factorId });
-        } catch (e) {
-          console.error('Error cleaning up enrollment on page hidden:', e);
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [state.factorId, state.isEnrolling, state.isVerifying]);
-
   // Get verified factors
   const verifiedFactors = state.factors.filter(f => f.status === 'verified');
   const hasMFAEnabled = verifiedFactors.length > 0;

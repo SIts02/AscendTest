@@ -77,6 +77,13 @@ export function TwoFactorSetup() {
     setVerificationCode('');
   };
 
+  const handleDialogOpenChange = async (open: boolean) => {
+    if (!open) {
+      // Only cancel if user explicitly closes the dialog by clicking X or ESC
+      await handleCancelSetup();
+    }
+  };
+
   const copySecret = () => {
     if (secret) {
       navigator.clipboard.writeText(secret);
@@ -142,7 +149,7 @@ export function TwoFactorSetup() {
       </Card>
 
       {/* Setup Dialog */}
-      <Dialog open={showSetup} onOpenChange={(open) => !open && handleCancelSetup()}>
+      <Dialog open={showSetup} onOpenChange={handleDialogOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="relative">
             <DialogTitle className="flex items-center gap-2">
