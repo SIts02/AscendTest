@@ -94,7 +94,7 @@ function ThemeSwitcher() {
   return (
     <div className="relative">
       <motion.button
-        className="relative flex size-8 cursor-pointer items-center justify-center rounded-lg transition-all pointer-events-auto bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+        className="relative flex size-8 cursor-pointer items-center justify-center rounded-full transition-all pointer-events-auto bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700"
         onClick={() => setIsExpanded(!isExpanded)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
