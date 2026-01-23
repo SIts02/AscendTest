@@ -5,6 +5,7 @@ import { Link, LinkProps, useLocation } from "react-router-dom";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import montanhaLogo from "@/assets/Montanha logo.png";
 
 interface Links {
   label: string;
@@ -223,10 +224,10 @@ export const Logo = () => {
       {/* Barra decorativa superior */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-primary/40 rounded-full" />
       
-      {/* Container arredondado */}
+      {/* Container */}
       <Link
         to="/dashboard"
-        className="flex items-center gap-3 p-3 rounded-2xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
+        className="flex items-center gap-3 p-3 transition-colors"
       >
         <motion.div
           animate={{
@@ -251,11 +252,13 @@ export const LogoIcon = () => {
       
       <Link
         to="/dashboard"
-        className="flex items-center justify-center p-2 rounded-xl bg-sidebar-accent/20 border border-sidebar-border/20 hover:bg-sidebar-accent/30 transition-colors"
+        className="flex items-center justify-center p-2 transition-colors"
       >
-        <span className="text-sidebar-foreground font-medium tracking-wide text-sm">
-          ascend.<sup className="text-[8px] ml-0.5 text-sidebar-foreground/60">®</sup>
-        </span>
+        <img
+          src={montanhaLogo}
+          alt="Montanha Logo"
+          className="h-8 w-auto filter brightness-0 invert"
+        />
       </Link>
     </div>
   );
