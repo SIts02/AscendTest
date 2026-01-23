@@ -85,12 +85,24 @@ const Assistente = () => {
       };
       
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in handleSendMessage:', error);
+      
+      // Check for rate limit or payment errors
+      let errorContent = 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.';
+      let toastDescription = "Não foi possível obter uma resposta. Verifique sua conexão e tente novamente.";
+      
+      if (error?.message?.includes('RATE_LIMIT') || error?.context?.body?.code === 'RATE_LIMIT') {
+        errorContent = 'Muitas perguntas em pouco tempo! 😅 Aguarde alguns segundos e tente novamente.';
+        toastDescription = "Limite de requisições atingido. Aguarde um momento.";
+      } else if (error?.message?.includes('PAYMENT_REQUIRED') || error?.context?.body?.code === 'PAYMENT_REQUIRED') {
+        errorContent = 'O assistente está temporariamente indisponível. Tente novamente mais tarde.';
+        toastDescription = "Serviço temporariamente indisponível.";
+      }
       
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
-        content: 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.',
+        content: errorContent,
         role: "assistant",
         timestamp: new Date()
       };
@@ -98,7 +110,7 @@ const Assistente = () => {
       setMessages(prev => [...prev, errorMessage]);
       
       toast.error("Erro ao processar pergunta", {
-        description: "Não foi possível obter uma resposta. Verifique sua conexão e tente novamente."
+        description: toastDescription
       });
     } finally {
       setIsTyping(false);
@@ -135,12 +147,23 @@ const Assistente = () => {
       };
       
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in handleSuggestedQuestion:', error);
+      
+      let errorContent = 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.';
+      let toastDescription = "Não foi possível obter uma resposta.";
+      
+      if (error?.message?.includes('RATE_LIMIT') || error?.context?.body?.code === 'RATE_LIMIT') {
+        errorContent = 'Muitas perguntas em pouco tempo! 😅 Aguarde alguns segundos e tente novamente.';
+        toastDescription = "Limite de requisições atingido.";
+      } else if (error?.message?.includes('PAYMENT_REQUIRED') || error?.context?.body?.code === 'PAYMENT_REQUIRED') {
+        errorContent = 'O assistente está temporariamente indisponível. Tente novamente mais tarde.';
+        toastDescription = "Serviço temporariamente indisponível.";
+      }
       
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
-        content: 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.',
+        content: errorContent,
         role: "assistant",
         timestamp: new Date()
       };
@@ -148,7 +171,7 @@ const Assistente = () => {
       setMessages(prev => [...prev, errorMessage]);
       
       toast.error("Erro ao processar pergunta", {
-        description: "Não foi possível obter uma resposta."
+        description: toastDescription
       });
     } finally {
       setIsTyping(false);

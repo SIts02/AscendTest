@@ -105,5 +105,28 @@
     "tag_accuracy": "Precisão",
     "tag_security": "Segurança",
     "tag_support": "Suporte 24/7"
+  },
+  "developer_letter": {
+    "title": "Bem-vindo ao Ascend!",
+    "subtitle": "Uma mensagem do desenvolvedor",
+    "greeting": "Olá! Sou o desenvolvedor por trás do Ascend e estou muito feliz que você está aqui.",
+    "beta_notice": "Este projeto ainda está em fase",
+    "beta_notice_2": ", então pode haver alguns bugs. Estou trabalhando para melhorar sua experiência.",
+    "manage": "Gerencie suas",
+    "with_us": "conosco!",
+    "ai_help": "Precisa de ajuda? Nosso Assistente de IA está sempre disponível para tirar suas dúvidas sobre a plataforma ou sobre finanças!",
+    "close": "Fechar",
+    "go_to_assistant": "Conhecer o Assistente",
+    "flip_words": {
+      "finances": "finanças",
+      "goals": "metas",
+      "investments": "investimentos",
+      "future": "futuro"
+    }
+  },
+  "common": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "finish": "Concluir"
   }
 }
