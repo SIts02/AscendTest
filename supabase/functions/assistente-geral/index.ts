@@ -89,7 +89,7 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
       .order('date', { ascending: false })
-      .limit(50);
+.limit(20);
 
     if (transactionsError) {
       console.error('Error fetching transactions:', transactionsError);
@@ -108,22 +108,25 @@ serve(async (req) => {
       expensesByCategory[category] = (expensesByCategory[category] || 0) + Number(t.amount);
     });
 
-    // 2. Buscar metas financeiras ativas
-    const { data: goals, error: goalsError } = await supabase
-      .from('goals')
-      .select('name, target, current, deadline, category')
-      .eq('user_id', user.id)
-      .eq('status', 'em andamento');
+    // 2. Buscar metas e investimentos em paralelo
+    const [goalsResult, investmentsResult] = await Promise.all([
+      supabase
+        .from('goals')
+        .select('name, target, current, deadline, category')
+        .eq('user_id', user.id)
+        .eq('status', 'em andamento'),
+      supabase
+        .from('investments')
+        .select('name, type, quantity, price, current_price')
+        .eq('user_id', user.id)
+    ]);
+
+    const { data: goals, error: goalsError } = goalsResult;
+    const { data: investments, error: investmentsError } = investmentsResult;
 
     if (goalsError) {
       console.error('Error fetching goals:', goalsError);
     }
-
-    // 3. Buscar investimentos
-    const { data: investments, error: investmentsError } = await supabase
-      .from('investments')
-      .select('name, type, quantity, price, current_price')
-      .eq('user_id', user.id);
 
     if (investmentsError) {
       console.error('Error fetching investments:', investmentsError);
@@ -259,7 +262,7 @@ Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend est
           { role: 'system', content: systemPrompt },
           { role: 'user', content: question }
         ],
-        max_tokens: 1500,
+        max_tokens: 1000,
         temperature: 0.7,
       }),
     });
