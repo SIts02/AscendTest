@@ -62,11 +62,11 @@ export default {
 				// Cores de texto e destaque do Design System
 				'text-primary': '#AAAAAA',
 				'text-highlight': '#FFFFFF',
-				'accent-start': '#A47CF3', // Início do Gradiente
-				'accent-end': '#683FEA',   // Fim do Gradiente
+				'accent-start': '#0ea5e9', // Azul primário
+				'accent-end': '#0284c7',   // Azul secundário
 				brand: { // Cores de destaque
-					'primary': '#A47CF3', // Mesma do accent-start para consistência
-					'secondary': '#683FEA', // Mesma do accent-end para consistência
+					'primary': '#0ea5e9', // Azul primário
+					'secondary': '#0284c7', // Azul secundário
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background, var(--background)))',
@@ -92,16 +92,16 @@ export default {
 					950: '#082f49',
 				},
 				momoney: {
-					50: '#f5f3ff',
-					100: '#ede9fe',
-					200: '#ddd6fe',
-					300: '#c4b5fd',
-					400: '#a78bfa',
-					500: '#8b5cf6',
-					600: '#7c3aed',
-					700: '#6d28d9',
-					800: '#5b21b6',
-					900: '#4c1d95',
+					50: '#f0f9ff',
+					100: '#e0f2fe',
+					200: '#bae6fd',
+					300: '#7dd3fc',
+					400: '#38bdf8',
+					500: '#0ea5e9',
+					600: '#0284c7',
+					700: '#0369a1',
+					800: '#075985',
+					900: '#0c4a6e',
 				},
 				dark: {
 					50: '#f9fafb',

@@ -137,7 +137,7 @@ const PredictiveAnalysis = () => {
             <Sparkles className="h-4 w-4 mr-2" />
             Insights Preditivos
           </h5>
-          <div className="space-y-2 text-sm text-purple-800 dark:text-purple-200">
+          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
             {predictiveAnalysis.projectedSavings > 0 ? (
               <div className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0" />

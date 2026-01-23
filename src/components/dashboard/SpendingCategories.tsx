@@ -18,7 +18,7 @@ const SpendingCategories = () => {
   const isDark = resolvedTheme === 'dark';
   const textColor = isDark ? 'hsl(215, 20%, 55%)' : 'hsl(215, 16%, 47%)';
   
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6366f1'];
+  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#0284c7', '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6366f1'];
 
   const chartData = summary.spendingByCategory.map((item, index) => ({
     name: item.name,
