@@ -11,11 +11,11 @@ import {
   Legend 
 } from 'recharts';
 import { BarChart3 } from "lucide-react";
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 
 const MonthlyBreakdownChart = () => {
-  const { summary } = useFinancialData();
+  const { summary } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
 
   const chartData = summary.monthlyData.map((item) => ({

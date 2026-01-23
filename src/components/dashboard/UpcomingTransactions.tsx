@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CalendarDays, CreditCard, Check, Clock, AlertCircle, Loader2, Receipt } from "lucide-react";
-import { useTransactions, Transaction } from "@/hooks/useTransactions";
+import { useConvertedTransactions, Transaction } from "@/hooks/useConvertedTransactions";
 import { useCategories, Category } from "@/hooks/useCategories";
 import { useMemo } from "react";
 import { format, parseISO, isBefore, startOfDay } from "date-fns";
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 const UpcomingTransactions = () => {
   const navigate = useNavigate();
-  const { transactions, loading: transactionsLoading, updateTransaction } = useTransactions();
+  const { transactions, loading: transactionsLoading, updateTransaction } = useConvertedTransactions();
   const { categories, loading: categoriesLoading } = useCategories();
 
   const loading = transactionsLoading || categoriesLoading;

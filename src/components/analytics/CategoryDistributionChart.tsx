@@ -9,7 +9,7 @@ import {
   Legend 
 } from 'recharts';
 import { PieChartIcon } from "lucide-react";
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 
 const COLORS = [
@@ -24,7 +24,7 @@ const COLORS = [
 ];
 
 const CategoryDistributionChart = () => {
-  const { summary } = useFinancialData();
+  const { summary } = useConvertedFinancialData();
   const { formatCurrency, formatPercentage } = useFormatters();
 
   const chartData = summary.spendingByCategory.slice(0, 8).map((item, index) => ({

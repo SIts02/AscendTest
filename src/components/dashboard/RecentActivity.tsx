@@ -1,5 +1,5 @@
 import { ShoppingCart, Coffee, Home, Car, CreditCard, DollarSign, TrendingUp, Loader2, Receipt, LucideIcon } from "lucide-react";
-import { useTransactions, Transaction } from "@/hooks/useTransactions";
+import { useConvertedTransactions, Transaction } from "@/hooks/useConvertedTransactions";
 import { useCategories, Category } from "@/hooks/useCategories";
 import { useMemo } from "react";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
@@ -49,7 +49,7 @@ const formatTransactionDate = (dateString: string): string => {
 };
 
 const RecentActivity = () => {
-  const { transactions, loading: transactionsLoading } = useTransactions();
+  const { transactions, loading: transactionsLoading } = useConvertedTransactions();
   const { categories, loading: categoriesLoading } = useCategories();
 
   const loading = transactionsLoading || categoriesLoading;

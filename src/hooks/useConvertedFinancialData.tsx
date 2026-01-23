@@ -52,14 +52,14 @@ export function useConvertedFinancialData() {
 
         // Converter summary
         const newSummary = await convertFinancialSummary(summary, originalCurrency);
-        setConvertedSummary(newSummary);
+        setConvertedSummary(newSummary as any);
 
         // Converter transações
         const newTransactions = await convertTransactions(
           transactions,
           originalCurrency
         );
-        setConvertedTransactions(newTransactions);
+        setConvertedTransactions(newTransactions as any);
 
         // Atualizar moeda atual
         setLastConvertedCurrency(preferences.currency);
