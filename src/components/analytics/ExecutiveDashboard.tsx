@@ -213,17 +213,17 @@ const ExecutiveDashboard = () => {
                 </p>
               </div>
 
-              <div className="text-center p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20">
-                <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
+              <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                   Média Mensal
                 </h4>
-                <p className="text-2xl font-bold text-purple-600">
+                <p className="text-2xl font-bold text-blue-600">
                   {summary.monthlyData.length > 0 ? 
                     formatCurrency(summary.monthlyData.reduce((sum, m) => sum + m.balance, 0) / summary.monthlyData.length) : 
                     formatCurrency(0)
                   }
                 </p>
-                <p className="text-sm text-purple-700 dark:text-purple-300">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
                   Saldo médio mensal
                 </p>
               </div>

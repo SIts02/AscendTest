@@ -101,8 +101,8 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded">
-                <Target className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded">
+                <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Transações</p>

@@ -13,8 +13,8 @@ const defaultAssistant: Assistant = {
   id: "financial-advisor",
   name: "Assistente Financeiro MoMoney",
   description: "Seu parceiro para realizar sonhos financeiros",
-  icon: <Sparkles className="h-6 w-6 text-purple-500" />,
-  gradient: "from-purple-500/20 to-purple-600/20"
+  icon: <Sparkles className="h-6 w-6 text-blue-500" />,
+  gradient: "from-blue-500/20 to-blue-600/20"
 };
 
 const suggestedQuestions = [

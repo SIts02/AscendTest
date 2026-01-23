@@ -14,7 +14,7 @@ import { useFormatters } from '@/hooks/useFormatters';
 
 const COLORS = [
   'hsl(221, 83%, 53%)', // Blue
-  'hsl(262, 83%, 58%)', // Purple
+  'hsl(217, 98%, 53%)', // Blue
   'hsl(142, 76%, 36%)', // Green
   'hsl(38, 92%, 50%)',  // Orange
   'hsl(0, 84%, 60%)',   // Red

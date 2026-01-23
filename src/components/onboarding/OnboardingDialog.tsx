@@ -34,7 +34,7 @@ const OnboardingDialog: React.FC = () => {
     {
       title: "Assistente de IA",
       description: "Nossa IA analisa seus dados financeiros e oferece dicas personalizadas para economizar e investir melhor.",
-      icon: <Sparkles className="w-12 h-12 text-purple-500" />,
+      icon: <Sparkles className="w-12 h-12 text-blue-500" />,
     },
     {
       title: "Planejamento Financeiro",

@@ -61,7 +61,7 @@ const PredictiveAnalysis = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-5 w-5 text-purple-600" />
+            <Sparkles className="h-5 w-5 text-blue-600" />
             <span>Análise Preditiva</span>
           </div>
           <Badge 
@@ -132,8 +132,8 @@ const PredictiveAnalysis = () => {
         </div>
 
         {/* Insights and Recommendations */}
-        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-          <h5 className="font-medium text-purple-900 dark:text-purple-100 mb-3 flex items-center">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+          <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-3 flex items-center">
             <Sparkles className="h-4 w-4 mr-2" />
             Insights Preditivos
           </h5>
