@@ -13,12 +13,13 @@ import { ptBR } from "date-fns/locale";
 import { useFormatters } from "@/hooks/useFormatters";
 import { useGoals, Goal, CreateGoalInput } from "@/hooks/useGoals";
 import { LoadingScreen } from "@/components/ui/loading-screen";
+import { useConvertedGoals } from "@/hooks/useConvertedGoals";
 
 const Metas = () => {
   const [showNewGoalModal, setShowNewGoalModal] = useState(false);
   const { formatCurrency } = useFormatters();
   const { 
-    goals, 
+    goals: rawGoals, 
     isLoading, 
     error,
     createGoal, 
@@ -26,6 +27,9 @@ const Metas = () => {
     isCreating,
     stats 
   } = useGoals();
+  
+  // Usar o hook de conversão de moeda
+  const { convertedGoals: goals } = useConvertedGoals(rawGoals);
   
   useEffect(() => {
     document.title = "MoMoney | Metas";

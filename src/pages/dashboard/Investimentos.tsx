@@ -14,6 +14,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 import { useMultipleStockQuotes, calculatePortfolioWithQuotes } from "@/hooks/useStockQuotes";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useConvertedInvestments } from "@/hooks/useConvertedInvestments";
 
 type Investment = {
   id: string;
@@ -72,11 +73,19 @@ const Investimentos = () => {
     refetch: refetchQuotes 
   } = useMultipleStockQuotes(stockTickers);
 
+  // Hook para conversão de moeda
+  const { convertPortfolioSync, currentCurrency, rateLoading } = useConvertedInvestments();
+
   // Calculate portfolio with real-time quotes
-  const portfolio = useMemo(() => {
+  const rawPortfolio = useMemo(() => {
     if (!investments) return null;
     return calculatePortfolioWithQuotes(investments, quotes);
   }, [investments, quotes]);
+
+  // Apply currency conversion
+  const portfolio = useMemo(() => {
+    return convertPortfolioSync(rawPortfolio);
+  }, [rawPortfolio, convertPortfolioSync, currentCurrency]);
 
   // Add investment mutation
   const addInvestmentMutation = useMutation({
