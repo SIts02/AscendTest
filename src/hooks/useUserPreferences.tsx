@@ -90,7 +90,6 @@ export function useUserPreferences() {
       // If logged in, also update in Supabase
       if (user) {
         const prefsToSave = {
-          user_id: user.id,
           theme: newPreferences.theme,
           language: newPreferences.language,
           currency: newPreferences.currency,
@@ -103,24 +102,47 @@ export function useUserPreferences() {
         
         console.log('Saving preferences for user:', user.id, prefsToSave);
         
-        // Use upsert to handle both insert and update cases
-        const { data, error } = await supabase
+        // First check if preferences already exist
+        const { data: existing, error: fetchError } = await supabase
           .from('user_preferences')
-          .upsert(prefsToSave, { 
-            onConflict: 'user_id'
-          })
-          .select();
-          
-        console.log('Upsert response:', { data, error });
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
         
-        if (error) {
-          console.error('Upsert error:', error);
-          throw error;
+        if (fetchError && fetchError.code !== 'PGRST116') {
+          console.error('Error fetching existing preferences:', fetchError);
+          throw fetchError;
         }
         
-        if (data && data.length > 0) {
-          setInitialized(true);
+        if (existing?.id) {
+          // UPDATE if exists
+          const { error: updateError } = await supabase
+            .from('user_preferences')
+            .update(prefsToSave)
+            .eq('id', existing.id);
+            
+          if (updateError) {
+            console.error('Update error:', updateError);
+            throw updateError;
+          }
+          console.log('Preferences updated successfully');
+        } else {
+          // INSERT if not exists
+          const { error: insertError } = await supabase
+            .from('user_preferences')
+            .insert({
+              user_id: user.id,
+              ...prefsToSave
+            });
+            
+          if (insertError) {
+            console.error('Insert error:', insertError);
+            throw insertError;
+          }
+          console.log('Preferences inserted successfully');
         }
+        
+        setInitialized(true);
       } else {
         console.warn('User not authenticated, preferences saved to localStorage only');
       }

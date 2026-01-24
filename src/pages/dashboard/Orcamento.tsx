@@ -13,11 +13,15 @@ import BudgetChart from "@/components/budget/BudgetChart";
 import BudgetPerformanceChart from "@/components/budget/BudgetPerformanceChart";
 import BudgetSummary from "@/components/budget/BudgetSummary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useConvertedBudget } from "@/hooks/useConvertedBudget";
 
 const Orcamento = () => {
   const [categoryFormOpen, setCategoryFormOpen] = useState(false);
   const { addCategory } = useCategories();
-  const { budgetCategories, loading, error, updateBudgetLimit } = useBudget();
+  const { budgetCategories: rawBudgetCategories, loading, error, updateBudgetLimit } = useBudget();
+  
+  // Usar o hook de conversão de moeda
+  const { convertedBudget: budgetCategories } = useConvertedBudget(rawBudgetCategories);
   
   useEffect(() => {
     document.title = "MoMoney | Orçamento";

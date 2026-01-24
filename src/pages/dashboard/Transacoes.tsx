@@ -42,12 +42,17 @@ import {
 import { useCategories, CategoryFormData } from "@/hooks/useCategories";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { useFormatters } from "@/hooks/useFormatters";
+import { useConvertedTransactions } from "@/hooks/useConvertedTransactions";
 
 const Transacoes = () => {
+  const { formatCurrency } = useFormatters();
+  
   useEffect(() => {
     document.title = "MoMoney | Transações";
   }, []);
 
+  // Usar o hook de transações convertidas
   const { 
     transactions, 
     loading: loadingTransactions, 
@@ -55,7 +60,7 @@ const Transacoes = () => {
     updateTransaction, 
     deleteTransaction, 
     exportTransactions
-  } = useTransactions();
+  } = useConvertedTransactions();
   
   const { categories, addCategory } = useCategories();
 
@@ -205,12 +210,7 @@ const Transacoes = () => {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  // formatCurrency agora vem do hook useFormatters (definido no início do componente)
 
   const getPaymentMethodName = (method: string | null) => {
     if (!method) return "";
