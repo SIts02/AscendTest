@@ -78,8 +78,8 @@ export function TwoFactorSetup() {
   };
 
   const handleDialogOpenChange = async (open: boolean) => {
-    if (!open) {
-      // Only cancel if user explicitly closes the dialog by clicking X or ESC
+    // Only cancel enrollment when explicitly closing the dialog (not on visibility change)
+    if (!open && document.visibilityState === 'visible') {
       await handleCancelSetup();
     }
   };
@@ -178,10 +178,16 @@ export function TwoFactorSetup() {
               
               {qrCode ? (
                 <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto">
-                  <div 
-                    dangerouslySetInnerHTML={{ __html: qrCode }} 
-                    className="w-56 h-56 [&]:contents [&>svg]:w-56 [&>svg]:h-56"
-                  />
+                  {qrCode.startsWith('data:image') ? (
+                    <img src={qrCode} alt="QR Code para 2FA" className="w-56 h-56" />
+                  ) : qrCode.includes('<svg') ? (
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: qrCode }} 
+                      className="w-56 h-56 [&>svg]:w-56 [&>svg]:h-56"
+                    />
+                  ) : (
+                    <img src={qrCode} alt="QR Code para 2FA" className="w-56 h-56" />
+                  )}
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-56 bg-muted rounded-lg">

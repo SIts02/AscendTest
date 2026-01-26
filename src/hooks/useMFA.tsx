@@ -56,9 +56,11 @@ export function useMFA() {
     }
   }, []);
 
+  // Only fetch MFA status on initial mount, not on visibility changes
   useEffect(() => {
     fetchMFAStatus();
-  }, [fetchMFAStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Get verified factors
   const verifiedFactors = state.factors.filter(f => f.status === 'verified');
