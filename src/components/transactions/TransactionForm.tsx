@@ -18,16 +18,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
 import { CategoryForm } from './CategoryForm';
+import { transactionFormSchema, sanitizeString, VALIDATION_LIMITS } from '@/lib/validators';
 
-const transactionSchema = z.object({
-  description: z.string().min(3, { message: 'A descrição deve ter pelo menos 3 caracteres' }),
-  amount: z.coerce.number().refine(val => val !== 0, { message: 'O valor não pode ser zero' }),
-  category_id: z.string().nullable(),
-  type: z.string().min(1, { message: 'Selecione um tipo' }),
-  date: z.string().min(1, { message: 'Selecione uma data' }),
-  payment_method: z.string().nullable(),
-  status: z.string()
-});
+/**
+ * Transaction form schema with strict validation
+ * Following OWASP best practices for input validation
+ */
+const transactionSchema = transactionFormSchema;
 
 interface TransactionFormProps {
   open: boolean;
@@ -59,10 +56,10 @@ export function TransactionForm({
       description: initialData?.description || '',
       amount: initialData?.amount || 0,
       category_id: initialData?.category_id || null,
-      type: initialData?.type || 'expense',
+      type: (initialData?.type as 'income' | 'expense') || 'expense',
       date: initialData?.date || format(new Date(), 'yyyy-MM-dd'),
-      payment_method: initialData?.payment_method || null,
-      status: initialData?.status || 'completed'
+      payment_method: (initialData?.payment_method as 'credit' | 'debit' | 'cash' | 'transfer' | 'pix' | null) || null,
+      status: (initialData?.status as 'completed' | 'pending' | 'scheduled') || 'completed'
     }
   });
 
