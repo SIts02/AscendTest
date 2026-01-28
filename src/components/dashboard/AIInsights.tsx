@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Sparkles, TrendingUp, TrendingDown, AlertTriangle, Lightbulb } from "lucide-react";
 
-// Simulated AI insights
 const insights = [
   {
     id: 1,
@@ -45,7 +44,6 @@ const insights = [
   },
 ];
 
-// New simulated insights that appear when the user asks for more
 const additionalInsights = [
   {
     id: 5,
@@ -80,8 +78,7 @@ const AIInsights = () => {
 
   const handleAskMore = () => {
     setLoading(true);
-    
-    // Simulate loading
+
     setTimeout(() => {
       setCurrentInsights([...currentInsights, ...additionalInsights]);
       setLoading(false);
@@ -110,8 +107,8 @@ const AIInsights = () => {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {currentInsights.map((insight) => (
-            <div 
-              key={insight.id} 
+            <div
+              key={insight.id}
               className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-card"
             >
               <div className="flex items-start">
@@ -121,20 +118,20 @@ const AIInsights = () => {
                 <div>
                   <div className="flex items-center mb-1">
                     <h3 className="font-medium text-foreground">{insight.title}</h3>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={`ml-2 ${
-                        insight.type === 'alert' 
-                          ? 'border-red-300 text-red-700 dark:border-red-800 dark:text-red-400' 
-                          : insight.type === 'opportunity' 
-                            ? 'border-green-300 text-green-700 dark:border-green-800 dark:text-green-400' 
+                        insight.type === 'alert'
+                          ? 'border-red-300 text-red-700 dark:border-red-800 dark:text-red-400'
+                          : insight.type === 'opportunity'
+                            ? 'border-green-300 text-green-700 dark:border-green-800 dark:text-green-400'
                             : 'border-amber-300 text-amber-700 dark:border-amber-800 dark:text-amber-400'
                       }`}
                     >
-                      {insight.type === 'alert' 
-                        ? 'Alerta' 
-                        : insight.type === 'opportunity' 
-                          ? 'Oportunidade' 
+                      {insight.type === 'alert'
+                        ? 'Alerta'
+                        : insight.type === 'opportunity'
+                          ? 'Oportunidade'
                           : 'Economia'}
                     </Badge>
                   </div>
@@ -144,10 +141,10 @@ const AIInsights = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="flex justify-center mt-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleAskMore}
             disabled={loading || currentInsights.length > insights.length}
             className="group"

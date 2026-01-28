@@ -78,17 +78,15 @@ export const useAutomation = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  // Recurring Transactions
   const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
   const [templates, setTemplates] = useState<TransactionTemplate[]>([]);
   const [categorizationRules, setCategorizationRules] = useState<CategorizationRule[]>([]);
   const [alerts, setAlerts] = useState<UserAlert[]>([]);
   const [alertHistory, setAlertHistory] = useState<AlertHistory[]>([]);
 
-  // Fetch all automation data
   const fetchAutomationData = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       const [
@@ -122,7 +120,6 @@ export const useAutomation = () => {
     }
   };
 
-  // Recurring Transactions CRUD
   const createRecurringTransaction = async (data: Omit<RecurringTransaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return;
 
@@ -162,7 +159,7 @@ export const useAutomation = () => {
 
       if (error) throw error;
 
-      setRecurringTransactions(prev => 
+      setRecurringTransactions(prev =>
         prev.map(item => item.id === id ? result as RecurringTransaction : item)
       );
       toast({
@@ -204,7 +201,6 @@ export const useAutomation = () => {
     }
   };
 
-  // Transaction Templates CRUD
   const createTemplate = async (data: Omit<TransactionTemplate, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return;
 
@@ -257,7 +253,6 @@ export const useAutomation = () => {
     }
   };
 
-  // Categorization Rules CRUD
   const createCategorizationRule = async (data: Omit<CategorizationRule, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return;
 
@@ -310,7 +305,6 @@ export const useAutomation = () => {
     }
   };
 
-  // Auto-categorize transaction based on rules
   const suggestCategory = (description: string): string | null => {
     const activeRules = categorizationRules
       .filter(rule => rule.is_active)
@@ -326,7 +320,6 @@ export const useAutomation = () => {
     return null;
   };
 
-  // Alerts CRUD
   const createAlert = async (data: Omit<UserAlert, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'last_triggered'>) => {
     if (!user) return;
 
@@ -379,7 +372,6 @@ export const useAutomation = () => {
     }
   };
 
-  // Mark alert as read
   const markAlertAsRead = async (historyId: string) => {
     try {
       const { error } = await supabase
@@ -402,7 +394,7 @@ export const useAutomation = () => {
   }, [user]);
 
   return {
-    // Data
+
     recurringTransactions,
     templates,
     categorizationRules,
@@ -410,24 +402,19 @@ export const useAutomation = () => {
     alertHistory,
     loading,
 
-    // Methods
     fetchAutomationData,
-    
-    // Recurring Transactions
+
     createRecurringTransaction,
     updateRecurringTransaction,
     deleteRecurringTransaction,
-    
-    // Templates
+
     createTemplate,
     deleteTemplate,
-    
-    // Categorization
+
     createCategorizationRule,
     deleteCategorizationRule,
     suggestCategory,
-    
-    // Alerts
+
     createAlert,
     deleteAlert,
     markAlertAsRead

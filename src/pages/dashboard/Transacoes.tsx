@@ -10,22 +10,22 @@ import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { CategoryForm } from "@/components/transactions/CategoryForm";
 import { ImportCSV } from "@/components/transactions/ImportCSV";
 import { ImportPDF } from "@/components/transactions/ImportPDF";
-import { 
-  ArrowDownUp, 
-  Calendar, 
+import {
+  ArrowDownUp,
+  Calendar,
   Download,
   Upload,
   FileText,
-  Filter, 
-  Plus, 
-  Search, 
-  ShoppingCart, 
-  Coffee, 
-  Home, 
-  Car, 
-  DollarSign, 
-  CreditCard, 
-  Briefcase, 
+  Filter,
+  Plus,
+  Search,
+  ShoppingCart,
+  Coffee,
+  Home,
+  Car,
+  DollarSign,
+  CreditCard,
+  Briefcase,
   Trash2,
   Pencil,
   AlertCircle,
@@ -34,10 +34,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { 
-  useTransactions, 
-  Transaction as TransactionType, 
-  TransactionFormData 
+import {
+  useTransactions,
+  Transaction as TransactionType,
+  TransactionFormData
 } from "@/hooks/useTransactions";
 import { useCategories, CategoryFormData } from "@/hooks/useCategories";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -47,58 +47,51 @@ import { useConvertedTransactions } from "@/hooks/useConvertedTransactions";
 
 const Transacoes = () => {
   const { formatCurrency } = useFormatters();
-  
+
   useEffect(() => {
     document.title = "MoMoney | Transações";
   }, []);
 
-  // Usar o hook de transações convertidas
-  const { 
-    transactions, 
-    loading: loadingTransactions, 
-    addTransaction, 
-    updateTransaction, 
-    deleteTransaction, 
+  const {
+    transactions,
+    loading: loadingTransactions,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
     exportTransactions
   } = useConvertedTransactions();
-  
+
   const { categories, addCategory } = useCategories();
 
-  // Filtros e pesquisa
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentTab, setCurrentTab] = useState("all");
   const [period, setPeriod] = useState("current");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  // Modais
   const [transactionFormOpen, setTransactionFormOpen] = useState(false);
   const [categoryFormOpen, setCategoryFormOpen] = useState(false);
   const [importCsvOpen, setImportCsvOpen] = useState(false);
   const [importPdfOpen, setImportPdfOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<TransactionType | null>(null);
 
-  // Filtragem de transações
   const filteredTransactions = transactions.filter(transaction => {
-    // Filtro de pesquisa
-    const matchesSearch = searchQuery === "" || 
+
+    const matchesSearch = searchQuery === "" ||
       transaction.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Filtro de tipo
-    const matchesType = typeFilter === "all" || 
+
+    const matchesType = typeFilter === "all" ||
       (typeFilter === "income" && transaction.type === "income") ||
       (typeFilter === "expense" && transaction.type === "expense");
-    
-    // Filtro de aba atual
-    const matchesTab = currentTab === "all" || 
-      (currentTab === "income" && transaction.type === "income") || 
+
+    const matchesTab = currentTab === "all" ||
+      (currentTab === "income" && transaction.type === "income") ||
       (currentTab === "expense" && transaction.type === "expense") ||
       (currentTab === "scheduled" && transaction.status === "scheduled");
-    
+
     return matchesSearch && matchesType && matchesTab;
   });
 
-  // Ordenação
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
     if (sortDirection === "asc") {
       return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -142,18 +135,15 @@ const Transacoes = () => {
     try {
       let successCount = 0;
       let errorCount = 0;
-      
-      // Show progress toast
-      toast("Importando transações...", { 
+
+      toast("Importando transações...", {
         duration: transactions.length * 200,
       });
-      
-      // Process transactions in batches to avoid UI freezing
+
       const batchSize = 10;
       for (let i = 0; i < transactions.length; i += batchSize) {
         const batch = transactions.slice(i, i + batchSize);
-        
-        // Process batch in parallel
+
         const results = await Promise.all(
           batch.map(async (transaction) => {
             try {
@@ -165,13 +155,11 @@ const Transacoes = () => {
             }
           })
         );
-        
-        // Count successes and failures
+
         successCount += results.filter(Boolean).length;
         errorCount += results.filter(result => !result).length;
       }
-      
-      // Show results
+
       if (errorCount === 0) {
         toast.success(`${successCount} transações importadas com sucesso!`);
       } else {
@@ -183,9 +171,8 @@ const Transacoes = () => {
     }
   };
 
-  // Ícones para categorias
   const getCategoryIcon = (type: string, category: string | null = null) => {
-    // Definir ícone padrão com base no tipo
+
     if (type === "income") return DollarSign;
     if (category === "Alimentação") return ShoppingCart;
     if (category === "Café") return Coffee;
@@ -193,10 +180,9 @@ const Transacoes = () => {
     if (category === "Transporte") return Car;
     if (category === "Salário") return Briefcase;
     if (category === "Freelance") return DollarSign;
-    return CreditCard; // Padrão
+    return CreditCard;
   };
 
-  // Status das transações
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
@@ -210,11 +196,9 @@ const Transacoes = () => {
     }
   };
 
-  // formatCurrency agora vem do hook useFormatters (definido no início do componente)
-
   const getPaymentMethodName = (method: string | null) => {
     if (!method) return "";
-    
+
     const methods: Record<string, string> = {
       "credit": "Cartão de Crédito",
       "debit": "Cartão de Débito",
@@ -222,7 +206,7 @@ const Transacoes = () => {
       "transfer": "Transferência",
       "pix": "Pix"
     };
-    
+
     return methods[method] || method;
   };
 
@@ -251,7 +235,7 @@ const Transacoes = () => {
             </Button>
             <Button variant="default" className="bg-gradient-to-r from-primary to-primary/80" onClick={() => setImportPdfOpen(true)}>
               <Sparkles className="h-4 w-4 mr-2" />
-              Importar PDF com IA
+              Importar Extrato com IA
             </Button>
             <Button variant="outline" onClick={() => setCategoryFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
@@ -272,15 +256,15 @@ const Transacoes = () => {
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                <Input 
-                  type="search" 
-                  placeholder="Pesquisar transações..." 
+                <Input
+                  type="search"
+                  placeholder="Pesquisar transações..."
                   className="pl-8"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="w-40">
                   <Select onValueChange={setTypeFilter} defaultValue="all">
@@ -296,7 +280,7 @@ const Transacoes = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="w-40">
                   <Select value={period} onValueChange={setPeriod}>
                     <SelectTrigger>
@@ -312,9 +296,9 @@ const Transacoes = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant="outline"
                   size="icon"
                   onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
                 >
@@ -330,7 +314,7 @@ const Transacoes = () => {
                 <TabsTrigger value="expense">Saídas</TabsTrigger>
                 <TabsTrigger value="scheduled">Agendadas</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="all" className="space-y-4">
                 {loadingTransactions ? (
                   <div className="flex justify-center py-10">
@@ -409,7 +393,7 @@ const Transacoes = () => {
                   </div>
                 )}
               </TabsContent>
-              
+
               <TabsContent value="income">
                 {loadingTransactions ? (
                   <div className="flex justify-center py-10">
@@ -488,7 +472,7 @@ const Transacoes = () => {
                   </div>
                 )}
               </TabsContent>
-              
+
               <TabsContent value="expense">
                 {loadingTransactions ? (
                   <div className="flex justify-center py-10">
@@ -567,7 +551,7 @@ const Transacoes = () => {
                   </div>
                 )}
               </TabsContent>
-              
+
               <TabsContent value="scheduled">
                 {loadingTransactions ? (
                   <div className="flex justify-center py-10">

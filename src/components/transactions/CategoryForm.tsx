@@ -20,16 +20,12 @@ interface CategoryFormProps {
   isEditing?: boolean;
 }
 
-/**
- * Form for creating and editing categories
- * Includes strict input validation following OWASP best practices
- */
-export function CategoryForm({ 
-  open, 
-  onOpenChange, 
-  onSubmit, 
-  initialData, 
-  isEditing = false 
+export function CategoryForm({
+  open,
+  onOpenChange,
+  onSubmit,
+  initialData,
+  isEditing = false
 }: CategoryFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,7 +39,6 @@ export function CategoryForm({
     }
   });
 
-  // Reset form when dialog opens with new initial data
   useEffect(() => {
     if (open) {
       form.reset({
@@ -55,21 +50,18 @@ export function CategoryForm({
     }
   }, [open, initialData, form]);
 
-  /**
-   * Handle form submission with validation and sanitization
-   */
   const handleSubmit = async (data: z.infer<typeof categoryFormSchema>) => {
     setIsSubmitting(true);
-    
+
     try {
-      // Sanitize string inputs before saving
+
       const sanitizedData: CategoryFormData = {
         name: sanitizeString(data.name.trim()),
         type: data.type,
         color: data.color?.trim() || null,
         icon: data.icon ? sanitizeString(data.icon.trim()) : null,
       };
-      
+
       await onSubmit(sanitizedData);
       form.reset();
       onOpenChange(false);
@@ -80,9 +72,6 @@ export function CategoryForm({
     }
   };
 
-  /**
-   * Handle dialog close - reset form
-   */
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       form.reset();
@@ -90,9 +79,6 @@ export function CategoryForm({
     onOpenChange(open);
   };
 
-  /**
-   * Validate color format
-   */
   const isValidColor = (color: string): boolean => {
     if (!color) return true;
     return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
@@ -104,10 +90,10 @@ export function CategoryForm({
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar Categoria' : 'Nova Categoria'}</DialogTitle>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" noValidate>
-            {/* Name field */}
+            {}
             <FormField
               control={form.control}
               name="name"
@@ -115,8 +101,8 @@ export function CategoryForm({
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="Nome da categoria" 
+                    <Input
+                      placeholder="Nome da categoria"
                       {...field}
                       maxLength={50}
                       onChange={(e) => {
@@ -129,8 +115,8 @@ export function CategoryForm({
                 </FormItem>
               )}
             />
-            
-            {/* Type field */}
+
+            {}
             <FormField
               control={form.control}
               name="type"
@@ -153,8 +139,8 @@ export function CategoryForm({
                 </FormItem>
               )}
             />
-            
-            {/* Color field */}
+
+            {}
             <FormField
               control={form.control}
               name="color"
@@ -163,20 +149,20 @@ export function CategoryForm({
                   <FormLabel>Cor (opcional)</FormLabel>
                   <FormControl>
                     <div className="flex gap-2">
-                      <Input 
-                        placeholder="Cor (ex: #ff5555)" 
-                        {...field} 
-                        value={field.value || ''} 
+                      <Input
+                        placeholder="Cor (ex: #ff5555)"
+                        {...field}
+                        value={field.value || ''}
                         maxLength={7}
                         onChange={(e) => {
-                          // Only allow valid hex color characters
+
                           const value = e.target.value.replace(/[^#A-Fa-f0-9]/g, '').slice(0, 7);
                           field.onChange(value || null);
                         }}
                       />
                       {field.value && isValidColor(field.value) && (
-                        <div 
-                          className="w-10 h-10 rounded border flex-shrink-0" 
+                        <div
+                          className="w-10 h-10 rounded border flex-shrink-0"
                           style={{ backgroundColor: field.value }}
                           aria-label={`Cor selecionada: ${field.value}`}
                         />
@@ -187,8 +173,8 @@ export function CategoryForm({
                 </FormItem>
               )}
             />
-            
-            {/* Icon field */}
+
+            {}
             <FormField
               control={form.control}
               name="icon"
@@ -196,10 +182,10 @@ export function CategoryForm({
                 <FormItem>
                   <FormLabel>Ícone (opcional)</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="Nome do ícone" 
-                      {...field} 
-                      value={field.value || ''} 
+                    <Input
+                      placeholder="Nome do ícone"
+                      {...field}
+                      value={field.value || ''}
                       maxLength={50}
                       onChange={(e) => {
                         const value = e.target.value.slice(0, 50);
@@ -211,19 +197,19 @@ export function CategoryForm({
                 </FormItem>
               )}
             />
-            
+
             <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => handleOpenChange(false)}
                 disabled={isSubmitting}
               >
                 Cancelar
               </Button>
-              <Button 
-                type="submit" 
-                variant="clean" 
+              <Button
+                type="submit"
+                variant="clean"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

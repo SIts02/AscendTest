@@ -27,7 +27,7 @@ export const AutoCategorization = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.rule_name || !formData.keywords || !formData.category_id) {
       toast({
         title: 'Erro',
@@ -38,7 +38,7 @@ export const AutoCategorization = () => {
     }
 
     const keywordArray = formData.keywords.split(',').map(k => k.trim()).filter(k => k);
-    
+
     await createCategorizationRule({
       rule_name: formData.rule_name,
       keywords: keywordArray,
@@ -95,7 +95,7 @@ export const AutoCategorization = () => {
                     placeholder="Ex: Supermercado"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="keywords">Palavras-chave</Label>
                   <Textarea
@@ -106,7 +106,7 @@ export const AutoCategorization = () => {
                     rows={3}
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="category_id">Categoria</Label>
                   <Select value={formData.category_id} onValueChange={(value) => setFormData(prev => ({ ...prev, category_id: value }))}>
@@ -122,7 +122,7 @@ export const AutoCategorization = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="priority">Prioridade</Label>
                   <Input
@@ -134,7 +134,7 @@ export const AutoCategorization = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) }))}
                   />
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="is_active"
@@ -143,7 +143,7 @@ export const AutoCategorization = () => {
                   />
                   <Label htmlFor="is_active">Regra ativa</Label>
                 </div>
-                
+
                 <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancelar

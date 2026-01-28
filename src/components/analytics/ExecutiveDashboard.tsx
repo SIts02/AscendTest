@@ -1,10 +1,10 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  DollarSign, 
+import {
+  BarChart3,
+  TrendingUp,
+  DollarSign,
   Target,
   Calendar,
   Award
@@ -20,15 +20,15 @@ const ExecutiveDashboard = () => {
   const { formatCurrency } = useFormatters();
 
   const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-  const savingsRate = summary.totalIncome > 0 ? 
+  const savingsRate = summary.totalIncome > 0 ?
     ((summary.totalIncome - summary.totalExpense) / summary.totalIncome) * 100 : 0;
 
   const kpis = [
     {
       title: "Receita Total",
       value: formatCurrency(summary.totalIncome),
-      change: summary.monthlyData.length >= 2 ? 
-        ((summary.monthlyData[summary.monthlyData.length - 1]?.income || 0) - 
+      change: summary.monthlyData.length >= 2 ?
+        ((summary.monthlyData[summary.monthlyData.length - 1]?.income || 0) -
          (summary.monthlyData[summary.monthlyData.length - 2]?.income || 0)) : 0,
       icon: DollarSign,
       color: "text-green-600",
@@ -37,8 +37,8 @@ const ExecutiveDashboard = () => {
     {
       title: "Gastos Totais",
       value: formatCurrency(summary.totalExpense),
-      change: summary.monthlyData.length >= 2 ? 
-        ((summary.monthlyData[summary.monthlyData.length - 1]?.expense || 0) - 
+      change: summary.monthlyData.length >= 2 ?
+        ((summary.monthlyData[summary.monthlyData.length - 1]?.expense || 0) -
          (summary.monthlyData[summary.monthlyData.length - 2]?.expense || 0)) : 0,
       icon: TrendingUp,
       color: "text-red-600",
@@ -47,25 +47,25 @@ const ExecutiveDashboard = () => {
     {
       title: "Saldo Atual",
       value: formatCurrency(summary.balance),
-      change: summary.monthlyData.length >= 2 ? 
-        ((summary.monthlyData[summary.monthlyData.length - 1]?.balance || 0) - 
+      change: summary.monthlyData.length >= 2 ?
+        ((summary.monthlyData[summary.monthlyData.length - 1]?.balance || 0) -
          (summary.monthlyData[summary.monthlyData.length - 2]?.balance || 0)) : 0,
       icon: Target,
       color: summary.balance >= 0 ? "text-green-600" : "text-red-600",
-      bgColor: summary.balance >= 0 ? 
-        "bg-green-50 dark:bg-green-900/20" : 
+      bgColor: summary.balance >= 0 ?
+        "bg-green-50 dark:bg-green-900/20" :
         "bg-red-50 dark:bg-red-900/20"
     },
     {
       title: "Taxa de Poupança",
       value: `${savingsRate.toFixed(1)}%`,
-      change: 0, // Could be calculated based on historical data
+      change: 0,
       icon: Award,
       color: savingsRate >= 20 ? "text-green-600" : savingsRate >= 10 ? "text-yellow-600" : "text-red-600",
-      bgColor: savingsRate >= 20 ? 
-        "bg-green-50 dark:bg-green-900/20" : 
-        savingsRate >= 10 ? 
-        "bg-yellow-50 dark:bg-yellow-900/20" : 
+      bgColor: savingsRate >= 20 ?
+        "bg-green-50 dark:bg-green-900/20" :
+        savingsRate >= 10 ?
+        "bg-yellow-50 dark:bg-yellow-900/20" :
         "bg-red-50 dark:bg-red-900/20"
     }
   ];
@@ -92,7 +92,7 @@ const ExecutiveDashboard = () => {
       animate="visible"
       className="space-y-6"
     >
-      {/* Header */}
+      {}
       <motion.div variants={itemVariants} className="mb-6">
         <div className="flex items-center space-x-3 mb-2">
           <BarChart3 className="h-6 w-6 text-primary" />
@@ -103,7 +103,7 @@ const ExecutiveDashboard = () => {
         </p>
       </motion.div>
 
-      {/* KPI Cards Grid */}
+      {}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {kpis.map((kpi, index) => (
@@ -148,25 +148,25 @@ const ExecutiveDashboard = () => {
         </div>
       </motion.div>
 
-      {/* Analytics Grid */}
+      {}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Financial Score - Takes full width on mobile, 1 column on xl */}
+        {}
         <motion.div variants={itemVariants} className="xl:col-span-1">
           <FinancialScore />
         </motion.div>
 
-        {/* Predictive Analysis - Takes full width on mobile, 1 column on xl */}
+        {}
         <motion.div variants={itemVariants} className="xl:col-span-1">
           <PredictiveAnalysis />
         </motion.div>
 
-        {/* Insights - Takes full width on mobile, 1 column on xl */}
+        {}
         <motion.div variants={itemVariants} className="xl:col-span-1">
           <FinancialInsights />
         </motion.div>
       </div>
 
-      {/* Performance Summary */}
+      {}
       <motion.div variants={itemVariants}>
         <Card>
           <CardHeader>
@@ -182,13 +182,13 @@ const ExecutiveDashboard = () => {
                   Melhor Mês (Receita)
                 </h4>
                 <p className="text-2xl font-bold text-blue-600">
-                  {summary.monthlyData.length > 0 ? 
-                    formatCurrency(Math.max(...summary.monthlyData.map(m => m.income))) : 
+                  {summary.monthlyData.length > 0 ?
+                    formatCurrency(Math.max(...summary.monthlyData.map(m => m.income))) :
                     formatCurrency(0)
                   }
                 </p>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  {summary.monthlyData.length > 0 ? 
+                  {summary.monthlyData.length > 0 ?
                     summary.monthlyData.find(m => m.income === Math.max(...summary.monthlyData.map(d => d.income)))?.month || 'N/A' :
                     'N/A'
                   }
@@ -200,13 +200,13 @@ const ExecutiveDashboard = () => {
                   Maior Economia
                 </h4>
                 <p className="text-2xl font-bold text-green-600">
-                  {summary.monthlyData.length > 0 ? 
-                    formatCurrency(Math.max(...summary.monthlyData.map(m => m.balance))) : 
+                  {summary.monthlyData.length > 0 ?
+                    formatCurrency(Math.max(...summary.monthlyData.map(m => m.balance))) :
                     formatCurrency(0)
                   }
                 </p>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  {summary.monthlyData.length > 0 ? 
+                  {summary.monthlyData.length > 0 ?
                     summary.monthlyData.find(m => m.balance === Math.max(...summary.monthlyData.map(d => d.balance)))?.month || 'N/A' :
                     'N/A'
                   }
@@ -218,8 +218,8 @@ const ExecutiveDashboard = () => {
                   Média Mensal
                 </h4>
                 <p className="text-2xl font-bold text-blue-600">
-                  {summary.monthlyData.length > 0 ? 
-                    formatCurrency(summary.monthlyData.reduce((sum, m) => sum + m.balance, 0) / summary.monthlyData.length) : 
+                  {summary.monthlyData.length > 0 ?
+                    formatCurrency(summary.monthlyData.reduce((sum, m) => sum + m.balance, 0) / summary.monthlyData.length) :
                     formatCurrency(0)
                   }
                 </p>

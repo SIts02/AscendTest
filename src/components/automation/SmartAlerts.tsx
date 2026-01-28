@@ -29,7 +29,7 @@ export const SmartAlerts = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.message) {
       toast({
         title: 'Erro',
@@ -40,7 +40,7 @@ export const SmartAlerts = () => {
     }
 
     const threshold = formData.threshold_value ? parseFloat(formData.threshold_value) : null;
-    
+
     await createAlert({
       alert_type: formData.alert_type,
       title: formData.title,
@@ -97,7 +97,7 @@ export const SmartAlerts = () => {
                     placeholder="Ex: Orçamento Excedido"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="message">Mensagem</Label>
                   <Textarea
@@ -108,7 +108,7 @@ export const SmartAlerts = () => {
                     rows={3}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="alert_type">Tipo</Label>
@@ -136,7 +136,7 @@ export const SmartAlerts = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancelar

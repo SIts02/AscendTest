@@ -22,7 +22,6 @@ export function useSecureAction() {
   ): Promise<T | null> => {
     const { endpoint, action: auditAction, resource, maxRequests, windowMinutes } = options;
 
-    // Check rate limit
     const allowed = await checkRateLimit(endpoint, { maxRequests, windowMinutes });
     if (!allowed) {
       toast.error('Muitas requisições. Por favor, aguarde um momento.');
@@ -31,8 +30,7 @@ export function useSecureAction() {
 
     try {
       const result = await action();
-      
-      // Log successful action
+
       await logEvent(auditAction, resource, {
         ...metadata,
         success: true,
@@ -40,7 +38,7 @@ export function useSecureAction() {
 
       return result;
     } catch (error: unknown) {
-      // Log failed action
+
       await logEvent(auditAction, resource, {
         ...metadata,
         success: false,

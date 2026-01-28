@@ -11,10 +11,9 @@ export function useConvertedBudget(budgetCategories: BudgetCategory[]) {
   const [convertedBudget, setConvertedBudget] = useState<BudgetCategory[]>(budgetCategories);
   const [converting, setConverting] = useState(false);
   const [cachedRate, setCachedRate] = useState<number | null>(null);
-  
+
   const targetCurrency = preferences.currency || 'BRL';
 
-  // Fetch rate for sync conversions
   useEffect(() => {
     const fetchRate = async () => {
       if (targetCurrency === 'BRL') {
@@ -33,7 +32,7 @@ export function useConvertedBudget(budgetCategories: BudgetCategory[]) {
 
   useEffect(() => {
     const convertBudget = async () => {
-      // If same currency, no conversion needed
+
       if (targetCurrency === 'BRL') {
         setConvertedBudget(budgetCategories);
         return;
@@ -52,7 +51,7 @@ export function useConvertedBudget(budgetCategories: BudgetCategory[]) {
               ...category,
               max_amount: maxAmount,
               current_amount: currentAmount,
-              // Percentage stays the same
+
             };
           })
         );
@@ -60,7 +59,7 @@ export function useConvertedBudget(budgetCategories: BudgetCategory[]) {
         setConvertedBudget(converted);
       } catch (error) {
         console.error('Error converting budget:', error);
-        setConvertedBudget(budgetCategories); // Fallback
+        setConvertedBudget(budgetCategories);
       } finally {
         setConverting(false);
       }
@@ -69,7 +68,6 @@ export function useConvertedBudget(budgetCategories: BudgetCategory[]) {
     convertBudget();
   }, [budgetCategories, targetCurrency, convertAmount]);
 
-  // Synchronous conversion using cached rate
   const convertBudgetSync = (categories: BudgetCategory[]): BudgetCategory[] => {
     if (targetCurrency === 'BRL' || !cachedRate) {
       return categories;
@@ -82,10 +80,10 @@ export function useConvertedBudget(budgetCategories: BudgetCategory[]) {
     }));
   };
 
-  return { 
-    convertedBudget, 
+  return {
+    convertedBudget,
     convertBudgetSync,
-    converting, 
+    converting,
     rateLoading,
     currentCurrency: targetCurrency,
     rate: cachedRate

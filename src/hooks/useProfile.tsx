@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -52,12 +51,12 @@ export function useProfile() {
         windowMinutes: 1
       },
       async () => {
-        const updateData: { 
-          name?: string; 
-          email?: string; 
+        const updateData: {
+          name?: string;
+          email?: string;
           avatar_url?: string;
         } = {};
-        
+
         if (profileData.name !== undefined) updateData.name = profileData.name;
         if (profileData.email !== undefined) updateData.email = profileData.email;
         if (profileData.avatar_url !== undefined) updateData.avatar_url = profileData.avatar_url;
@@ -96,14 +95,14 @@ export function useProfile() {
       async () => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
-        // Use folder-based path: {user_id}/{filename} for RLS policy enforcement
+
         const filePath = `${user.id}/${fileName}`;
 
         const { data: buckets } = await supabase.storage.listBuckets();
         if (!buckets?.find(bucket => bucket.name === 'avatars')) {
           await supabase.storage.createBucket('avatars', {
             public: true,
-            fileSizeLimit: 1024 * 1024 * 2 // 2MB
+            fileSizeLimit: 1024 * 1024 * 2
           });
         }
 

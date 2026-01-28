@@ -20,7 +20,6 @@ interface NewInvestmentModalProps {
   onAddInvestment?: (investment: any) => void;
 }
 
-// Allowed asset types - validated against schema
 const ALLOWED_ASSET_TYPES = [
   { id: "stocks", name: "Ações", icon: "📈" },
   { id: "fixed_income", name: "Renda Fixa", icon: "💵" },
@@ -33,10 +32,6 @@ const ALLOWED_ASSET_TYPES = [
 
 type AssetTypeId = typeof ALLOWED_ASSET_TYPES[number]['id'];
 
-/**
- * Modal for adding new investments
- * Includes strict input validation following OWASP best practices
- */
 const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestmentModalProps) => {
   const [name, setName] = useState("");
   const [assetType, setAssetType] = useState<AssetTypeId | "">("");
@@ -47,9 +42,6 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { formatCurrency } = useFormatters();
 
-  /**
-   * Reset form state
-   */
   const resetForm = () => {
     setName("");
     setAssetType("");
@@ -60,17 +52,12 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
     setIsSubmitting(false);
   };
 
-  /**
-   * Handle form submission with validation
-   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Parse numeric values safely
+
     const parsedAmount = parseFloat(amount);
     const parsedPrice = parseFloat(purchasePrice);
-    
-    // Validate using schema
+
     const validationResult = investmentFormSchema.safeParse({
       name: name.trim(),
       type: assetType,
@@ -78,7 +65,7 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
       purchasePrice: isNaN(parsedPrice) ? 0 : parsedPrice,
       purchaseDate,
     });
-    
+
     if (!validationResult.success) {
       const fieldErrors: Record<string, string> = {};
       validationResult.error.errors.forEach(err => {
@@ -91,12 +78,12 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
       toast.error(getFirstError(validationResult.error));
       return;
     }
-    
+
     setIsSubmitting(true);
     setErrors({});
-    
+
     try {
-      // Sanitize string inputs before storing
+
       const newInvestment = {
         id: `inv-${Date.now()}`,
         name: sanitizeString(validationResult.data.name),
@@ -104,9 +91,9 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
         amount: validationResult.data.amount,
         purchasePrice: validationResult.data.purchasePrice,
         purchaseDate: validationResult.data.purchaseDate,
-        currentPrice: validationResult.data.purchasePrice, // Initially equal to purchase price
+        currentPrice: validationResult.data.purchasePrice,
         totalValue: validationResult.data.amount * validationResult.data.purchasePrice,
-        variation: 0, // Initial variation is 0
+        variation: 0,
         createdAt: new Date(),
       };
 
@@ -127,9 +114,6 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
     }
   };
 
-  /**
-   * Handle dialog close - reset form
-   */
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       resetForm();
@@ -149,22 +133,22 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
             Adicione um novo investimento à sua carteira.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6 mt-2" noValidate>
           <div className="grid gap-5">
-            {/* Name field */}
+            {}
             <div className="grid gap-3">
               <Label htmlFor="investment-name" className="text-sm font-medium text-gray-700">
                 Nome do Investimento *
               </Label>
-              <Input 
-                id="investment-name" 
-                value={name} 
+              <Input
+                id="investment-name"
+                value={name}
                 onChange={(e) => {
                   const value = e.target.value.slice(0, VALIDATION_LIMITS.NAME_MAX);
                   setName(value);
                   if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
-                }} 
+                }}
                 placeholder="Ex: PETR4, Tesouro Selic 2026, etc."
                 maxLength={VALIDATION_LIMITS.NAME_MAX}
                 className={cn("shadow-sm", errors.name && "border-red-500")}
@@ -174,21 +158,21 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
                 <p className="text-sm text-red-500">{errors.name}</p>
               )}
             </div>
-            
-            {/* Asset type field */}
+
+            {}
             <div className="grid gap-3">
               <Label htmlFor="asset-type" className="text-sm font-medium text-gray-700">
                 Tipo de Ativo *
               </Label>
-              <Select 
-                value={assetType} 
+              <Select
+                value={assetType}
                 onValueChange={(value: AssetTypeId) => {
                   setAssetType(value);
                   if (errors.type) setErrors(prev => ({ ...prev, type: '' }));
                 }}
               >
-                <SelectTrigger 
-                  id="asset-type" 
+                <SelectTrigger
+                  id="asset-type"
                   className={cn(
                     "rounded-xl border-gray-200 shadow-sm bg-white h-10",
                     errors.type && "border-red-500"
@@ -211,24 +195,24 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
                 <p className="text-sm text-red-500">{errors.type}</p>
               )}
             </div>
-            
-            {/* Amount and price fields */}
+
+            {}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-3">
                 <Label htmlFor="amount" className="text-sm font-medium text-gray-700">
                   Quantidade *
                 </Label>
-                <Input 
-                  id="amount" 
-                  type="number" 
-                  value={amount} 
+                <Input
+                  id="amount"
+                  type="number"
+                  value={amount}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) <= VALIDATION_LIMITS.QUANTITY_MAX)) {
                       setAmount(value);
                       if (errors.amount) setErrors(prev => ({ ...prev, amount: '' }));
                     }
-                  }} 
+                  }}
                   placeholder="10"
                   min="0.0001"
                   max={VALIDATION_LIMITS.QUANTITY_MAX}
@@ -240,22 +224,22 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
                   <p className="text-sm text-red-500">{errors.amount}</p>
                 )}
               </div>
-              
+
               <div className="grid gap-3">
                 <Label htmlFor="purchase-price" className="text-sm font-medium text-gray-700">
                   Preço de Compra (R$) *
                 </Label>
-                <Input 
-                  id="purchase-price" 
-                  type="number" 
-                  value={purchasePrice} 
+                <Input
+                  id="purchase-price"
+                  type="number"
+                  value={purchasePrice}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) <= VALIDATION_LIMITS.AMOUNT_MAX)) {
                       setPurchasePrice(value);
                       if (errors.purchasePrice) setErrors(prev => ({ ...prev, purchasePrice: '' }));
                     }
-                  }} 
+                  }}
                   placeholder="25.75"
                   min="0.01"
                   max={VALIDATION_LIMITS.AMOUNT_MAX}
@@ -268,8 +252,8 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
                 )}
               </div>
             </div>
-            
-            {/* Purchase date field */}
+
+            {}
             <div className="grid gap-3">
               <Label htmlFor="purchase-date" className="text-sm font-medium text-gray-700">
                 Data de Compra *
@@ -309,11 +293,11 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
               )}
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => handleOpenChange(false)}
               size="lg"
               className="rounded-xl"
@@ -321,8 +305,8 @@ const NewInvestmentModal = ({ open, onOpenChange, onAddInvestment }: NewInvestme
             >
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="success"
               size="lg"
               className="rounded-xl"

@@ -9,9 +9,9 @@ const getCategoryIcon = (categoryName: string | null, transactionType: string): 
   if (!categoryName) {
     return transactionType === 'income' ? DollarSign : Receipt;
   }
-  
+
   const lowerName = categoryName.toLowerCase();
-  
+
   if (lowerName.includes('alimentação') || lowerName.includes('mercado') || lowerName.includes('supermercado')) {
     return ShoppingCart;
   }
@@ -30,21 +30,21 @@ const getCategoryIcon = (categoryName: string | null, transactionType: string): 
   if (lowerName.includes('receita') || lowerName.includes('salário')) {
     return DollarSign;
   }
-  
+
   return transactionType === 'income' ? DollarSign : CreditCard;
 };
 
 const formatTransactionDate = (dateString: string): string => {
   const date = parseISO(dateString);
-  
+
   if (isToday(date)) {
     return `Hoje, ${format(date, 'HH:mm')}`;
   }
-  
+
   if (isYesterday(date)) {
     return `Ontem, ${format(date, 'HH:mm')}`;
   }
-  
+
   return format(date, "dd/MM/yyyy", { locale: ptBR });
 };
 
@@ -75,7 +75,7 @@ const RecentActivity = () => {
 
   const getIconColorClass = (type: string) => {
     return type === 'income'
-      ? "bg-green-500/10 text-green-500" 
+      ? "bg-green-500/10 text-green-500"
       : "bg-red-500/10 text-red-500";
   };
 
@@ -120,8 +120,8 @@ const RecentActivity = () => {
           const displayAmount = getDisplayAmount(transaction);
 
           return (
-            <div 
-              key={transaction.id} 
+            <div
+              key={transaction.id}
               className="flex items-center justify-between p-3 rounded-xl hover:bg-secondary/30 transition-colors"
             >
               <div className="flex items-center min-w-0">
@@ -131,7 +131,7 @@ const RecentActivity = () => {
                 <div className="min-w-0">
                   <p className="font-medium text-sm text-foreground truncate">{transaction.description}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatTransactionDate(transaction.date)} 
+                    {formatTransactionDate(transaction.date)}
                     {categoryName && ` • ${categoryName}`}
                   </p>
                 </div>

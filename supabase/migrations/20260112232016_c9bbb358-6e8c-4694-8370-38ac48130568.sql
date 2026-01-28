@@ -1,7 +1,6 @@
--- Create an Enum for Roles
+
 CREATE TYPE public.app_role AS ENUM ('admin', 'moderator', 'user');
 
--- Set Up the user_roles Table
 CREATE TABLE public.user_roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
@@ -10,10 +9,8 @@ CREATE TABLE public.user_roles (
     UNIQUE (user_id, role)
 );
 
--- Enable Row-Level Security on user_roles
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 
--- Create a Security Definer Function to check roles (prevents RLS recursion)
 CREATE OR REPLACE FUNCTION public.has_role(_user_id UUID, _role app_role)
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -29,7 +26,6 @@ AS $$
   )
 $$;
 
--- Create a function to get all roles for a user
 CREATE OR REPLACE FUNCTION public.get_user_roles(_user_id UUID)
 RETURNS app_role[]
 LANGUAGE sql
@@ -42,26 +38,21 @@ AS $$
   WHERE user_id = _user_id
 $$;
 
--- RLS Policies for user_roles table
--- Users can view their own roles
 CREATE POLICY "Users can view their own roles"
 ON public.user_roles
 FOR SELECT
 USING (auth.uid() = user_id);
 
--- Only admins can insert new roles
 CREATE POLICY "Admins can insert roles"
 ON public.user_roles
 FOR INSERT
 WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
--- Only admins can update roles
 CREATE POLICY "Admins can update roles"
 ON public.user_roles
 FOR UPDATE
 USING (public.has_role(auth.uid(), 'admin'));
 
--- Only admins can delete roles
 CREATE POLICY "Admins can delete roles"
 ON public.user_roles
 FOR DELETE

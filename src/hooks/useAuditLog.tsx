@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
-type AuditAction = 
+type AuditAction =
   | 'login'
   | 'logout'
   | 'signup'
@@ -39,8 +39,7 @@ export function useAuditLog() {
     if (!user?.id) return;
 
     try {
-      // Client-side logging - can be extended to send to an analytics service
-      // or a dedicated audit log table when available
+
       console.debug('[Audit]', {
         userId: user.id,
         action,
@@ -49,7 +48,7 @@ export function useAuditLog() {
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
-      // Silently fail - audit logging should not block user actions
+
       console.error('Audit log error:', error);
     }
   }, [user?.id]);
@@ -57,7 +56,6 @@ export function useAuditLog() {
   return { logEvent };
 }
 
-// Remove sensitive fields from metadata before logging
 function sanitizeMetadata(metadata: AuditMetadata): Record<string, unknown> {
   const sensitiveFields = ['password', 'token', 'secret', 'key', 'credit_card', 'cvv', 'ssn'];
   const sanitized: Record<string, unknown> = {};

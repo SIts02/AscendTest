@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,7 +38,7 @@ export const useFinancialData = () => {
 
   const fetchTransactions = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -59,7 +58,6 @@ export const useFinancialData = () => {
     }
   }, [user]);
 
-  // Calculate financial summary from transactions
   const calculateSummary = useCallback(() => {
     if (!transactions.length) {
       setSummary({
@@ -74,28 +72,25 @@ export const useFinancialData = () => {
       return;
     }
 
-    // Calculate totals
     const totalIncome = transactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + Number(t.amount), 0);
-      
+
     const totalExpense = transactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + Number(t.amount), 0);
-      
+
     const balance = totalIncome - totalExpense;
 
-    // Group by category
     const incomeByCategory: Record<string, number> = {};
     const expenseByCategory: Record<string, number> = {};
-    
-    // Process transactions by category
+
     transactions.forEach(transaction => {
       if (!transaction.category_id) return;
-      
+
       const categoryId = transaction.category_id;
       const amount = Number(transaction.amount);
-      
+
       if (transaction.type === 'income') {
         incomeByCategory[categoryId] = (incomeByCategory[categoryId] || 0) + amount;
       } else if (transaction.type === 'expense') {
@@ -103,10 +98,8 @@ export const useFinancialData = () => {
       }
     });
 
-    // Calculate monthly data (last 6 months)
     const monthlyData = calculateMonthlyData(transactions);
 
-    // Calculate spending by category for charts
     const spendingByCategory = calculateSpendingByCategory(transactions, categories);
 
     setSummary({
@@ -120,11 +113,9 @@ export const useFinancialData = () => {
     });
   }, [transactions, categories]);
 
-  // Helper function to get monthly data
   const calculateMonthlyData = (transactions: Transaction[]) => {
     const months: Record<string, { income: number; expense: number }> = {};
-    
-    // Get last 6 months including current
+
     const today = new Date();
     for (let i = 0; i < 6; i++) {
       const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
@@ -133,11 +124,10 @@ export const useFinancialData = () => {
       months[monthKey] = { income: 0, expense: 0 };
     }
 
-    // Group transactions by month
     transactions.forEach(transaction => {
       const date = new Date(transaction.date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (months[monthKey]) {
         if (transaction.type === 'income') {
           months[monthKey].income += Number(transaction.amount);
@@ -147,12 +137,11 @@ export const useFinancialData = () => {
       }
     });
 
-    // Convert to array and calculate balance
     return Object.entries(months).map(([monthKey, data]) => {
       const [year, month] = monthKey.split('-');
       const date = new Date(Number(year), Number(month) - 1, 1);
       const monthName = date.toLocaleString('default', { month: 'short' });
-      
+
       return {
         month: monthName,
         income: data.income,
@@ -162,19 +151,16 @@ export const useFinancialData = () => {
     }).reverse();
   };
 
-  // Helper function to calculate spending by category
   const calculateSpendingByCategory = (transactions: Transaction[], categories: any[]) => {
     const categoryTotals: Record<string, number> = {};
-    
-    // Sum expenses by category
+
     transactions
       .filter(t => t.type === 'expense' && t.category_id)
       .forEach(transaction => {
         const categoryId = transaction.category_id as string;
         categoryTotals[categoryId] = (categoryTotals[categoryId] || 0) + Number(transaction.amount);
       });
-    
-    // Map to format needed for charts
+
     const result = Object.entries(categoryTotals).map(([categoryId, value]) => {
       const category = categories.find(c => c.id === categoryId);
       return {
@@ -183,22 +169,19 @@ export const useFinancialData = () => {
         color: category?.color || '#6b7280',
       };
     });
-    
-    // Sort by value (descending)
+
     return result.sort((a, b) => b.value - a.value);
   };
 
-  // Setup real-time listener for transactions
   useEffect(() => {
     if (!user) return;
 
     fetchTransactions();
 
-    // Setup real-time subscription
     const channel = supabase
       .channel('financial-data-changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'transactions' }, 
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'transactions' },
         () => {
           fetchTransactions();
         })
@@ -209,7 +192,6 @@ export const useFinancialData = () => {
     };
   }, [user, fetchTransactions]);
 
-  // Calculate summary when transactions change
   useEffect(() => {
     calculateSummary();
   }, [transactions, calculateSummary]);

@@ -38,7 +38,7 @@ const LandingFooter = () => {
     <footer id="contact" className="relative bg-black border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {/* Brand */}
+          {}
           <div className="md:col-span-1">
             <motion.h3
               initial={{ opacity: 0 }}
@@ -54,7 +54,7 @@ const LandingFooter = () => {
             </p>
           </div>
 
-          {/* Links */}
+          {}
           <div>
             <h4 className="text-white font-semibold mb-4">Produto</h4>
             <ul className="space-y-3">
@@ -104,7 +104,7 @@ const LandingFooter = () => {
           </div>
         </div>
 
-        {/* Bottom */}
+        {}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/40 text-sm">
             © {new Date().getFullYear()} MoMoney. Todos os direitos reservados.

@@ -10,8 +10,7 @@ interface BudgetChartProps {
 
 const BudgetChart: React.FC<BudgetChartProps> = ({ budgetCategories }) => {
   const { formatCurrency } = useFormatters();
-  
-  // Prepare data for chart
+
   const chartData = budgetCategories.map(category => ({
     name: category.name,
     value: category.current_amount,
@@ -20,11 +19,10 @@ const BudgetChart: React.FC<BudgetChartProps> = ({ budgetCategories }) => {
     percentage: category.percentage
   }));
 
-  // Custom tooltip component
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      
+
       return (
         <div className="bg-card p-4 rounded-xl shadow-lg border border-border">
           <p className="font-semibold text-foreground">{data.name}</p>
@@ -39,7 +37,7 @@ const BudgetChart: React.FC<BudgetChartProps> = ({ budgetCategories }) => {
         </div>
       );
     }
-    
+
     return null;
   };
 

@@ -1,14 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
-import { 
-  Bell, 
-  Settings, 
-  Shield, 
-  Globe, 
-  PaintBucket, 
+import {
+  Bell,
+  Settings,
+  Shield,
+  Globe,
+  PaintBucket,
   Save,
   Loader2,
   AlertCircle,
@@ -35,20 +34,20 @@ const Configuracoes = () => {
 
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  
-  const { 
-    preferences, 
-    setPreferences, 
-    savePreferences, 
-    loading, 
-    saving 
+
+  const {
+    preferences,
+    setPreferences,
+    savePreferences,
+    loading,
+    saving
   } = useUserPreferences();
 
-  const { 
-    convertCurrency, 
+  const {
+    convertCurrency,
     getSupportedCurrencies,
     formatCurrency,
-    isLoading: isConverting 
+    isLoading: isConverting
   } = useCurrencyConverter();
 
   const [isModified, setIsModified] = useState(false);
@@ -62,12 +61,11 @@ const Configuracoes = () => {
       ...preferences,
       [key]: value
     });
-    
-    // If changing language, update i18n immediately
+
     if (key === 'language') {
       i18n.changeLanguage(value);
     }
-    
+
     setIsModified(true);
   };
 
@@ -111,10 +109,9 @@ const Configuracoes = () => {
       show_balance: true,
       date_format: "dd/MM/yyyy",
     });
-    
-    // Update i18n when resetting language
+
     i18n.changeLanguage("pt-BR");
-    
+
     setIsModified(true);
     toast.info(t("settings.defaults_restored"));
   };
@@ -141,7 +138,7 @@ const Configuracoes = () => {
             </AlertDescription>
           </Alert>
         )}
-        
+
         <Tabs defaultValue="appearance" className="w-full">
           <TabsList className="mb-4 bg-white dark:bg-gray-800 border dark:border-gray-700">
             <TabsTrigger value="appearance" className="flex items-center gap-2 data-[state=active]:bg-momoney-100 dark:data-[state=active]:bg-momoney-900">
@@ -157,8 +154,8 @@ const Configuracoes = () => {
               <span>{t("settings.security")}</span>
             </TabsTrigger>
           </TabsList>
-          
-          {/* Appearance Tab */}
+
+          {}
           <TabsContent value="appearance">
             <Card className="animate-fade-in dark-card">
               <CardHeader>
@@ -171,8 +168,8 @@ const Configuracoes = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <Label>{t("settings.theme")}</Label>
-                  <RadioGroup 
-                    value={preferences.theme} 
+                  <RadioGroup
+                    value={preferences.theme}
                     onValueChange={(value: 'light' | 'dark' | 'system') => handlePreferenceChange('theme', value)}
                     className="flex flex-col space-y-3"
                   >
@@ -190,7 +187,7 @@ const Configuracoes = () => {
                     </div>
                   </RadioGroup>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>{t("settings.show_balance")}</Label>
                   <div className="flex items-center justify-between">
@@ -200,17 +197,17 @@ const Configuracoes = () => {
                         {t("settings.show_values_desc")}
                       </div>
                     </div>
-                    <Switch 
-                      checked={preferences.show_balance} 
-                      onCheckedChange={(value) => handlePreferenceChange('show_balance', value)} 
+                    <Switch
+                      checked={preferences.show_balance}
+                      onCheckedChange={(value) => handlePreferenceChange('show_balance', value)}
                     />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
-          
-          {/* Localization Tab */}
+
+          {}
           <TabsContent value="localization">
             <Card className="animate-fade-in dark-card">
               <CardHeader>
@@ -223,8 +220,8 @@ const Configuracoes = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <Label>{t("settings.language")}</Label>
-                  <Select 
-                    value={preferences.language} 
+                  <Select
+                    value={preferences.language}
                     onValueChange={(value) => handlePreferenceChange('language', value)}
                   >
                     <SelectTrigger className="bg-white dark:bg-gray-800">
@@ -237,11 +234,11 @@ const Configuracoes = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label>{t("settings.currency")}</Label>
-                  <Select 
-                    value={preferences.currency} 
+                  <Select
+                    value={preferences.currency}
                     onValueChange={(value) => handlePreferenceChange('currency', value)}
                   >
                     <SelectTrigger className="bg-white dark:bg-gray-800">
@@ -262,15 +259,15 @@ const Configuracoes = () => {
                   </Select>
                 </div>
 
-                {/* Currency Converter */}
+                {}
                 <div className="space-y-4 pt-4 border-t border-muted">
                   <Label className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4" />
                     Conversor de Moedas
                   </Label>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* From Currency */}
+                    {}
                     <div className="space-y-2">
                       <Label className="text-xs">De</Label>
                       <Select value={fromCurrency} onValueChange={setFromCurrency}>
@@ -287,7 +284,7 @@ const Configuracoes = () => {
                       </Select>
                     </div>
 
-                    {/* Amount Input */}
+                    {}
                     <div className="space-y-2">
                       <Label className="text-xs">Valor</Label>
                       <Input
@@ -299,7 +296,7 @@ const Configuracoes = () => {
                       />
                     </div>
 
-                    {/* To Currency */}
+                    {}
                     <div className="space-y-2">
                       <Label className="text-xs">Para</Label>
                       <Select value={toCurrency} onValueChange={setToCurrency}>
@@ -318,7 +315,7 @@ const Configuracoes = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button 
+                    <Button
                       onClick={handleConvertCurrency}
                       disabled={isConverting}
                       className="flex-1"
@@ -328,7 +325,7 @@ const Configuracoes = () => {
                       ) : null}
                       Converter
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleSwapCurrencies}
                       variant="outline"
                     >
@@ -347,11 +344,11 @@ const Configuracoes = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label>{t("settings.date_format")}</Label>
-                  <Select 
-                    value={preferences.date_format} 
+                  <Select
+                    value={preferences.date_format}
                     onValueChange={(value) => handlePreferenceChange('date_format', value)}
                   >
                     <SelectTrigger className="bg-white dark:bg-gray-800">
@@ -367,8 +364,8 @@ const Configuracoes = () => {
               </CardContent>
             </Card>
           </TabsContent>
-          
-          {/* Security Tab */}
+
+          {}
           <TabsContent value="security">
             <Card className="animate-fade-in">
               <CardHeader>
@@ -384,16 +381,16 @@ const Configuracoes = () => {
             </Card>
           </TabsContent>
         </Tabs>
-        
+
         <div className="mt-6 flex justify-between">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleResetSettings}
             className="border-gray-200 dark:border-gray-700"
           >
             {t("settings.restore_defaults")}
           </Button>
-          <Button 
+          <Button
             variant="default"
             onClick={handleSavePreferences}
             className="gap-2 bg-momoney-600 hover:bg-momoney-700 text-white"

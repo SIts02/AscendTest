@@ -3,14 +3,9 @@ import { useUserPreferences } from './useUserPreferences';
 import { useCurrencyConversion } from './useCurrencyConversion';
 import { useCurrencyConverter } from './useCurrencyConverter';
 
-// Cache for converted values to avoid re-fetching
 const conversionCache = new Map<string, { value: number; timestamp: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 
-/**
- * Hook to convert a single monetary value from BRL to user's preferred currency.
- * Caches results to minimize API calls.
- */
 export function useConvertedAmount(value: number, fromCurrency: string = 'BRL') {
   const { preferences } = useUserPreferences();
   const { convertAmount } = useCurrencyConversion();
@@ -22,13 +17,12 @@ export function useConvertedAmount(value: number, fromCurrency: string = 'BRL') 
 
   useEffect(() => {
     const convert = async () => {
-      // If same currency, no conversion needed
+
       if (targetCurrency === fromCurrency) {
         setConverted(value);
         return;
       }
 
-      // Check cache
       const cacheKey = `${fromCurrency}-${targetCurrency}-${value}`;
       const cached = conversionCache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -40,12 +34,11 @@ export function useConvertedAmount(value: number, fromCurrency: string = 'BRL') 
       try {
         const result = await convertAmount(value, fromCurrency);
         setConverted(result);
-        
-        // Cache the result
+
         conversionCache.set(cacheKey, { value: result, timestamp: Date.now() });
       } catch (error) {
         console.error('Error converting amount:', error);
-        setConverted(value); // Fallback to original value
+        setConverted(value);
       } finally {
         setLoading(false);
       }
@@ -57,10 +50,6 @@ export function useConvertedAmount(value: number, fromCurrency: string = 'BRL') 
   return { converted, loading: loading || rateLoading };
 }
 
-/**
- * Hook to convert multiple monetary values at once.
- * More efficient than calling useConvertedAmount multiple times.
- */
 export function useConvertedAmounts(values: number[], fromCurrency: string = 'BRL') {
   const { preferences } = useUserPreferences();
   const { convertAmount } = useCurrencyConversion();
@@ -69,13 +58,12 @@ export function useConvertedAmounts(values: number[], fromCurrency: string = 'BR
   const [loading, setLoading] = useState(false);
 
   const targetCurrency = preferences.currency || 'BRL';
-  
-  // Memoize values to prevent unnecessary re-renders
+
   const valuesKey = useMemo(() => values.join(','), [values]);
 
   useEffect(() => {
     const convertAll = async () => {
-      // If same currency, no conversion needed
+
       if (targetCurrency === fromCurrency) {
         setConvertedValues(values);
         return;
@@ -85,7 +73,7 @@ export function useConvertedAmounts(values: number[], fromCurrency: string = 'BR
       try {
         const results = await Promise.all(
           values.map(async (value) => {
-            // Check cache first
+
             const cacheKey = `${fromCurrency}-${targetCurrency}-${value}`;
             const cached = conversionCache.get(cacheKey);
             if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -100,7 +88,7 @@ export function useConvertedAmounts(values: number[], fromCurrency: string = 'BR
         setConvertedValues(results);
       } catch (error) {
         console.error('Error converting amounts:', error);
-        setConvertedValues(values); // Fallback
+        setConvertedValues(values);
       } finally {
         setLoading(false);
       }
@@ -112,19 +100,14 @@ export function useConvertedAmounts(values: number[], fromCurrency: string = 'BR
   return { convertedValues, loading: loading || rateLoading };
 }
 
-/**
- * Hook that provides a conversion function that uses the user's currency preference.
- * Useful for converting values on-demand.
- */
 export function useAsyncCurrencyConverter() {
   const { preferences } = useUserPreferences();
   const { convertAmount } = useCurrencyConversion();
   const { isLoading: rateLoading, getExchangeRate } = useCurrencyConverter();
   const [cachedRate, setCachedRate] = useState<number | null>(null);
-  
+
   const targetCurrency = preferences.currency || 'BRL';
 
-  // Fetch rate once for sync conversions
   useEffect(() => {
     const fetchRate = async () => {
       if (targetCurrency === 'BRL') {
@@ -145,8 +128,7 @@ export function useAsyncCurrencyConverter() {
     if (targetCurrency === fromCurrency) {
       return value;
     }
-    
-    // Check cache
+
     const cacheKey = `${fromCurrency}-${targetCurrency}-${value}`;
     const cached = conversionCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -158,7 +140,6 @@ export function useAsyncCurrencyConverter() {
     return result;
   }, [targetCurrency, convertAmount]);
 
-  // Synchronous conversion when rate is available
   const convertSync = useCallback((value: number, fromCurrency: string = 'BRL'): number => {
     if (targetCurrency === fromCurrency || !cachedRate) {
       return value;
@@ -166,18 +147,15 @@ export function useAsyncCurrencyConverter() {
     return value * cachedRate;
   }, [targetCurrency, cachedRate]);
 
-  return { 
-    convert, 
+  return {
+    convert,
     convertSync,
-    loading: rateLoading, 
+    loading: rateLoading,
     targetCurrency,
-    rate: cachedRate 
+    rate: cachedRate
   };
 }
 
-/**
- * Clear the conversion cache. Call this when user changes currency preference.
- */
 export function clearConversionCache() {
   conversionCache.clear();
 }

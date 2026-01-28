@@ -178,12 +178,12 @@ const LandingDock = React.forwardRef<HTMLDivElement, DockProps>(
           className
         )}
         initial={{ y: -100, opacity: 0 }}
-        animate={{ 
-          y: hidden ? -100 : 0, 
-          opacity: hidden ? 0 : 1 
+        animate={{
+          y: hidden ? -100 : 0,
+          opacity: hidden ? 0 : 1
         }}
-        transition={{ 
-          duration: 0.4, 
+        transition={{
+          duration: 0.4,
           ease: [0.25, 0.46, 0.45, 0.94]
         }}
       >
@@ -201,7 +201,7 @@ const LandingDock = React.forwardRef<HTMLDivElement, DockProps>(
             "shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
           )}
         >
-          {/* Navigation Icons */}
+          {}
           <div className="flex items-center">
             {items.map((item, index) => (
               <DockIconButton
@@ -214,13 +214,13 @@ const LandingDock = React.forwardRef<HTMLDivElement, DockProps>(
             ))}
           </div>
 
-          {/* Separator */}
+          {}
           <div className="w-px h-6 bg-white/20 mx-2" />
 
-          {/* User Button */}
+          {}
           <UserButton />
 
-          {/* Brand */}
+          {}
           <div className="flex items-center pl-2">
             <span className="text-white/90 font-medium tracking-wide text-sm">
               ascend.<sup className="text-[8px] ml-0.5 text-white/60">®</sup>

@@ -127,7 +127,7 @@ function ThemeSwitcher() {
         )}
       </AnimatePresence>
 
-      {/* Close on outside click */}
+      {}
       {isExpanded && (
         <div
           className="fixed inset-0 z-40"

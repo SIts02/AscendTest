@@ -20,7 +20,6 @@ interface NewGoalModalProps {
   onAddGoal?: (goal: any) => void;
 }
 
-// Allowed category values - validated against schema
 const ALLOWED_CATEGORIES = [
   { id: "savings", name: "Poupança", icon: "💰" },
   { id: "travel", name: "Lazer", icon: "✈️" },
@@ -32,10 +31,6 @@ const ALLOWED_CATEGORIES = [
 
 type CategoryId = typeof ALLOWED_CATEGORIES[number]['id'];
 
-/**
- * Modal for creating new financial goals
- * Includes strict input validation following OWASP best practices
- */
 const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<CategoryId | "">("");
@@ -46,9 +41,6 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { formatCurrency } = useFormatters();
 
-  /**
-   * Reset form state
-   */
   const resetForm = () => {
     setName("");
     setCategory("");
@@ -59,17 +51,12 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
     setIsSubmitting(false);
   };
 
-  /**
-   * Handle form submission with validation
-   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Parse numeric values safely
+
     const parsedTargetAmount = parseFloat(targetAmount);
     const parsedInitialAmount = parseFloat(initialAmount || "0");
-    
-    // Validate using schema
+
     const validationResult = goalFormSchema.safeParse({
       name: name.trim(),
       category,
@@ -77,7 +64,7 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
       currentAmount: isNaN(parsedInitialAmount) ? 0 : parsedInitialAmount,
       deadline: date,
     });
-    
+
     if (!validationResult.success) {
       const fieldErrors: Record<string, string> = {};
       validationResult.error.errors.forEach(err => {
@@ -90,19 +77,18 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
       toast.error(getFirstError(validationResult.error));
       return;
     }
-    
-    // Additional business logic validation
+
     if (parsedInitialAmount > parsedTargetAmount) {
       setErrors({ currentAmount: 'Valor inicial não pode ser maior que o valor alvo' });
       toast.error('Valor inicial não pode ser maior que o valor alvo');
       return;
     }
-    
+
     setIsSubmitting(true);
     setErrors({});
-    
+
     try {
-      // Sanitize string inputs before storing
+
       const newGoal = {
         id: `goal-${Date.now()}`,
         name: sanitizeString(validationResult.data.name),
@@ -132,9 +118,6 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
     }
   };
 
-  /**
-   * Handle dialog close - reset form
-   */
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       resetForm();
@@ -154,22 +137,22 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
             Defina seus objetivos financeiros e acompanhe seu progresso.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6 mt-2" noValidate>
           <div className="grid gap-5">
-            {/* Name field */}
+            {}
             <div className="grid gap-3">
               <Label htmlFor="name" className="text-sm font-medium text-gray-700">
                 Nome da Meta *
               </Label>
-              <Input 
-                id="name" 
-                value={name} 
+              <Input
+                id="name"
+                value={name}
                 onChange={(e) => {
                   const value = e.target.value.slice(0, VALIDATION_LIMITS.NAME_MAX);
                   setName(value);
                   if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
-                }} 
+                }}
                 placeholder="Ex: Viagem para Europa"
                 maxLength={VALIDATION_LIMITS.NAME_MAX}
                 className={cn("shadow-sm", errors.name && "border-red-500")}
@@ -179,21 +162,21 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
                 <p className="text-sm text-red-500">{errors.name}</p>
               )}
             </div>
-            
-            {/* Category field */}
+
+            {}
             <div className="grid gap-3">
               <Label htmlFor="category" className="text-sm font-medium text-gray-700">
                 Categoria *
               </Label>
-              <Select 
-                value={category} 
+              <Select
+                value={category}
                 onValueChange={(value: CategoryId) => {
                   setCategory(value);
                   if (errors.category) setErrors(prev => ({ ...prev, category: '' }));
                 }}
               >
-                <SelectTrigger 
-                  id="category" 
+                <SelectTrigger
+                  id="category"
                   className={cn(
                     "rounded-xl border-gray-200 shadow-sm bg-white h-10",
                     errors.category && "border-red-500"
@@ -216,25 +199,25 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
                 <p className="text-sm text-red-500">{errors.category}</p>
               )}
             </div>
-            
-            {/* Amount fields */}
+
+            {}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-3">
                 <Label htmlFor="target-amount" className="text-sm font-medium text-gray-700">
                   Valor Alvo (R$) *
                 </Label>
-                <Input 
-                  id="target-amount" 
-                  type="number" 
-                  value={targetAmount} 
+                <Input
+                  id="target-amount"
+                  type="number"
+                  value={targetAmount}
                   onChange={(e) => {
-                    // Validate numeric input
+
                     const value = e.target.value;
                     if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) <= VALIDATION_LIMITS.AMOUNT_MAX)) {
                       setTargetAmount(value);
                       if (errors.targetAmount) setErrors(prev => ({ ...prev, targetAmount: '' }));
                     }
-                  }} 
+                  }}
                   placeholder="10000"
                   min="0.01"
                   max={VALIDATION_LIMITS.AMOUNT_MAX}
@@ -246,22 +229,22 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
                   <p className="text-sm text-red-500">{errors.targetAmount}</p>
                 )}
               </div>
-              
+
               <div className="grid gap-3">
                 <Label htmlFor="initial-amount" className="text-sm font-medium text-gray-700">
                   Valor Inicial (R$)
                 </Label>
-                <Input 
-                  id="initial-amount" 
-                  type="number" 
-                  value={initialAmount} 
+                <Input
+                  id="initial-amount"
+                  type="number"
+                  value={initialAmount}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) <= VALIDATION_LIMITS.AMOUNT_MAX)) {
                       setInitialAmount(value);
                       if (errors.currentAmount) setErrors(prev => ({ ...prev, currentAmount: '' }));
                     }
-                  }} 
+                  }}
                   placeholder="0"
                   min="0"
                   max={VALIDATION_LIMITS.AMOUNT_MAX}
@@ -274,8 +257,8 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
                 )}
               </div>
             </div>
-            
-            {/* Date field */}
+
+            {}
             <div className="grid gap-3">
               <Label htmlFor="deadline" className="text-sm font-medium text-gray-700">
                 Data Limite *
@@ -315,11 +298,11 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
               )}
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => handleOpenChange(false)}
               size="lg"
               className="rounded-xl"
@@ -327,8 +310,8 @@ const NewGoalModal = ({ open, onOpenChange, onAddGoal }: NewGoalModalProps) => {
             >
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="primary"
               size="lg"
               className="rounded-xl"

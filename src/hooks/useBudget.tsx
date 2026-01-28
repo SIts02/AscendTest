@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,23 +27,21 @@ export const useBudget = () => {
   const [error, setError] = useState<string | null>(null);
   const { categories } = useCategories();
 
-  // Helper function to extract budget limit from color field
   const extractBudgetLimit = (colorField: string | null): number => {
-    if (!colorField) return 1000; // Default limit
-    
+    if (!colorField) return 1000;
+
     const parts = colorField.split(':');
     if (parts.length > 1) {
       const limit = parseFloat(parts[1]);
       return isNaN(limit) ? 1000 : limit;
     }
-    
-    return 1000; // Default limit if no budget info in color
+
+    return 1000;
   };
 
-  // Helper function to extract just the color
   const extractColor = (colorField: string | null): string => {
-    if (!colorField) return '#3b82f6'; // Default color
-    
+    if (!colorField) return '#3b82f6';
+
     const parts = colorField.split(':');
     return parts[0] || '#3b82f6';
   };
@@ -62,7 +59,6 @@ export const useBudget = () => {
 
       if (error) throw error;
 
-      // Get transactions to calculate current amounts
       const { data: transactions, error: transactionsError } = await supabase
         .from('transactions')
         .select('*')
@@ -73,7 +69,6 @@ export const useBudget = () => {
 
       if (transactionsError) throw transactionsError;
 
-      // Process budget data
       const processedBudgetData = (data as any[] || []).map(category => {
         const categoryTransactions = transactions ? transactions.filter(t => t.category_id === category.id) : [];
         const currentAmount = categoryTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
@@ -108,10 +103,8 @@ export const useBudget = () => {
   const updateBudgetLimit = async (categoryId: string, newLimit: number) => {
     if (!user) return false;
 
-    // Store previous state for rollback
     const previousBudgetCategories = [...budgetCategories];
 
-    // Optimistic update
     setBudgetCategories(prev =>
       prev.map(bc => {
         if (bc.id === categoryId) {
@@ -141,15 +134,15 @@ export const useBudget = () => {
           .eq('id', categoryId)
           .eq('user_id', user.id)
           .single();
-        
+
         if (fetchError) throw fetchError;
-        
+
         const currentColor = extractColor(categoryData?.color);
-        
+
         const { error } = await supabase
           .from('categories')
-          .update({ 
-            color: `${currentColor}:${newLimit}` 
+          .update({
+            color: `${currentColor}:${newLimit}`
           })
           .eq('id', categoryId)
           .eq('user_id', user.id);
@@ -163,7 +156,7 @@ export const useBudget = () => {
     );
 
     if (result === null) {
-      // Rollback on rate limit or error
+
       setBudgetCategories(previousBudgetCategories);
       return false;
     }
@@ -175,7 +168,6 @@ export const useBudget = () => {
     fetchBudgetCategories();
   }, [fetchBudgetCategories]);
 
-  // Real-time subscription for cross-tab sync - listen to both categories and transactions
   useEffect(() => {
     if (!user) return;
 

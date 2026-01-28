@@ -1,51 +1,49 @@
-
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
-// Simulated budget data
 const budgetCategories = [
-  { 
-    name: "Alimentação", 
-    current: 950, 
-    max: 1200, 
+  {
+    name: "Alimentação",
+    current: 950,
+    max: 1200,
     percentUsed: 79,
-    trend: "up", // up means spending more than last month
+    trend: "up",
     trendPercentage: 12
   },
-  { 
-    name: "Transporte", 
-    current: 320, 
-    max: 600, 
+  {
+    name: "Transporte",
+    current: 320,
+    max: 600,
     percentUsed: 53,
     trend: "down",
     trendPercentage: 8
   },
-  { 
-    name: "Lazer", 
-    current: 480, 
-    max: 500, 
+  {
+    name: "Lazer",
+    current: 480,
+    max: 500,
     percentUsed: 96,
     trend: "up",
     trendPercentage: 23
   },
-  { 
-    name: "Moradia", 
-    current: 1800, 
-    max: 2000, 
+  {
+    name: "Moradia",
+    current: 1800,
+    max: 2000,
     percentUsed: 90,
     trend: "down",
     trendPercentage: 3
   },
-  { 
-    name: "Saúde", 
-    current: 280, 
-    max: 600, 
+  {
+    name: "Saúde",
+    current: 280,
+    max: 600,
     percentUsed: 47,
     trend: "up",
     trendPercentage: 5
@@ -69,7 +67,6 @@ const BudgetProgress = () => {
     }).format(value);
   };
 
-  // Calculate total budget status
   const totalBudget = budgetCategories.reduce((acc, cat) => acc + cat.max, 0);
   const totalSpent = budgetCategories.reduce((acc, cat) => acc + cat.current, 0);
   const totalPercentUsed = Math.round((totalSpent / totalBudget) * 100);
@@ -87,8 +84,8 @@ const BudgetProgress = () => {
               {formatCurrency(totalSpent)} / {formatCurrency(totalBudget)}
             </span>
           </div>
-          <Progress 
-            value={totalPercentUsed} 
+          <Progress
+            value={totalPercentUsed}
             className="h-3"
           />
           <div className="flex justify-between text-xs text-muted-foreground">
@@ -116,8 +113,8 @@ const BudgetProgress = () => {
                   {formatCurrency(category.current)} / {formatCurrency(category.max)}
                 </span>
               </div>
-              <Progress 
-                value={category.percentUsed} 
+              <Progress
+                value={category.percentUsed}
                 className={`h-2 ${getProgressColorClass(category.percentUsed)}`}
               />
             </div>

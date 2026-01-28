@@ -17,13 +17,13 @@ const Analytics = () => {
     <DashboardLayout activePage="Analytics">
       <div className="container mx-auto px-4 space-y-6">
         <ExecutiveDashboard />
-        
-        {/* Enhanced Charts Section */}
+
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <MonthlyBreakdownChart />
           <CategoryDistributionChart />
         </div>
-        
+
         <NetWorthChart />
       </div>
     </DashboardLayout>

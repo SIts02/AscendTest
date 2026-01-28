@@ -45,7 +45,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
     const newCategories = checked
       ? [...filters.categories, categoryId]
       : filters.categories.filter(id => id !== categoryId);
-    
+
     onFiltersChange({
       ...filters,
       categories: newCategories
@@ -56,7 +56,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
     const newTypes = checked
       ? [...filters.transactionTypes, type]
       : filters.transactionTypes.filter(t => t !== type);
-    
+
     onFiltersChange({
       ...filters,
       transactionTypes: newTypes
@@ -69,7 +69,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
     const newMethods = checked
       ? [...filters.paymentMethods, method]
       : filters.paymentMethods.filter(m => m !== method);
-    
+
     onFiltersChange({
       ...filters,
       paymentMethods: newMethods
@@ -85,7 +85,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Date Range */}
+        {}
         <div className="space-y-2">
           <Label>Período</Label>
           <div className="flex gap-2">
@@ -105,7 +105,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
                 />
               </PopoverContent>
             </Popover>
-            
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="flex-1 justify-start text-left font-normal">
@@ -125,7 +125,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
           </div>
         </div>
 
-        {/* Transaction Types */}
+        {}
         <div className="space-y-2">
           <Label>Tipos de Transação</Label>
           <div className="flex gap-4">
@@ -148,7 +148,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
           </div>
         </div>
 
-        {/* Categories */}
+        {}
         <div className="space-y-2">
           <Label>Categorias</Label>
           <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
@@ -167,7 +167,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
           </div>
         </div>
 
-        {/* Amount Range */}
+        {}
         <div className="space-y-2">
           <Label>Faixa de Valor</Label>
           <div className="flex gap-2">
@@ -202,7 +202,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
           </div>
         </div>
 
-        {/* Payment Methods */}
+        {}
         <div className="space-y-2">
           <Label>Métodos de Pagamento</Label>
           <div className="grid grid-cols-2 gap-2">
@@ -221,7 +221,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
           </div>
         </div>
 
-        {/* Description Search */}
+        {}
         <div className="space-y-2">
           <Label>Descrição</Label>
           <Input
@@ -234,7 +234,7 @@ const ReportFilters = ({ filters, onFiltersChange, onApplyFilters, onClearFilter
           />
         </div>
 
-        {/* Action Buttons */}
+        {}
         <div className="flex gap-2">
           <Button onClick={onApplyFilters} className="flex-1">
             Aplicar Filtros

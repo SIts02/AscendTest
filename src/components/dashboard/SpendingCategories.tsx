@@ -14,10 +14,10 @@ const SpendingCategories = () => {
   const { formatCurrency } = useFormatters();
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const { resolvedTheme } = useTheme();
-  
+
   const isDark = resolvedTheme === 'dark';
   const textColor = isDark ? 'hsl(215, 20%, 55%)' : 'hsl(215, 16%, 47%)';
-  
+
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#0284c7', '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6366f1'];
 
   const chartData = summary.spendingByCategory.map((item, index) => ({
@@ -95,8 +95,8 @@ const SpendingCategories = () => {
                   label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                 >
                   {chartData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
+                    <Cell
+                      key={`cell-${index}`}
                       fill={`url(#pieGradient-${index})`}
                       stroke={isDark ? 'hsl(220, 40%, 13%)' : '#fff'}
                       strokeWidth={2}
@@ -104,9 +104,9 @@ const SpendingCategories = () => {
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  layout="vertical" 
-                  verticalAlign="middle" 
+                <Legend
+                  layout="vertical"
+                  verticalAlign="middle"
                   align="right"
                   wrapperStyle={{ color: textColor, fontSize: '11px' }}
                   iconType="circle"
@@ -123,8 +123,8 @@ const SpendingCategories = () => {
                     </linearGradient>
                   ))}
                 </defs>
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   angle={-45}
                   textAnchor="end"
                   height={80}
@@ -133,7 +133,7 @@ const SpendingCategories = () => {
                   tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
+                <YAxis
                   tickFormatter={(value) => formatCurrency(value, { notation: 'compact' })}
                   stroke={textColor}
                   fontSize={10}

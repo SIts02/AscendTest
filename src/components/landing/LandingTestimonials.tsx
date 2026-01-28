@@ -41,8 +41,8 @@ const TestimonialCard = ({
       ref={ref}
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      transition={{ 
-        duration: 0.8, 
+      transition={{
+        duration: 0.8,
         delay: index * 0.12,
         ease: [0.25, 0.46, 0.45, 0.94]
       }}

@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -36,30 +35,26 @@ const Mensagens = () => {
     setActiveContact
   } = useMessaging();
 
-  // Scroll to bottom of messages when new message arrives
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Set page title
   useEffect(() => {
     document.title = "MoMoney | Mensagens";
   }, []);
 
-  // Handle sending a message
   const handleSendMessage = () => {
     if (input.trim() && sendMessage(input)) {
       setInput("");
     }
   };
 
-  // Handle search user by email
   const handleSearchUser = async () => {
     if (!searchEmail.trim()) return;
-    
+
     setIsSearching(true);
     setSearchResults([]);
-    
+
     try {
       const results = await searchUsers(searchEmail);
       setSearchResults(results);
@@ -68,7 +63,6 @@ const Mensagens = () => {
     }
   };
 
-  // Helper function to get initials from a name
   const getInitials = (name: string = "") => {
     return name
       .split(' ')
@@ -78,18 +72,16 @@ const Mensagens = () => {
       .substring(0, 2);
   };
 
-  // Format time from a date object
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Format date in a user-friendly way
   const formatDate = (date: Date) => {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     if (date.toDateString() === today.toDateString()) {
       return "Hoje";
     } else if (date.toDateString() === yesterday.toDateString()) {
@@ -102,30 +94,30 @@ const Mensagens = () => {
   return (
     <DashboardLayout activePage="Mensagens">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-[calc(100vh-12rem)]">
-        {/* Contacts Sidebar */}
+        {}
         <div className="md:col-span-1">
           <Card className="h-full flex flex-col">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Mensagens</CardTitle>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={() => setShowContactSheet(true)}
                 >
                   <Plus className="h-5 w-5" />
                 </Button>
               </div>
-              
+
               <div className="relative mt-2">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-                <Input 
-                  placeholder="Buscar conversas" 
-                  className="pl-8" 
+                <Input
+                  placeholder="Buscar conversas"
+                  className="pl-8"
                 />
               </div>
             </CardHeader>
-            
+
             <CardContent className="flex-1 overflow-y-auto pt-0">
               {isLoadingContacts ? (
                 <div className="flex justify-center items-center h-full">
@@ -178,7 +170,7 @@ const Mensagens = () => {
                   <p className="text-sm text-gray-500 mt-1">
                     Adicione contatos para iniciar conversas
                   </p>
-                  <Button 
+                  <Button
                     onClick={() => setShowContactSheet(true)}
                     className="mt-4"
                     variant="outline"
@@ -191,8 +183,8 @@ const Mensagens = () => {
             </CardContent>
           </Card>
         </div>
-        
-        {/* Chat Area */}
+
+        {}
         <div className="md:col-span-3">
           {activeContact ? (
             <Card className="h-full flex flex-col">
@@ -213,7 +205,7 @@ const Mensagens = () => {
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
                 {isLoadingMessages ? (
                   <div className="flex justify-center items-center h-full">
@@ -254,7 +246,7 @@ const Mensagens = () => {
                 )}
                 <div ref={messagesEndRef} />
               </CardContent>
-              
+
               <CardFooter className="border-t p-3">
                 <form
                   className="flex w-full items-center space-x-2"
@@ -289,7 +281,7 @@ const Mensagens = () => {
                 <p className="text-sm text-gray-500 mt-1">
                   Selecione um contato para começar a conversar
                 </p>
-                <Button 
+                <Button
                   onClick={() => setShowContactSheet(true)}
                   className="mt-4"
                   variant="outline"
@@ -302,7 +294,7 @@ const Mensagens = () => {
         </div>
       </div>
 
-      {/* Add Contact Sheet */}
+      {}
       <Sheet open={showContactSheet} onOpenChange={setShowContactSheet}>
         <SheetContent>
           <SheetHeader>
@@ -314,8 +306,8 @@ const Mensagens = () => {
 
           <div className="mt-6 space-y-6">
             <div className="space-y-2">
-              <form 
-                className="flex gap-2" 
+              <form
+                className="flex gap-2"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSearchUser();
@@ -338,8 +330,8 @@ const Mensagens = () => {
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium mb-2">Resultados da Busca</h4>
                   {searchResults.map((user) => (
-                    <div 
-                      key={user.id} 
+                    <div
+                      key={user.id}
                       className="flex items-center justify-between p-2 border rounded-lg"
                     >
                       <div className="flex items-center gap-2">
@@ -357,7 +349,7 @@ const Mensagens = () => {
                           <p className="text-xs text-gray-500">{user.email}</p>
                         </div>
                       </div>
-                      <Button 
+                      <Button
                         size="sm"
                         onClick={() => addContact(user.id)}
                       >

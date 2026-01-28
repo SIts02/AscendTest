@@ -10,14 +10,12 @@ import i18n from "./i18n";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { Toaster } from "@/components/ui/sonner";
 
-// Landing pages
 import LandingIndex from "@/pages/LandingIndex";
 import LandingLogin from "@/pages/LandingLogin";
 import LandingSignup from "@/pages/LandingSignup";
 import LandingForgotPassword from "@/pages/LandingForgotPassword";
 import LandingResetPassword from "@/pages/LandingResetPassword";
 
-// Dashboard pages
 import Dashboard from "@/pages/Dashboard";
 import Orcamento from "@/pages/dashboard/Orcamento";
 import Investimentos from "@/pages/dashboard/Investimentos";
@@ -30,6 +28,13 @@ import Relatorios from "@/pages/dashboard/Relatorios";
 import Configuracoes from "@/pages/dashboard/Configuracoes";
 import Perfil from "@/pages/dashboard/Perfil";
 import Mensagens from "@/pages/dashboard/Mensagens";
+import Feedback from "@/pages/dashboard/Feedback";
+import Forecasting from "@/pages/dashboard/Forecasting";
+import OpenFinance from "@/pages/dashboard/OpenFinance";
+import Billing from "@/pages/dashboard/Billing";
+import Psychology from "@/pages/dashboard/Psychology";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminFeedbacks from "@/pages/admin/AdminFeedbacks";
 import MFAVerify from "@/pages/MFAVerify";
 import NotFound from "@/pages/NotFound";
 import AuthCallback from "@/pages/AuthCallback";
@@ -38,7 +43,7 @@ import "./sidebar-theme.css";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) return <LoadingScreen />;
   if (!user) return <Navigate to="/login" replace />;
   return children;
@@ -47,7 +52,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 const ThemeAndLanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const { preferences } = useUserPreferences();
   useThemeEffect();
-  
+
   useEffect(() => {
     if (preferences.language) i18n.changeLanguage(preferences.language);
   }, [preferences.language]);
@@ -57,7 +62,7 @@ const ThemeAndLanguageProvider = ({ children }: { children: React.ReactNode }) =
 
 const AppRoutes = () => (
   <Routes>
-    {/* Landing pages */}
+    {}
     <Route path="/" element={<LandingIndex />} />
     <Route path="/login" element={<LandingLogin />} />
     <Route path="/signup" element={<LandingSignup />} />
@@ -65,8 +70,8 @@ const AppRoutes = () => (
     <Route path="/reset-password" element={<LandingResetPassword />} />
     <Route path="/auth-callback" element={<AuthCallback />} />
     <Route path="/mfa-verify" element={<MFAVerify />} />
-    
-    {/* Dashboard routes */}
+
+    {}
     <Route path="/dashboard" element={<ProtectedRoute><ThemeAndLanguageProvider><Dashboard /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/analytics" element={<ProtectedRoute><ThemeAndLanguageProvider><Analytics /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/automacao" element={<ProtectedRoute><ThemeAndLanguageProvider><Automacao /></ThemeAndLanguageProvider></ProtectedRoute>} />
@@ -75,10 +80,20 @@ const AppRoutes = () => (
     <Route path="/dashboard/investimentos" element={<ProtectedRoute><ThemeAndLanguageProvider><Investimentos /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/transacoes" element={<ProtectedRoute><ThemeAndLanguageProvider><Transacoes /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/metas" element={<ProtectedRoute><ThemeAndLanguageProvider><Metas /></ThemeAndLanguageProvider></ProtectedRoute>} />
+    <Route path="/dashboard/previsoes" element={<ProtectedRoute><ThemeAndLanguageProvider><Forecasting /></ThemeAndLanguageProvider></ProtectedRoute>} />
+    <Route path="/dashboard/open-finance" element={<ProtectedRoute><ThemeAndLanguageProvider><OpenFinance /></ThemeAndLanguageProvider></ProtectedRoute>} />
+    <Route path="/dashboard/billing" element={<ProtectedRoute><ThemeAndLanguageProvider><Billing /></ThemeAndLanguageProvider></ProtectedRoute>} />
+    <Route path="/dashboard/psychology" element={<ProtectedRoute><ThemeAndLanguageProvider><Psychology /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/assistente" element={<ProtectedRoute><ThemeAndLanguageProvider><Assistente /></ThemeAndLanguageProvider></ProtectedRoute>} />
+    <Route path="/dashboard/feedback" element={<ProtectedRoute><ThemeAndLanguageProvider><Feedback /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/configuracoes" element={<ProtectedRoute><ThemeAndLanguageProvider><Configuracoes /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/perfil" element={<ProtectedRoute><ThemeAndLanguageProvider><Perfil /></ThemeAndLanguageProvider></ProtectedRoute>} />
     <Route path="/dashboard/mensagens" element={<ProtectedRoute><ThemeAndLanguageProvider><Mensagens /></ThemeAndLanguageProvider></ProtectedRoute>} />
+
+    {}
+    <Route path="/admin/login" element={<AdminLogin />} />
+    <Route path="/admin/feedbacks" element={<AdminFeedbacks />} />
+
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

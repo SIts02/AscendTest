@@ -56,7 +56,7 @@ const ChatMessage = ({ message, assistantName, onFeedback, onSuggestionClick }: 
         <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
           <ReactMarkdown>{message.content}</ReactMarkdown>
         </div>
-        
+
         {message.suggestions && message.suggestions.length > 0 && onSuggestionClick && (
           <div className="mt-3 space-y-2">
             {message.suggestions.map((suggestion, index) => (
@@ -72,20 +72,20 @@ const ChatMessage = ({ message, assistantName, onFeedback, onSuggestionClick }: 
             ))}
           </div>
         )}
-        
+
         {message.role === "assistant" && (
           <div className="flex justify-end mt-2 space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-6 px-2 hover:bg-white/10"
               onClick={() => onFeedback(true)}
             >
               <ThumbsUp className="h-3 w-3" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-6 px-2 hover:bg-white/10"
               onClick={() => onFeedback(false)}
             >

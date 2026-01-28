@@ -26,7 +26,7 @@ const suggestedQuestions = [
 ];
 
 const Assistente = () => {
-  
+
   useEffect(() => {
     document.title = "MoMoney | Assistente IA";
   }, []);
@@ -47,27 +47,27 @@ const Assistente = () => {
       role: "assistant" as const,
       timestamp: new Date()
     };
-    
+
     setMessages([welcomeMessage]);
   }, []);
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
-    
+
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       content: input,
       role: "user",
       timestamp: new Date()
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     const userInput = input;
     setInput("");
     setIsTyping(true);
-    
+
     try {
-      // Chamar a Edge Function assistente-geral
+
       const { data, error } = await supabase.functions.invoke('assistente-geral', {
         body: { question: userInput }
       });
@@ -83,15 +83,14 @@ const Assistente = () => {
         role: "assistant",
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
       console.error('Error in handleSendMessage:', error);
-      
-      // Check for rate limit or payment errors
+
       let errorContent = 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.';
       let toastDescription = "Não foi possível obter uma resposta. Verifique sua conexão e tente novamente.";
-      
+
       if (error?.message?.includes('RATE_LIMIT') || error?.context?.body?.code === 'RATE_LIMIT') {
         errorContent = 'Muitas perguntas em pouco tempo! 😅 Aguarde alguns segundos e tente novamente.';
         toastDescription = "Limite de requisições atingido. Aguarde um momento.";
@@ -99,16 +98,16 @@ const Assistente = () => {
         errorContent = 'O assistente está temporariamente indisponível. Tente novamente mais tarde.';
         toastDescription = "Serviço temporariamente indisponível.";
       }
-      
+
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         content: errorContent,
         role: "assistant",
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, errorMessage]);
-      
+
       toast.error("Erro ao processar pergunta", {
         description: toastDescription
       });
@@ -124,12 +123,12 @@ const Assistente = () => {
       role: "user",
       timestamp: new Date()
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
-    
+
     try {
-      // Chamar a Edge Function assistente-geral
+
       const { data, error } = await supabase.functions.invoke('assistente-geral', {
         body: { question }
       });
@@ -145,14 +144,14 @@ const Assistente = () => {
         role: "assistant",
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
       console.error('Error in handleSuggestedQuestion:', error);
-      
+
       let errorContent = 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.';
       let toastDescription = "Não foi possível obter uma resposta.";
-      
+
       if (error?.message?.includes('RATE_LIMIT') || error?.context?.body?.code === 'RATE_LIMIT') {
         errorContent = 'Muitas perguntas em pouco tempo! 😅 Aguarde alguns segundos e tente novamente.';
         toastDescription = "Limite de requisições atingido.";
@@ -160,16 +159,16 @@ const Assistente = () => {
         errorContent = 'O assistente está temporariamente indisponível. Tente novamente mais tarde.';
         toastDescription = "Serviço temporariamente indisponível.";
       }
-      
+
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         content: errorContent,
         role: "assistant",
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, errorMessage]);
-      
+
       toast.error("Erro ao processar pergunta", {
         description: toastDescription
       });
@@ -184,7 +183,6 @@ const Assistente = () => {
       icon: positive ? <span>👍</span> : <span>👎</span>,
     });
   };
-
 
   return (
     <DashboardLayout activePage="Assistente IA">
@@ -201,7 +199,7 @@ const Assistente = () => {
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((message) => (
             <ChatMessage
@@ -212,7 +210,7 @@ const Assistente = () => {
                 onSuggestionClick={handleSuggestedQuestion}
               />
             ))}
-            
+
             {isTyping && (
               <div className="flex justify-start animate-fade-in">
                 <div className="bg-muted text-foreground rounded-lg p-4 max-w-[80%]">
@@ -224,10 +222,10 @@ const Assistente = () => {
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </CardContent>
-          
+
           {messages.length <= 2 && (
             <div className="px-6 pb-4">
               <p className="text-sm text-muted-foreground mb-2">Comece me contando seu objetivo:</p>
@@ -246,7 +244,7 @@ const Assistente = () => {
               </div>
             </div>
           )}
-          
+
           <CardFooter className="border-t pt-4 pb-4 px-6 flex-shrink-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <form
               className="flex w-full items-center space-x-2"
@@ -262,8 +260,8 @@ const Assistente = () => {
                 onChange={(e) => setInput(e.target.value)}
                 className="flex-1"
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 size="icon"
                 className="bg-gradient-to-r from-momoney-600 to-momoney-500 hover:from-momoney-700 hover:to-momoney-600 text-white"
                 disabled={!input.trim() || isTyping}

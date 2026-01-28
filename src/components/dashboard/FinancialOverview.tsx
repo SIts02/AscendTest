@@ -10,11 +10,10 @@ const FinancialOverview = () => {
   const { summary, loading } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
   const { resolvedTheme } = useTheme();
-  
+
   const isDark = resolvedTheme === 'dark';
   const textColor = isDark ? 'hsl(215, 20%, 55%)' : 'hsl(215, 16%, 47%)';
-  
-  // Prepare data for the chart
+
   const chartData = summary.monthlyData.map(item => ({
     name: item.month,
     income: item.income,
@@ -47,15 +46,15 @@ const FinancialOverview = () => {
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <XAxis 
-                dataKey="name" 
-                stroke={textColor} 
-                fontSize={12} 
-                tickLine={false} 
+              <XAxis
+                dataKey="name"
+                stroke={textColor}
+                fontSize={12}
+                tickLine={false}
                 axisLine={false}
                 dy={10}
               />
-              <YAxis 
+              <YAxis
                 tickFormatter={(value) => formatCurrency(value, { notation: 'compact' })}
                 stroke={textColor}
                 fontSize={11}
@@ -63,7 +62,7 @@ const FinancialOverview = () => {
                 axisLine={false}
                 width={60}
               />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{
                   backgroundColor: isDark ? 'hsl(220, 40%, 13%)' : 'white',
                   borderColor: isDark ? 'hsl(220, 30%, 22%)' : 'hsl(214, 32%, 91%)',
@@ -82,33 +81,33 @@ const FinancialOverview = () => {
                 }}
                 labelFormatter={(label) => `${label}`}
               />
-              <Legend 
-                wrapperStyle={{ color: textColor, fontSize: '12px', paddingTop: '16px' }} 
+              <Legend
+                wrapperStyle={{ color: textColor, fontSize: '12px', paddingTop: '16px' }}
                 iconType="circle"
                 iconSize={8}
               />
-              <Area 
-                type="monotone" 
-                dataKey="income" 
-                stroke="#22c55e" 
+              <Area
+                type="monotone"
+                dataKey="income"
+                stroke="#22c55e"
                 strokeWidth={2}
                 fill="url(#incomeGradient)"
                 name="Receitas"
                 activeDot={{ r: 6, strokeWidth: 2, stroke: isDark ? '#151C2C' : '#fff' }}
               />
-              <Area 
-                type="monotone" 
-                dataKey="expense" 
-                stroke="#ef4444" 
+              <Area
+                type="monotone"
+                dataKey="expense"
+                stroke="#ef4444"
                 strokeWidth={2}
                 fill="url(#expenseGradient)"
                 name="Despesas"
                 activeDot={{ r: 6, strokeWidth: 2, stroke: isDark ? '#151C2C' : '#fff' }}
               />
-              <Area 
-                type="monotone" 
-                dataKey="balance" 
-                stroke="#3b82f6" 
+              <Area
+                type="monotone"
+                dataKey="balance"
+                stroke="#3b82f6"
                 strokeWidth={2}
                 fill="url(#balanceGradient)"
                 name="Saldo"

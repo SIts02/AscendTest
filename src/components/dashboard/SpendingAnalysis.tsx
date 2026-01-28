@@ -12,7 +12,7 @@ import { useTheme } from "next-themes";
 
 const CustomTooltip = ({ active, payload }: any) => {
   const { formatCurrency } = useFormatters();
-  
+
   if (active && payload && payload.length) {
     return (
       <div className="glass-card px-4 py-3 !rounded-xl shadow-lg">
@@ -37,11 +37,11 @@ const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: an
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return percent > 0.05 ? (
-    <text 
-      x={x} 
-      y={y} 
-      fill="white" 
-      textAnchor={x > cx ? 'start' : 'end'} 
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
       fontSize={11}
       fontWeight="bold"
@@ -56,14 +56,14 @@ const SpendingAnalysis = () => {
   const { summary, loading } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
   const { resolvedTheme } = useTheme();
-  
+
   const isDark = resolvedTheme === 'dark';
-  
+
   const data = tabView === 'categories' ? summary.spendingByCategory : [];
-  
+
   const hasData = data.length > 0;
   const total = hasData ? data.reduce((sum, item) => sum + item.value, 0) : 0;
-  
+
   const dataWithPercentage = hasData ? data.map(item => ({
     ...item,
     percentage: parseFloat(((item.value / total) * 100).toFixed(1))
@@ -87,21 +87,21 @@ const SpendingAnalysis = () => {
         <div className="flex items-center gap-2">
           <Tabs defaultValue="categories" className="w-[200px]" onValueChange={(value) => setTabView(value as 'categories' | 'merchants')}>
             <TabsList className="grid w-full grid-cols-2 rounded-xl bg-secondary/50 p-1">
-              <TabsTrigger 
-                value="categories" 
+              <TabsTrigger
+                value="categories"
                 className="rounded-lg text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Categorias
               </TabsTrigger>
-              <TabsTrigger 
-                value="merchants" 
+              <TabsTrigger
+                value="merchants"
                 className="rounded-lg text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Locais
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl">
@@ -117,7 +117,7 @@ const SpendingAnalysis = () => {
           </DropdownMenu>
         </div>
       </div>
-      
+
       {loading ? (
         <div className="flex items-center justify-center h-[260px]">
           <Skeleton className="h-[180px] w-[180px] rounded-full" />
@@ -146,22 +146,22 @@ const SpendingAnalysis = () => {
                       </linearGradient>
                     ))}
                   </defs>
-                  <Pie 
-                    data={dataWithPercentage} 
-                    cx="50%" 
-                    cy="50%" 
-                    labelLine={false} 
-                    outerRadius={70} 
-                    innerRadius={35} 
-                    fill="#8884d8" 
-                    dataKey="value" 
-                    nameKey="name" 
+                  <Pie
+                    data={dataWithPercentage}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={70}
+                    innerRadius={35}
+                    fill="#8884d8"
+                    dataKey="value"
+                    nameKey="name"
                     paddingAngle={3}
                     label={CustomLabel}
                   >
                     {dataWithPercentage.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
+                      <Cell
+                        key={`cell-${index}`}
                         fill={`url(#gradient-${index})`}
                         stroke={isDark ? 'hsl(220, 40%, 13%)' : '#fff'}
                         strokeWidth={2}
@@ -170,8 +170,8 @@ const SpendingAnalysis = () => {
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend 
-                    verticalAlign="bottom" 
+                  <Legend
+                    verticalAlign="bottom"
                     height={36}
                     formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
                     iconType="circle"
@@ -181,15 +181,15 @@ const SpendingAnalysis = () => {
               </ResponsiveContainer>
             </ChartContainer>
           </div>
-          
+
           <div className="w-full lg:w-1/2 max-h-[260px] overflow-y-auto">
             <div className="space-y-2">
               {dataWithPercentage.slice(0, 4).map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-3 hover:bg-secondary/30 rounded-xl transition-colors">
                   <div className="flex items-center min-w-0">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-3 flex-shrink-0" 
-                      style={{ backgroundColor: item.color }} 
+                    <div
+                      className="w-3 h-3 rounded-full mr-3 flex-shrink-0"
+                      style={{ backgroundColor: item.color }}
                     />
                     <span className="truncate text-sm font-medium text-foreground">{item.name}</span>
                   </div>

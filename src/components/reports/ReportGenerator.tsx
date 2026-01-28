@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  FileText, 
-  Download, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  FileText,
+  Download,
+  TrendingUp,
+  TrendingDown,
   DollarSign,
   BarChart3,
   Calendar,
@@ -58,7 +58,7 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
 
   return (
     <div className="space-y-6">
-      {/* Report Summary */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -113,7 +113,7 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
         </CardContent>
       </Card>
 
-      {/* Top Categories */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle>Principais Categorias</CardTitle>
@@ -121,10 +121,10 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
         <CardContent>
           <div className="space-y-4">
             {stats.topCategories.map(([categoryName, categoryData]: [string, { total: number; count: number; type: string }]) => {
-              const percentage = stats.totalExpenses > 0 
-                ? (categoryData.total / stats.totalExpenses) * 100 
+              const percentage = stats.totalExpenses > 0
+                ? (categoryData.total / stats.totalExpenses) * 100
                 : 0;
-              
+
               return (
                 <div key={categoryName} className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -149,7 +149,7 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
         </CardContent>
       </Card>
 
-      {/* Transactions Table */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle>Transações Detalhadas</CardTitle>
@@ -199,7 +199,7 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
         </CardContent>
       </Card>
 
-      {/* Export Actions */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -209,8 +209,8 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            <Button 
-              onClick={() => handleExport('csv')} 
+            <Button
+              onClick={() => handleExport('csv')}
               disabled={loading}
               variant="outline"
               className="flex-1"
@@ -218,8 +218,8 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
               <FileText className="h-4 w-4 mr-2" />
               Exportar CSV
             </Button>
-            <Button 
-              onClick={() => handleExport('pdf')} 
+            <Button
+              onClick={() => handleExport('pdf')}
               disabled={loading}
               className="flex-1"
             >
@@ -227,7 +227,7 @@ const ReportGenerator = ({ filters, data, onExportCSV, onExportPDF }: ReportGene
               Exportar PDF
             </Button>
           </div>
-          
+
           {filters.dateRange.start && filters.dateRange.end && (
             <div className="mt-4 p-3 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground">

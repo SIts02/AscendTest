@@ -14,7 +14,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { preferences, savePreferences } = useUserPreferences();
   const [systemTheme, setSystemTheme] = useState<string | undefined>("light");
 
-  // Listen for system theme changes
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -27,14 +26,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setTheme = async (theme: string) => {
-    // Apply theme immediately to the DOM
+
     const root = window.document.documentElement;
-    
+
     let themeToApply = theme;
     if (theme === "system") {
       themeToApply = systemTheme === "dark" ? "dark" : "light";
     }
-    
+
     if (themeToApply === "dark") {
       root.classList.add("dark");
       root.classList.remove("light");
@@ -43,7 +42,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.remove("dark");
     }
 
-    // Save to preferences
     await savePreferences({
       ...preferences,
       theme: theme as "light" | "dark" | "system",

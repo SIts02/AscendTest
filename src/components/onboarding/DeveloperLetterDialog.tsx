@@ -15,10 +15,10 @@ const DeveloperLetterDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user has seen the letter
+
     const hasSeen = localStorage.getItem(STORAGE_KEY);
     if (!hasSeen) {
-      // Small delay to let the dashboard load first
+
       const timer = setTimeout(() => {
         setOpen(true);
       }, 500);
@@ -51,7 +51,7 @@ const DeveloperLetterDialog: React.FC = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-lg md:max-w-xl p-0 overflow-hidden bg-card border-border rounded-3xl shadow-2xl">
-        {/* Decorative header */}
+        {}
         <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-transparent pt-8 pb-6 px-6">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -63,7 +63,7 @@ const DeveloperLetterDialog: React.FC = () => {
               <Rocket className="w-10 h-10 text-primary" />
             </div>
           </motion.div>
-          
+
           <DialogHeader className="text-center">
             <DialogTitle className="text-2xl font-bold text-foreground">
               {t('developer_letter.title', 'Bem-vindo ao Ascend!')}
@@ -74,7 +74,7 @@ const DeveloperLetterDialog: React.FC = () => {
           </DialogHeader>
         </div>
 
-        {/* Letter content */}
+        {}
         <div className="px-6 py-6 space-y-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -85,7 +85,7 @@ const DeveloperLetterDialog: React.FC = () => {
             <p className="text-base leading-relaxed">
               {t('developer_letter.greeting', 'Olá! Sou o desenvolvedor por trás do Ascend e estou muito feliz que você está aqui.')}
             </p>
-            
+
             <p className="text-base leading-relaxed">
               {t('developer_letter.beta_notice', 'Este projeto ainda está em fase')} <span className="font-semibold text-primary">BETA</span>{t('developer_letter.beta_notice_2', ', então pode haver alguns bugs. Estou trabalhando para melhorar sua experiência.')}
             </p>
@@ -105,7 +105,7 @@ const DeveloperLetterDialog: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Footer with actions */}
+        {}
         <DialogFooter className="px-6 pb-6 pt-2 flex flex-col sm:flex-row gap-3">
           <Button
             variant="outline"

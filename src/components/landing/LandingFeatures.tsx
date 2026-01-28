@@ -45,14 +45,14 @@ const FeatureCard = ({
       ref={ref}
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      transition={{ 
-        duration: 0.8, 
+      transition={{
+        duration: 0.8,
         delay: index * 0.12,
         ease: [0.25, 0.46, 0.45, 0.94]
       }}
       className="group relative p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-500"
     >
-      {/* Glow effect on hover */}
+      {}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="relative z-10">

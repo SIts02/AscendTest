@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { passwordSchema } from '@/lib/validators';
 
 const LandingResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -21,7 +22,7 @@ const LandingResetPassword = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) { setIsValidSession(true); } 
+      if (session) { setIsValidSession(true); }
       else { toast.error('Link de recuperação inválido ou expirado'); navigate('/login'); }
     };
     checkSession();
@@ -31,11 +32,18 @@ const LandingResetPassword = () => {
     e.preventDefault();
     if (!password || !confirmPassword) { toast.error('Preencha todos os campos'); return; }
     if (password !== confirmPassword) { toast.error('As senhas não coincidem'); return; }
-    if (password.length < 6) { toast.error('A senha deve ter pelo menos 6 caracteres'); return; }
+
+    const validationResult = passwordSchema.safeParse(password);
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      toast.error(firstError.message || 'Senha inválida');
+      return;
+    }
+
     setLoading(true);
     const { error } = await updatePassword(password);
     setLoading(false);
-    if (error) { toast.error(error.message || 'Erro ao atualizar senha'); } 
+    if (error) { toast.error(error.message || 'Erro ao atualizar senha'); }
     else { setSuccess(true); toast.success('Senha atualizada com sucesso!'); setTimeout(() => navigate('/dashboard'), 2000); }
   };
 

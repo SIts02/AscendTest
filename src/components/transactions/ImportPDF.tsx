@@ -14,8 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface ExtractedTransaction {
   date: string;
@@ -44,9 +44,16 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
     total_income: number;
     total_expenses: number;
     transaction_count: number;
+    initial_balance?: number;
+    final_balance?: number;
+    calculated_final_balance?: number;
+    balance_valid?: boolean;
+    balance_difference?: number;
   } | null>(null);
+  const [bankInfo, setBankInfo] = useState<{ bank_name: string; account: string | null } | null>(null);
+  const [period, setPeriod] = useState<{ start: string | null; end: string | null } | null>(null);
+  const [transactionHashes, setTransactionHashes] = useState<string[]>([]);
 
-  // Convert file to base64 for reliable transmission
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -60,45 +67,42 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
     });
   };
 
-  // Convert PDF pages to images for OCR
   const convertPDFToImages = async (file: File, maxPages: number = 5): Promise<string[]> => {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const images: string[] = [];
-    
+
     const numPages = Math.min(pdf.numPages, maxPages);
-    
+
     for (let i = 1; i <= numPages; i++) {
       const page = await pdf.getPage(i);
-      const scale = 2; // Higher scale for better OCR
+      const scale = 2;
       const viewport = page.getViewport({ scale });
-      
+
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d')!;
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      
+
       await page.render({
         canvasContext: context,
         viewport: viewport
       }).promise;
-      
-      // Convert to base64 JPEG (smaller than PNG)
+
       const imageData = canvas.toDataURL('image/jpeg', 0.9);
       const base64 = imageData.split(',')[1];
       images.push(base64);
     }
-    
+
     return images;
   };
 
-  // Extract text from PDF using pdf.js
   const extractTextFromPDF = async (file: File): Promise<string> => {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = '';
-      
+
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
@@ -107,7 +111,7 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
           .join(' ');
         fullText += pageText + '\n';
       }
-      
+
       return fullText.trim();
     } catch (err) {
       console.error('Error extracting text from PDF:', err);
@@ -138,19 +142,18 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
     setAnalyzing(true);
 
     try {
-      // First, try to extract text directly from PDF
+
       const extractedText = await extractTextFromPDF(selectedFile);
       const cleanedText = extractedText.replace(/\s+/g, ' ').trim();
-      
-      // Check if we got enough meaningful text
+
       const hasEnoughText = cleanedText.length > 200;
-      const hasTransactionPatterns = /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(cleanedText) && 
-                                     /\d+[,\.]\d{2}/.test(cleanedText);
-      
+      const hasTransactionPatterns = /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(cleanedText) &&
+        /\d+[,\.]\d{2}/.test(cleanedText);
+
       let requestBody: any = {};
-      
+
       if (hasEnoughText && hasTransactionPatterns) {
-        // Use text extraction mode
+
         setAnalysisMode('text');
         requestBody = {
           mode: 'text',
@@ -158,10 +161,10 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
           fileName: selectedFile.name
         };
       } else {
-        // Fall back to OCR mode - convert PDF pages to images
+
         setAnalysisMode('ocr');
         toast.info('PDF parece ser escaneado. Usando OCR para extrair texto...');
-        
+
         const pageImages = await convertPDFToImages(selectedFile, 5);
         requestBody = {
           mode: 'ocr',
@@ -190,6 +193,16 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
         setRawText(data.rawText);
       }
 
+      if (data.bank_info) {
+        setBankInfo(data.bank_info);
+      }
+      if (data.period) {
+        setPeriod(data.period);
+      }
+      if (data.transaction_hashes) {
+        setTransactionHashes(data.transaction_hashes);
+      }
+
       const transactionsWithSelection = data.transactions.map((t: ExtractedTransaction) => ({
         ...t,
         selected: true
@@ -198,7 +211,15 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
       setExtractedTransactions(transactionsWithSelection);
       setSummary(data.summary);
       setStep('preview');
-      
+
+      if (data.summary && !data.summary.balance_valid) {
+        toast.warning(
+          `Validação matemática: Diferença de ${formatCurrency(data.summary.balance_difference || 0)}. ` +
+          'Verifique se todas as transações foram extraídas corretamente.',
+          { duration: 6000 }
+        );
+      }
+
       const modeText = analysisMode === 'ocr' ? ' (via OCR)' : '';
       toast.success(`${data.transactions.length} transações identificadas${modeText}!`);
     } catch (err: any) {
@@ -261,6 +282,9 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
     setSummary(null);
     setRawText(null);
     setAnalysisMode(null);
+    setBankInfo(null);
+    setPeriod(null);
+    setTransactionHashes([]);
   };
 
   const formatCurrency = (value: number) => {
@@ -339,7 +363,7 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
                 {analysisMode === 'ocr' ? 'Processando imagens com OCR...' : 'Analisando seu extrato...'}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {analysisMode === 'ocr' 
+                {analysisMode === 'ocr'
                   ? 'Extraindo texto das imagens do PDF. Isso pode levar um pouco mais de tempo.'
                   : 'Extraindo texto do PDF e identificando transações.'}
               </p>
@@ -376,12 +400,48 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
               </div>
             )}
 
+            { }
+            {(bankInfo || period) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {bankInfo && (
+                  <Card>
+                    <CardContent className="pt-4">
+                      <p className="text-xs text-muted-foreground">Banco</p>
+                      <p className="text-sm font-medium">
+                        {bankInfo.bank_name}
+                        {bankInfo.account && ` • ${bankInfo.account}`}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+                {period && period.start && period.end && (
+                  <Card>
+                    <CardContent className="pt-4">
+                      <p className="text-xs text-muted-foreground">Período</p>
+                      <p className="text-sm font-medium">
+                        {format(new Date(period.start), 'dd/MM/yyyy', { locale: ptBR })} - {format(new Date(period.end), 'dd/MM/yyyy', { locale: ptBR })}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+
+            { }
             {summary && (
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground">Saldo Inicial</p>
+                    <p className="text-sm font-semibold">
+                      {summary.initial_balance !== undefined ? formatCurrency(summary.initial_balance) : '-'}
+                    </p>
+                  </CardContent>
+                </Card>
                 <Card>
                   <CardContent className="pt-4">
                     <p className="text-xs text-muted-foreground">Entradas</p>
-                    <p className="text-lg font-semibold text-green-600">
+                    <p className="text-sm font-semibold text-green-600">
                       {formatCurrency(summary.total_income)}
                     </p>
                   </CardContent>
@@ -389,11 +449,43 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
                 <Card>
                   <CardContent className="pt-4">
                     <p className="text-xs text-muted-foreground">Saídas</p>
-                    <p className="text-lg font-semibold text-red-600">
+                    <p className="text-sm font-semibold text-red-600">
                       {formatCurrency(summary.total_expenses)}
                     </p>
                   </CardContent>
                 </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground">Saldo Final</p>
+                    <p className="text-sm font-semibold">
+                      {summary.final_balance !== undefined ? formatCurrency(summary.final_balance) : '-'}
+                    </p>
+                    {summary.balance_valid === false && (
+                      <p className="text-xs text-amber-600 mt-1">
+                        ⚠️ Diferença: {summary.balance_difference !== undefined ? formatCurrency(summary.balance_difference) : ''}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            { }
+            {summary && summary.balance_valid === false && (
+              <Alert variant="default" className="mb-4 border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800 dark:text-amber-200">
+                  <strong>Atenção:</strong> A validação matemática não fechou.
+                  {summary.balance_difference !== undefined && (
+                    <> Diferença de {formatCurrency(summary.balance_difference)}. </>
+                  )}
+                  Verifique se todas as transações foram extraídas corretamente.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {summary && (
+              <div className="mb-4">
                 <Card>
                   <CardContent className="pt-4">
                     <p className="text-xs text-muted-foreground">Transações</p>
@@ -457,9 +549,8 @@ export function ImportPDF({ onImport, open, onOpenChange }: ImportPDFProps) {
                         </Badge>
                       </TableCell>
                       <TableCell
-                        className={`text-right font-medium ${
-                          transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                        }`}
+                        className={`text-right font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                          }`}
                       >
                         {formatCurrency(transaction.amount)}
                       </TableCell>

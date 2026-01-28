@@ -1,69 +1,208 @@
-# Welcome to your Lovable project
+# Ascend 2.0 - Financial Management Platform
 
-## Project info
+## 📊 Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/40f75907-0d3e-49a9-ac30-53449c03e7ad
+Ascend é uma plataforma moderna e completa de gestão financeira pessoal, desenvolvida com as melhores práticas e tecnologias atuais do mercado.
 
-## How can I edit this code?
+### ✨ Principais Funcionalidades
 
-There are several ways of editing your application.
+- **Gestão Financeira**: Controle completo de receitas, despesas, investimentos e orçamentos
+- **Previsões Inteligentes**: Projeções financeiras de 30/60/90 dias com algoritmos preditivos
+- **Open Finance**: Integração bancária via Pluggy para sincronização automática
+- **Análise Comportamental**: Sistema de gamificação com conquistas e desafios financeiros
+- **Planos de Assinatura**: Integração Stripe para monetização (Free/Pro/Premium)
+- **Dashboards Customizáveis**: Crie e personalize seus próprios dashboards
+- **Segurança Avançada**: RLS policies, MFA, auditoria completa
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/40f75907-0d3e-49a9-ac30-53449c03e7ad) and start prompting.
+## 🚀 Como Executar
 
-Changes made via Lovable will be committed automatically to this repo.
+### Pré-requisitos
 
-**Use your preferred IDE**
+- Node.js 18+ e npm
+- Python 3.8+ (para Supabase local)
+- Docker (opcional, para Supabase local)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Instalação
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# 1. Clone o repositório
 git clone <YOUR_GIT_URL>
+cd AscendTest
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 2. Instale as dependências
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 3. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite .env com suas credenciais
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Configuração do Supabase
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Instalar Supabase CLI
+npm install -g supabase
 
-**Use GitHub Codespaces**
+# Iniciar Supabase local (requer Docker)
+npx supabase start
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Aplicar migrations
+npx supabase db reset
+```
 
-## What technologies are used for this project?
+Consulte os guias de configuração:
+- **Supabase**: Veja instruções no dashboard do Supabase
+- **Stripe**: [STRIPE_SETUP.md](./STRIPE_SETUP.md)
+- **Pluggy**: [ENV_SETUP.md](./ENV_SETUP.md)
 
-This project is built with .
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🛠️ Tecnologias Utilizadas
 
-## How can I deploy this project?
+### Frontend
+- **Vite** - Build tool  rápido
+- **React 18** - Framework UI
+- **TypeScript** - Type safety
+- **TanStack Query** - Data fetching e cache
+- **Shadcn/ui** - Componentes UI
+- **Tailwind CSS** - Styling utility-first
 
-Simply open [Lovable](https://lovable.dev/projects/40f75907-0d3e-49a9-ac30-53449c03e7ad) and click on Share -> Publish.
+### Backend
+- **Supabase** - Backend as a Service
+  - PostgreSQL database
+  - Authentication
+  - Row Level Security
+  - Edge Functions (Deno)
+  - Realtime subscriptions
 
-## I want to use a custom domain - is that possible?
+### Integrações
+- **Stripe** - Pagamentos e assinaturas
+- **Pluggy** - Open Finance / Banking
+- **Alpha Vantage** - Cotações de ações
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+---
+
+## 📦 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev              # Inicia dev server
+
+# Build
+npm run build            # Build produção
+npm run build:dev        # Build desenvolvimento
+npm run preview          # Preview do build
+
+# Qualidade
+npm run lint             # ESLint
+npm run security:audit   # Audit de segurança
+npm run security:check   # Audit + lint
+
+# TypeScript
+npx tsc --noEmit         # Verificar tipos
+```
+
+---
+
+## 📂 Estrutura do Projeto
+
+```
+AscendTest/
+├── src/
+│   ├── components/      # Componentes React
+│   ├── contexts/        # Context providers
+│   ├── hooks/           # Custom hooks
+│   ├── integrations/    # Integrações externas
+│   ├── lib/             # Utilitários
+│   ├── pages/           # Páginas/rotas
+│   └── App.tsx          # App principal
+├── supabase/
+│   ├── functions/       # Edge Functions
+│   └── migrations/      # SQL migrations
+├── public/              # Assets estáticos
+└── docs/                # Documentação
+```
+
+---
+
+## 🔐 Segurança
+
+O projeto implementa múltiplas camadas de segurança:
+
+- **Authentication**: Supabase Auth com suporte a OAuth
+- **MFA**: Two-Factor Authentication opcional
+- **RLS**: Row Level Security em todas as tabelas
+- **CSRF Protection**: Tokens CSRF configurados
+- **Rate Limiting**: Proteção contra abuse
+- **Audit Log**: Registro de ações sensíveis
+- **Webhook Signatures**: Validação Stripe e Pluggy
+
+---
+
+## 📚 Documentação
+
+- **[ENV_SETUP.md](./ENV_SETUP.md)** - Configuração Pluggy
+- **[STRIPE_SETUP.md](./STRIPE_SETUP.md)** - Configuração Stripe
+- **[OPTIMIZATIONS.md](./OPTIMIZATIONS.md)** - Boas práticas
+- **[CHECKLIST.md](./CHECKLIST.md)** - Checklist deploy
+
+---
+
+## 🚀 Deploy
+
+### Opção 1: Vercel (Recomendado)
+
+```bash
+# Instalar Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+### Opção 2: Netlify
+
+```bash
+# Build
+npm run build
+
+# Upload dist/ para Netlify
+```
+
+### Configuração do Backend
+
+1. Crie um projeto no [Supabase](https://supabase.com)
+2. Aplique as migrations: `npx supabase db push`
+3. Deploy edge functions: `npx supabase functions deploy [function-name]`
+4. Configure variáveis de ambiente no dashboard
+
+---
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch: `git checkout -b feature/nova-feature`
+3. Commit: `git commit -m 'feat: Adiciona nova feature'`
+4. Push: `git push origin feature/nova-feature`
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Proprietary - Todos os direitos reservados
+
+---
+
+## 📧 Suporte
+
+Para suporte e dúvidas, consulte a documentação ou abra uma issue no repositório.
+
+---
+
+**Desenvolvido com ❤️ para gestão financeira inteligente**

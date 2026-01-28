@@ -39,29 +39,29 @@ const BudgetCategoryCard = ({ category, onUpdateLimit }: BudgetCategoryCardProps
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center">
-              <div 
-                className="w-3 h-3 rounded-full mr-2" 
-                style={{ backgroundColor: category.color }} 
+              <div
+                className="w-3 h-3 rounded-full mr-2"
+                style={{ backgroundColor: category.color }}
               />
               <h3 className="font-medium">{category.name}</h3>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => setEditDialogOpen(true)}
             >
               <Edit2 className="h-4 w-4 text-gray-400 hover:text-gray-600" />
             </Button>
           </div>
-          
+
           <div className="space-y-1">
             <div className="flex justify-between text-sm">
               <span className="font-medium">{formatCurrency(category.current_amount)}</span>
               <span className="text-gray-500">{formatCurrency(category.max_amount)}</span>
             </div>
-            <Progress 
-              value={category.percentage} 
+            <Progress
+              value={category.percentage}
               className={`h-2 ${getProgressColorClass(category.percentage)}`}
             />
             <div className="flex justify-between items-center text-xs text-gray-500 mt-1">

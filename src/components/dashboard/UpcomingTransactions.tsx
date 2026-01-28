@@ -23,7 +23,7 @@ const UpcomingTransactions = () => {
 
   const upcomingTransactions = useMemo(() => {
     const today = startOfDay(new Date());
-    
+
     return transactions
       .filter(t => {
         if (t.type !== 'expense') return false;
@@ -33,11 +33,11 @@ const UpcomingTransactions = () => {
       .map(t => {
         const transactionDate = startOfDay(parseISO(t.date));
         let displayStatus = t.status;
-        
+
         if (isBefore(transactionDate, today) && t.status === 'pending') {
           displayStatus = 'overdue';
         }
-        
+
         return { ...t, displayStatus };
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -151,15 +151,15 @@ const UpcomingTransactions = () => {
           Ver Todos
         </Button>
       </div>
-      
+
       <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
         {upcomingTransactions.map((transaction) => {
           const category = transaction.category_id ? categoryMap.get(transaction.category_id) : null;
           const categoryName = category?.name || null;
 
           return (
-            <div 
-              key={transaction.id} 
+            <div
+              key={transaction.id}
               className="flex items-center justify-between p-3 rounded-xl hover:bg-secondary/30 transition-colors"
             >
               <div className="flex items-center min-w-0 flex-1">
@@ -179,8 +179,8 @@ const UpcomingTransactions = () => {
                 <span className="font-semibold text-sm text-red-500">
                   {formatCurrency(transaction.amount)}
                 </span>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => handleMarkAsPaid(transaction)}
                   className="h-7 px-2 rounded-lg text-xs"
@@ -192,7 +192,7 @@ const UpcomingTransactions = () => {
           );
         })}
       </div>
-      
+
       <div className="pt-3 mt-3 border-t border-border/50">
         <div className="flex items-center justify-between font-semibold text-sm p-3 bg-red-500/5 rounded-xl">
           <span className="text-foreground">Total Pendente</span>

@@ -13,32 +13,19 @@ interface ConvertedFinancialData {
   rate: number;
 }
 
-/**
- * Hook que gerencia a conversão de valores financeiros entre moedas
- * Usado para converter todos os dados financeiros do usuário (saldos, gráficos, investimentos)
- * quando ele muda a moeda padrão nas configurações
- */
 export function useCurrencyConversion() {
   const { preferences } = useUserPreferences();
-  const { 
+  const {
     convertCurrency: convertCurrencyValue,
     getExchangeRate,
     getSupportedCurrencies,
     formatCurrency
   } = useCurrencyConverter();
 
-  // Armazenar taxas de câmbio em cache para performance
   const exchangeRatesCache = useMemo(() => {
     return new Map<string, { rate: number; timestamp: number }>();
   }, []);
 
-  /**
-   * Converte um valor de uma moeda para outra
-   * @param amount - Valor a converter
-   * @param fromCurrency - Moeda de origem
-   * @param toCurrency - Moeda de destino (padrão: preferência do usuário)
-   * @returns Valor convertido
-   */
   const convertAmount = useCallback(
     async (
       amount: number,
@@ -46,7 +33,7 @@ export function useCurrencyConversion() {
       toCurrency?: string
     ): Promise<number> => {
       try {
-        // Usar moeda de destino padrão das preferências
+
         const targetCurrency = toCurrency || preferences.currency;
 
         if (!amount || amount === 0) {
@@ -57,41 +44,31 @@ export function useCurrencyConversion() {
           return amount;
         }
 
-        // Verificar cache
         const cacheKey = `${fromCurrency}-${targetCurrency}`;
         const cached = exchangeRatesCache.get(cacheKey);
-        
-        if (cached && (Date.now() - cached.timestamp) < 3600000) { // Cache de 1 hora
+
+        if (cached && (Date.now() - cached.timestamp) < 3600000) {
           return Number((amount * cached.rate).toFixed(2));
         }
 
-        // Buscar taxa se não estiver em cache
         const rate = await getExchangeRate(fromCurrency, targetCurrency);
-        
+
         if (rate === null) {
           console.error(`Erro ao obter taxa de câmbio para ${fromCurrency} -> ${targetCurrency}`);
-          return amount; // Retornar valor original em caso de erro
+          return amount;
         }
 
-        // Atualizar cache
         exchangeRatesCache.set(cacheKey, { rate, timestamp: Date.now() });
 
         return Number((amount * rate).toFixed(2));
       } catch (error) {
         console.error('Erro ao converter moeda:', error);
-        return amount; // Retornar valor original em caso de erro
+        return amount;
       }
     },
     [preferences.currency, getExchangeRate, exchangeRatesCache]
   );
 
-  /**
-   * Converte um objeto com múltiplos valores
-   * @param data - Objeto com valores a converter
-   * @param keys - Chaves do objeto que contêm valores monetários
-   * @param fromCurrency - Moeda de origem
-   * @returns Novo objeto com valores convertidos
-   */
   const convertObject = useCallback(
     async (
       data: Record<string, any>,
@@ -111,13 +88,6 @@ export function useCurrencyConversion() {
     [convertAmount]
   );
 
-  /**
-   * Converte um array de objetos
-   * @param data - Array de objetos com valores a converter
-   * @param keys - Chaves que contêm valores monetários
-   * @param fromCurrency - Moeda de origem
-   * @returns Array com valores convertidos
-   */
   const convertArray = useCallback(
     async (
       data: Record<string, any>[],
@@ -131,12 +101,6 @@ export function useCurrencyConversion() {
     [convertObject]
   );
 
-  /**
-   * Converte dados financeiros completos
-   * @param summary - Resumo financeiro com totais
-   * @param fromCurrency - Moeda de origem
-   * @returns Resumo com valores convertidos
-   */
   const convertFinancialSummary = useCallback(
     async (summary: any, fromCurrency: string) => {
       const keysToConvert = [
@@ -147,7 +111,6 @@ export function useCurrencyConversion() {
 
       const converted = await convertObject(summary, keysToConvert, fromCurrency);
 
-      // Converter dados mensais
       if (converted.monthlyData && Array.isArray(converted.monthlyData)) {
         converted.monthlyData = await convertArray(
           converted.monthlyData,
@@ -156,7 +119,6 @@ export function useCurrencyConversion() {
         );
       }
 
-      // Converter dados por categoria (income e expense)
       if (converted.spendingByCategory && Array.isArray(converted.spendingByCategory)) {
         converted.spendingByCategory = await convertArray(
           converted.spendingByCategory,
@@ -165,7 +127,6 @@ export function useCurrencyConversion() {
         );
       }
 
-      // Converter incomeByCategory e expenseByCategory
       if (converted.incomeByCategory) {
         const incomeKeys = Object.keys(converted.incomeByCategory);
         for (const key of incomeKeys) {
@@ -191,12 +152,6 @@ export function useCurrencyConversion() {
     [convertObject, convertArray, convertAmount]
   );
 
-  /**
-   * Converte um array de transações
-   * @param transactions - Array de transações
-   * @param fromCurrency - Moeda de origem
-   * @returns Transações com valores convertidos
-   */
   const convertTransactions = useCallback(
     async (transactions: any[], fromCurrency: string) => {
       return convertArray(
@@ -208,12 +163,6 @@ export function useCurrencyConversion() {
     [convertArray]
   );
 
-  /**
-   * Formata um valor na moeda alvo do usuário
-   * @param amount - Valor a formatar
-   * @param showSymbol - Mostrar símbolo da moeda
-   * @returns Valor formatado
-   */
   const formatInTargetCurrency = useCallback(
     (amount: number, showSymbol: boolean = true) => {
       return formatCurrency(amount, preferences.currency);
@@ -221,29 +170,23 @@ export function useCurrencyConversion() {
     [preferences.currency, formatCurrency]
   );
 
-  /**
-   * Obtém a moeda atual do usuário
-   */
   const getCurrentCurrency = useCallback(() => {
     return preferences.currency;
   }, [preferences.currency]);
 
   return {
-    // Conversão
+
     convertAmount,
     convertObject,
     convertArray,
     convertFinancialSummary,
     convertTransactions,
-    
-    // Formatação
+
     formatInTargetCurrency,
-    
-    // Informações
+
     getCurrentCurrency,
     getSupportedCurrencies,
-    
-    // Estado
+
     currentCurrency: preferences.currency,
   };
 }

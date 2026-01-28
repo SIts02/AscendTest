@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, Mail } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-// Regex for strict email validation
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-// Reset password schema
 const resetPasswordSchema = z.object({
   email: z.string().regex(emailRegex, { message: "Digite um endereço de email válido" }),
 });
@@ -22,7 +19,7 @@ export const ResetPasswordDialog = () => {
   const { resetPassword } = useAuth();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -66,11 +63,11 @@ export const ResetPasswordDialog = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="email" 
-                      placeholder="seu@email.com" 
+                    <Input
+                      type="email"
+                      placeholder="seu@email.com"
                       className="rounded-xl"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

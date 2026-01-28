@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,7 +28,7 @@ export function useCategories() {
 
   const fetchCategories = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -53,7 +52,6 @@ export function useCategories() {
     fetchCategories();
   }, [fetchCategories]);
 
-  // Real-time subscription for cross-tab sync
   useEffect(() => {
     if (!user) return;
 
@@ -96,8 +94,7 @@ export function useCategories() {
 
   const addCategory = async (categoryData: CategoryFormData) => {
     if (!user) return null;
-    
-    // Create optimistic category with temporary ID
+
     const tempId = `temp-${Date.now()}`;
     const optimisticCategory: Category = {
       id: tempId,
@@ -109,7 +106,6 @@ export function useCategories() {
       created_at: new Date().toISOString()
     };
 
-    // Optimistic update - add immediately to UI
     setCategories(prev => {
       const updated = [...prev, optimisticCategory];
       return updated.sort((a, b) => a.name.localeCompare(b.name));
@@ -130,17 +126,16 @@ export function useCategories() {
         .select();
 
       if (error) throw error;
-      
-      // Replace optimistic category with real one
+
       const realCategory = data[0] as unknown as Category;
-      setCategories(prev => 
+      setCategories(prev =>
         prev.map(c => c.id === tempId ? realCategory : c)
       );
 
       toast.success('Categoria criada com sucesso!');
       return realCategory;
     } catch (err: any) {
-      // Rollback optimistic update on error
+
       setCategories(prev => prev.filter(c => c.id !== tempId));
       console.error('Erro ao adicionar categoria:', err);
       toast.error('Erro ao criar categoria');
@@ -150,12 +145,10 @@ export function useCategories() {
 
   const updateCategory = async (id: string, categoryData: Partial<CategoryFormData>) => {
     if (!user) return false;
-    
-    // Store previous state for rollback
+
     const previousCategories = [...categories];
-    
-    // Optimistic update
-    setCategories(prev => 
+
+    setCategories(prev =>
       prev.map(c => {
         if (c.id === id) {
           return {
@@ -171,13 +164,13 @@ export function useCategories() {
     );
 
     try {
-      const updateData: { 
-        name?: string; 
-        type?: string; 
-        color?: string | null; 
-        icon?: string | null 
+      const updateData: {
+        name?: string;
+        type?: string;
+        color?: string | null;
+        icon?: string | null
       } = {};
-      
+
       if (categoryData.name !== undefined) updateData.name = categoryData.name;
       if (categoryData.type !== undefined) updateData.type = categoryData.type;
       if (categoryData.color !== undefined) updateData.color = categoryData.color;
@@ -189,11 +182,11 @@ export function useCategories() {
         .eq('id', id as any);
 
       if (error) throw error;
-      
+
       toast.success('Categoria atualizada com sucesso!');
       return true;
     } catch (err: any) {
-      // Rollback on error
+
       setCategories(previousCategories);
       console.error('Erro ao atualizar categoria:', err);
       toast.error('Erro ao atualizar categoria');
@@ -203,11 +196,9 @@ export function useCategories() {
 
   const deleteCategory = async (id: string) => {
     if (!user) return false;
-    
-    // Store previous state for rollback
+
     const previousCategories = [...categories];
-    
-    // Optimistic update - remove immediately
+
     setCategories(prev => prev.filter(c => c.id !== id));
 
     try {
@@ -217,11 +208,11 @@ export function useCategories() {
         .eq('id', id as any);
 
       if (error) throw error;
-      
+
       toast.success('Categoria excluída com sucesso!');
       return true;
     } catch (err: any) {
-      // Rollback on error
+
       setCategories(previousCategories);
       console.error('Erro ao excluir categoria:', err);
       toast.error('Erro ao excluir categoria');

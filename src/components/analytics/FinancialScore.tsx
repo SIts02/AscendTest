@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Target, 
-  PiggyBank, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Target,
+  PiggyBank,
   BarChart3,
   Wallet,
   Info
@@ -88,7 +88,7 @@ const FinancialScore = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Overall Score */}
+          {}
           <div className="text-center space-y-4">
             <motion.div
               initial={{ scale: 0 }}
@@ -97,7 +97,7 @@ const FinancialScore = () => {
               className="relative w-32 h-32 mx-auto"
             >
               <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
-                {/* Background circle */}
+                {}
                 <circle
                   cx="60"
                   cy="60"
@@ -107,7 +107,7 @@ const FinancialScore = () => {
                   fill="none"
                   className="text-muted"
                 />
-                {/* Progress circle */}
+                {}
                 <motion.circle
                   cx="60"
                   cy="60"
@@ -138,10 +138,10 @@ const FinancialScore = () => {
                 </div>
               </div>
             </motion.div>
-            
+
             <div className="space-y-2">
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={`${getScoreColor(financialScore.overall)} border-current`}
               >
                 {getScoreLabel(financialScore.overall)}
@@ -152,7 +152,7 @@ const FinancialScore = () => {
             </div>
           </div>
 
-          {/* Score Breakdown */}
+          {}
           <div className="space-y-4">
             <h4 className="font-semibold text-foreground">Detalhamento do Score</h4>
             <div className="space-y-3">
@@ -182,11 +182,11 @@ const FinancialScore = () => {
                     </span>
                   </div>
                   <div className="relative">
-                    <Progress 
-                      value={metric.value} 
+                    <Progress
+                      value={metric.value}
                       className="h-2"
                     />
-                    <div 
+                    <div
                       className={`absolute top-0 left-0 h-2 rounded-full transition-all duration-1000 ${getProgressColor(metric.value)}`}
                       style={{ width: `${metric.value}%` }}
                     />
@@ -196,7 +196,7 @@ const FinancialScore = () => {
             </div>
           </div>
 
-          {/* Tips for Improvement */}
+          {}
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
             <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
               💡 Dicas para Melhorar

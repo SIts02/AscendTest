@@ -10,12 +10,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGoals } from '@/hooks/useGoals';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Check, 
-  User, 
-  Settings, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  User,
+  Settings,
   Target,
   Sparkles,
   Sun,
@@ -29,33 +29,28 @@ const OnboardingWizard: React.FC = () => {
   const { user } = useAuth();
   const { isFirstLogin, completeOnboarding } = useOnboarding();
   const { createGoal, isCreating } = useGoals();
-  
+
   const [step, setStep] = useState(0);
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Step 1: Profile data
   const [name, setName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
-  // Step 2: Preferences
   const [currency, setCurrency] = useState('BRL');
   const [language, setLanguage] = useState('pt-BR');
   const [theme, setTheme] = useState('system');
 
-  // Step 3: First goal
   const [goalName, setGoalName] = useState('');
   const [goalTarget, setGoalTarget] = useState('');
   const [goalCategory, setGoalCategory] = useState('savings');
 
-  // Initialize with user data
   useEffect(() => {
     if (user?.user_metadata?.name) {
       setName(user.user_metadata.name);
     }
   }, [user]);
 
-  // Show dialog when first login
   useEffect(() => {
     if (isFirstLogin) {
       setOpen(true);
@@ -89,13 +84,13 @@ const OnboardingWizard: React.FC = () => {
 
   const handleNextStep = async () => {
     if (step === 0) {
-      // Save profile
+
       await saveProfile();
     } else if (step === 1) {
-      // Save preferences
+
       await savePreferences();
     }
-    
+
     if (step < steps.length - 1) {
       setStep((current) => current + 1);
     } else {
@@ -105,16 +100,16 @@ const OnboardingWizard: React.FC = () => {
 
   const saveProfile = async () => {
     if (!user?.id) return;
-    
+
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           name,
           avatar_url: avatarUrl || null,
         })
         .eq('id', user.id);
-      
+
       if (error) throw error;
     } catch (error: any) {
       console.error('Error saving profile:', error);
@@ -123,9 +118,9 @@ const OnboardingWizard: React.FC = () => {
 
   const savePreferences = async () => {
     if (!user?.id) return;
-    
+
     try {
-      // Check if preferences exist
+
       const { data: existingPrefs } = await supabase
         .from('user_preferences')
         .select('id')
@@ -143,10 +138,8 @@ const OnboardingWizard: React.FC = () => {
           .insert({ user_id: user.id, currency, language, theme });
       }
 
-      // Apply language change immediately
       i18n.changeLanguage(language);
-      
-      // Apply theme change
+
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
       } else if (theme === 'light') {
@@ -159,9 +152,9 @@ const OnboardingWizard: React.FC = () => {
 
   const handleFinish = async () => {
     setIsSubmitting(true);
-    
+
     try {
-      // Create first goal if provided
+
       if (goalName && goalTarget) {
         createGoal({
           name: goalName,
@@ -171,7 +164,6 @@ const OnboardingWizard: React.FC = () => {
         });
       }
 
-      // Mark onboarding as complete
       completeOnboarding();
       setOpen(false);
       toast.success('Bem-vindo ao MoMoney! 🎉');
@@ -195,9 +187,9 @@ const OnboardingWizard: React.FC = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-background rounded-2xl">
         <div className="relative">
-          {/* Progress bar */}
+          {}
           <div className="absolute top-0 left-0 w-full h-1 bg-muted">
-            <motion.div 
+            <motion.div
               className="h-full bg-primary"
               initial={{ width: 0 }}
               animate={{ width: `${((step + 1) / steps.length) * 100}%` }}
@@ -205,7 +197,7 @@ const OnboardingWizard: React.FC = () => {
             />
           </div>
 
-          {/* Skip button */}
+          {}
           <Button
             variant="ghost"
             size="sm"
@@ -216,23 +208,23 @@ const OnboardingWizard: React.FC = () => {
           </Button>
 
           <div className="pt-10 px-6 pb-6">
-            {/* Step indicator */}
+            {}
             <div className="flex justify-center space-x-2 mb-6">
               {steps.map((_, index) => (
                 <div
                   key={index}
                   className={`h-2 rounded-full transition-all ${
-                    index === step 
-                      ? 'w-8 bg-primary' 
-                      : index < step 
-                        ? 'w-2 bg-primary/60' 
+                    index === step
+                      ? 'w-8 bg-primary'
+                      : index < step
+                        ? 'w-2 bg-primary/60'
                         : 'w-2 bg-muted'
                   }`}
                 />
               ))}
             </div>
 
-            {/* Header */}
+            {}
             <div className="text-center mb-6">
               <motion.div
                 key={`icon-${step}`}
@@ -246,7 +238,7 @@ const OnboardingWizard: React.FC = () => {
               <p className="text-muted-foreground mt-1">{steps[step].description}</p>
             </div>
 
-            {/* Step content */}
+            {}
             <AnimatePresence mode="wait">
               <motion.div
                 key={step}
@@ -273,7 +265,7 @@ const OnboardingWizard: React.FC = () => {
                         id="avatar"
                         value={avatarUrl}
                         onChange={(e) => setAvatarUrl(e.target.value)}
-                        placeholder="https://..."
+                        placeholder="https:
                       />
                     </div>
                   </>
@@ -294,7 +286,7 @@ const OnboardingWizard: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label>Idioma</Label>
                       <Select value={language} onValueChange={setLanguage}>
@@ -344,7 +336,7 @@ const OnboardingWizard: React.FC = () => {
                         Metas ajudam a manter o foco nas suas conquistas!
                       </span>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="goal-name">Nome da meta (opcional)</Label>
                       <Input
@@ -354,7 +346,7 @@ const OnboardingWizard: React.FC = () => {
                         placeholder="Ex: Fundo de emergência"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label>Categoria</Label>
                       <Select value={goalCategory} onValueChange={setGoalCategory}>
@@ -371,7 +363,7 @@ const OnboardingWizard: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="goal-target">Valor alvo (R$)</Label>
                       <Input
@@ -388,7 +380,7 @@ const OnboardingWizard: React.FC = () => {
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation buttons */}
+            {}
             <div className="flex justify-between gap-4 mt-8">
               <Button
                 variant="outline"
@@ -399,8 +391,8 @@ const OnboardingWizard: React.FC = () => {
                 <ChevronLeft className="mr-2 h-4 w-4" />
                 Voltar
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={handleNextStep}
                 disabled={isSubmitting || isCreating}
               >

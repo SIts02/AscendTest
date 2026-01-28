@@ -69,10 +69,9 @@ export const useReports = () => {
   const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
   const [schedules, setSchedules] = useState<ReportSchedule[]>([]);
 
-  // Fetch all reports data
   const fetchReportsData = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       const [templatesResult, savedResult, schedulesResult] = await Promise.all([
@@ -96,7 +95,6 @@ export const useReports = () => {
     }
   };
 
-  // Generate report data based on filters
   const generateReportData = async (filters: ReportFilters) => {
     if (!user) return null;
 
@@ -106,7 +104,6 @@ export const useReports = () => {
         categories (name, type, color, icon)
       `).eq('user_id', user.id);
 
-      // Apply date filter
       if (filters.dateRange.start) {
         query = query.gte('date', filters.dateRange.start);
       }
@@ -114,17 +111,14 @@ export const useReports = () => {
         query = query.lte('date', filters.dateRange.end);
       }
 
-      // Apply category filter
       if (filters.categories.length > 0) {
         query = query.in('category_id', filters.categories);
       }
 
-      // Apply transaction type filter
       if (filters.transactionTypes.length > 0) {
         query = query.in('type', filters.transactionTypes);
       }
 
-      // Apply amount range filter
       if (filters.amountRange.min !== null) {
         query = query.gte('amount', filters.amountRange.min);
       }
@@ -132,12 +126,10 @@ export const useReports = () => {
         query = query.lte('amount', filters.amountRange.max);
       }
 
-      // Apply payment method filter
       if (filters.paymentMethods.length > 0) {
         query = query.in('payment_method', filters.paymentMethods);
       }
 
-      // Apply description filter
       if (filters.description) {
         query = query.ilike('description', `%${filters.description}%`);
       }
@@ -153,7 +145,6 @@ export const useReports = () => {
     }
   };
 
-  // Create template
   const createTemplate = async (data: Omit<ReportTemplate, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return;
 
@@ -187,7 +178,6 @@ export const useReports = () => {
     return result;
   };
 
-  // Save report
   const saveReport = async (data: Omit<SavedReport, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return;
 
@@ -221,7 +211,6 @@ export const useReports = () => {
     return result;
   };
 
-  // Delete saved report
   const deleteSavedReport = async (id: string) => {
     const result = await executeSecurely(
       {
@@ -252,7 +241,6 @@ export const useReports = () => {
     return result;
   };
 
-  // Export to CSV
   const exportToCSV = async (data: any[], filename: string) => {
     await executeSecurely(
       {
@@ -296,7 +284,6 @@ export const useReports = () => {
     );
   };
 
-  // Calculate report statistics
   const calculateReportStats = (transactions: any[]) => {
     const totalIncome = transactions
       .filter(t => t.type === 'income')
@@ -338,13 +325,12 @@ export const useReports = () => {
   }, [user]);
 
   return {
-    // Data
+
     templates,
     savedReports,
     schedules,
     loading,
 
-    // Methods
     fetchReportsData,
     generateReportData,
     createTemplate,

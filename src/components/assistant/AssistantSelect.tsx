@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type Assistant } from "@/types/assistant";
@@ -18,8 +17,8 @@ const AssistantSelect = ({ assistants, activeAssistant, onSelectAssistant }: Ass
           variant={activeAssistant.id === assistant.id ? "default" : "outline"}
           className={cn(
             "w-full justify-start h-auto py-3 transition-all duration-300 whitespace-normal text-left",
-            activeAssistant.id === assistant.id 
-              ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md" 
+            activeAssistant.id === assistant.id
+              ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md"
               : `border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20`
           )}
           onClick={() => onSelectAssistant(assistant)}

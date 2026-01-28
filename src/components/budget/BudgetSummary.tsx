@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -12,11 +11,10 @@ interface BudgetSummaryProps {
 const BudgetSummary: React.FC<BudgetSummaryProps> = ({ budgetCategories }) => {
   const { formatCurrency } = useFormatters();
 
-  // Calculate total budget data
   const totalBudgetMax = budgetCategories.reduce((acc, cat) => acc + cat.max_amount, 0);
   const totalBudgetUsed = budgetCategories.reduce((acc, cat) => acc + cat.current_amount, 0);
-  const totalPercentUsed = totalBudgetMax > 0 
-    ? Math.round((totalBudgetUsed / totalBudgetMax) * 100) 
+  const totalPercentUsed = totalBudgetMax > 0
+    ? Math.round((totalBudgetUsed / totalBudgetMax) * 100)
     : 0;
 
   return (
@@ -26,7 +24,7 @@ const BudgetSummary: React.FC<BudgetSummaryProps> = ({ budgetCategories }) => {
       </CardHeader>
       <CardContent className="p-4">
         <div className="space-y-6">
-          {/* Total Budget */}
+          {}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-foreground">Orçamento Total</span>
@@ -34,8 +32,8 @@ const BudgetSummary: React.FC<BudgetSummaryProps> = ({ budgetCategories }) => {
                 {formatCurrency(totalBudgetUsed)} / {formatCurrency(totalBudgetMax)}
               </span>
             </div>
-            <Progress 
-              value={totalPercentUsed} 
+            <Progress
+              value={totalPercentUsed}
               className="h-3 bg-muted"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -44,7 +42,7 @@ const BudgetSummary: React.FC<BudgetSummaryProps> = ({ budgetCategories }) => {
             </div>
           </div>
 
-          {/* Status */}
+          {}
           <div className="bg-muted/50 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2 text-foreground">Status do Orçamento</h4>
             {totalPercentUsed < 50 ? (

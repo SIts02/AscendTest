@@ -43,7 +43,6 @@ export function useGoals() {
   const queryClient = useQueryClient();
   const { executeSecurely } = useSecureAction();
 
-  // Fetch all goals
   const {
     data: goals = [],
     isLoading,
@@ -66,7 +65,6 @@ export function useGoals() {
     enabled: !!user?.id,
   });
 
-  // Create goal mutation
   const createGoalMutation = useMutation({
     mutationFn: async (input: CreateGoalInput) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
@@ -115,7 +113,6 @@ export function useGoals() {
     },
   });
 
-  // Update goal mutation
   const updateGoalMutation = useMutation({
     mutationFn: async (input: UpdateGoalInput) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
@@ -130,8 +127,7 @@ export function useGoals() {
         },
         async () => {
           const { id, ...updateData } = input;
-          
-          // Auto-update status if goal is completed
+
           const goalToUpdate = goals.find(g => g.id === id);
           if (goalToUpdate && updateData.current !== undefined) {
             const newCurrent = updateData.current;
@@ -169,7 +165,6 @@ export function useGoals() {
     },
   });
 
-  // Delete goal mutation
   const deleteGoalMutation = useMutation({
     mutationFn: async (goalId: string) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
@@ -209,9 +204,8 @@ export function useGoals() {
     },
   });
 
-  // Optimistic update for progress
   const updateProgress = async (goalId: string, newCurrent: number) => {
-    // Optimistic update
+
     queryClient.setQueryData(['goals', user?.id], (oldGoals: Goal[] | undefined) => {
       if (!oldGoals) return oldGoals;
       return oldGoals.map((goal) => {
@@ -227,11 +221,9 @@ export function useGoals() {
       });
     });
 
-    // Actual mutation
     updateGoalMutation.mutate({ id: goalId, current: newCurrent });
   };
 
-  // Calculate stats
   const activeGoals = goals.filter((g) => g.status !== 'concluída');
   const completedGoals = goals.filter((g) => g.status === 'concluída');
   const totalTarget = goals.reduce((sum, g) => sum + g.target, 0);

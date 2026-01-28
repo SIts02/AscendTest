@@ -22,7 +22,7 @@ const LandingForgotPassword = () => {
       await resetPassword(email);
       setSent(true);
     } catch (error) {
-      // Error already handled in context
+
     }
     setLoading(false);
   };
