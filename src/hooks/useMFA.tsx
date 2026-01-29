@@ -30,11 +30,10 @@ export function useMFA() {
     factorId: null,
   });
 
-  // Fetch MFA factors and assurance level
   const fetchMFAStatus = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
-      
+
       const [factorsResult, aalResult] = await Promise.all([
         supabase.auth.mfa.listFactors(),
         supabase.auth.mfa.getAuthenticatorAssuranceLevel()
@@ -56,26 +55,68 @@ export function useMFA() {
     }
   }, []);
 
-  // Only fetch MFA status on initial mount, not on visibility changes
+  const cleanupUnverifiedFactors = useCallback(async () => {
+    try {
+      const factorsResult = await supabase.auth.mfa.listFactors();
+      if (factorsResult.error) throw factorsResult.error;
+
+      const unverifiedFactors = factorsResult.data?.totp?.filter(
+        (f: Factor) => f.status === 'unverified'
+      ) || [];
+
+      for (const factor of unverifiedFactors) {
+        try {
+          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+          console.log(`Removed unverified factor: ${factor.id}`);
+        } catch (error: any) {
+          console.error(`Error removing unverified factor ${factor.id}:`, error);
+
+        }
+      }
+
+      if (unverifiedFactors.length > 0) {
+        await fetchMFAStatus();
+      }
+    } catch (error: any) {
+      console.error('Error cleaning up unverified factors:', error);
+    }
+  }, [fetchMFAStatus]);
+
   useEffect(() => {
-    fetchMFAStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const initializeMFA = async () => {
+      await fetchMFAStatus();
+
+      await cleanupUnverifiedFactors();
+    };
+    initializeMFA();
+
   }, []);
 
-  // Get verified factors
   const verifiedFactors = state.factors.filter(f => f.status === 'verified');
   const hasMFAEnabled = verifiedFactors.length > 0;
 
-  // Check if user needs to verify MFA
-  const needsMFAVerification = 
-    state.currentLevel === 'aal1' && 
-    state.nextLevel === 'aal2' && 
+  const needsMFAVerification =
+    state.currentLevel === 'aal1' &&
+    state.nextLevel === 'aal2' &&
     hasMFAEnabled;
 
-  // Start MFA enrollment
   const startEnrollment = async () => {
     try {
       setState(prev => ({ ...prev, isEnrolling: true }));
+
+      const unverifiedFactors = state.factors.filter(f => f.status === 'unverified');
+      if (unverifiedFactors.length > 0) {
+        try {
+          for (const factor of unverifiedFactors) {
+            await supabase.auth.mfa.unenroll({ factorId: factor.id });
+          }
+
+          await fetchMFAStatus();
+        } catch (cleanupError: any) {
+          console.error('Error cleaning up unverified factors:', cleanupError);
+
+        }
+      }
 
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
@@ -96,13 +137,19 @@ export function useMFA() {
       return { success: true, data };
     } catch (error: any) {
       console.error('Error starting MFA enrollment:', error);
-      toast.error(error.message || 'Erro ao iniciar configuração de 2FA');
+      const errorMessage = error.message || 'Erro ao iniciar configuração de 2FA';
+
+      if (errorMessage.includes('already') || errorMessage.includes('exists')) {
+        toast.error('Detectamos uma configuração 2FA anterior incompleta. Tente novamente em alguns segundos ou entre em contato com o suporte.');
+      } else {
+        toast.error(errorMessage);
+      }
+
       setState(prev => ({ ...prev, isEnrolling: false }));
       return { success: false, error };
     }
   };
 
-  // Verify and complete enrollment
   const verifyEnrollment = async (code: string) => {
     if (!state.factorId) {
       toast.error('Nenhum fator para verificar');
@@ -121,14 +168,13 @@ export function useMFA() {
         setState(prev => ({ ...prev, isVerifying: true }));
 
         try {
-          // Create a challenge
-          const { data: challengeData, error: challengeError } = 
+
+          const { data: challengeData, error: challengeError } =
             await supabase.auth.mfa.challenge({ factorId: state.factorId! });
 
           if (challengeError) throw challengeError;
 
-          // Verify the code
-          const { data: verifyData, error: verifyError } = 
+          const { data: verifyData, error: verifyError } =
             await supabase.auth.mfa.verify({
               factorId: state.factorId!,
               challengeId: challengeData.id,
@@ -137,7 +183,6 @@ export function useMFA() {
 
           if (verifyError) throw verifyError;
 
-          // Reset enrollment state and refresh factors
           setState(prev => ({
             ...prev,
             qrCode: null,
@@ -165,7 +210,6 @@ export function useMFA() {
     return result;
   };
 
-  // Challenge and verify for login
   const challengeAndVerify = async (factorId: string, code: string) => {
     const result = await executeSecurely(
       {
@@ -178,14 +222,12 @@ export function useMFA() {
       async () => {
         setState(prev => ({ ...prev, isVerifying: true }));
 
-        // Create a challenge
-        const { data: challengeData, error: challengeError } = 
+        const { data: challengeData, error: challengeError } =
           await supabase.auth.mfa.challenge({ factorId });
 
         if (challengeError) throw challengeError;
 
-        // Verify the code
-        const { data: verifyData, error: verifyError } = 
+        const { data: verifyData, error: verifyError } =
           await supabase.auth.mfa.verify({
             factorId,
             challengeId: challengeData.id,
@@ -209,8 +251,7 @@ export function useMFA() {
     return result;
   };
 
-  // Unenroll a factor
-  const unenrollFactor = async (factorId: string, verificationCode?: string) => {
+  const unenrollFactor = async (factorId: string) => {
     const result = await executeSecurely(
       {
         endpoint: 'mfa/unenroll',
@@ -220,23 +261,6 @@ export function useMFA() {
         windowMinutes: 1
       },
       async () => {
-        // If verification code is provided, verify it first
-        if (verificationCode) {
-          const { data: challengeData, error: challengeError } = 
-            await supabase.auth.mfa.challenge({ factorId });
-
-          if (challengeError) throw challengeError;
-
-          const { data: verifyData, error: verifyError } = 
-            await supabase.auth.mfa.verify({
-              factorId,
-              challengeId: challengeData.id,
-              code: verificationCode,
-            });
-
-          if (verifyError) throw verifyError;
-        }
-
         const { error } = await supabase.auth.mfa.unenroll({ factorId });
         if (error) throw error;
 
@@ -254,11 +278,10 @@ export function useMFA() {
     return result;
   };
 
-  // Cancel enrollment
   const cancelEnrollment = async () => {
     if (state.factorId) {
       try {
-        // Only unenroll if factor exists and is unverified
+
         const response = await supabase.auth.mfa.unenroll({ factorId: state.factorId });
         if (!response.error) {
           console.log('Unverified factor removed successfully');
@@ -267,7 +290,7 @@ export function useMFA() {
         console.error('Error canceling enrollment:', e);
       }
     }
-    // Clear local state
+
     setState(prev => ({
       ...prev,
       qrCode: null,
@@ -276,7 +299,7 @@ export function useMFA() {
       isEnrolling: false,
       isVerifying: false,
     }));
-    // Refresh status to ensure factors list is up to date
+
     await fetchMFAStatus();
   };
 
@@ -291,5 +314,6 @@ export function useMFA() {
     unenrollFactor,
     cancelEnrollment,
     refreshStatus: fetchMFAStatus,
+    cleanupUnverifiedFactors,
   };
 }

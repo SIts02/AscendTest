@@ -27,11 +27,10 @@ export function ImportCSV({
   const [mappings, setMappings] = useState<Record<string, string>>({});
   const [headers, setHeaders] = useState<string[]>([]);
 
-  // CSV parser function
   const parseCSV = (text: string): string[][] => {
     const lines = text.split('\n');
     return lines.map(line => {
-      // Handle quoted values with commas inside them
+
       const result = [];
       let inQuote = false;
       let currentValue = '';
@@ -47,18 +46,15 @@ export function ImportCSV({
         }
       }
 
-      // Add the last value
       result.push(currentValue);
       return result;
     }).filter(row => row.some(cell => cell.trim() !== ''));
   };
 
-  // Guess the correct mappings based on header names
   const guessMappings = (headers: string[]): Record<string, string> => {
     const result: Record<string, string> = {};
     const lowerHeaders = headers.map(h => h.toLowerCase().trim());
 
-    // Map for description
     const descriptionKeywords = ['descrição', 'descricao', 'desc', 'nome', 'title', 'titulo'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (descriptionKeywords.some(keyword => lowerHeaders[i].includes(keyword))) {
@@ -67,7 +63,6 @@ export function ImportCSV({
       }
     }
 
-    // Map for amount
     const amountKeywords = ['valor', 'amount', 'price', 'preço', 'preco'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (amountKeywords.some(keyword => lowerHeaders[i].includes(keyword))) {
@@ -76,7 +71,6 @@ export function ImportCSV({
       }
     }
 
-    // Map for date
     const dateKeywords = ['data', 'date', 'dia', 'vencimento'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (dateKeywords.some(keyword => lowerHeaders[i].includes(keyword))) {
@@ -85,7 +79,6 @@ export function ImportCSV({
       }
     }
 
-    // Map for category
     const categoryKeywords = ['categoria', 'category', 'tipo', 'type'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (categoryKeywords.some(keyword => lowerHeaders[i].includes(keyword))) {
@@ -94,7 +87,6 @@ export function ImportCSV({
       }
     }
 
-    // Map for type (income/expense)
     const typeKeywords = ['tipo', 'type', 'natureza', 'nature'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (typeKeywords.some(keyword => lowerHeaders[i].includes(keyword)) && !result['category']) {
@@ -103,7 +95,6 @@ export function ImportCSV({
       }
     }
 
-    // Map for payment method
     const methodKeywords = ['pagamento', 'payment', 'método', 'metodo', 'method'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (methodKeywords.some(keyword => lowerHeaders[i].includes(keyword))) {
@@ -112,7 +103,6 @@ export function ImportCSV({
       }
     }
 
-    // Map for status
     const statusKeywords = ['status', 'situação', 'situacao', 'state'];
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (statusKeywords.some(keyword => lowerHeaders[i].includes(keyword))) {
@@ -123,7 +113,6 @@ export function ImportCSV({
     return result;
   };
 
-  // Process uploaded file
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setError(null);
@@ -145,21 +134,18 @@ export function ImportCSV({
       const headers = parsedData[0].map(header => header.trim().replace(/^"|"$/g, ''));
       setHeaders(headers);
 
-      // Guess initial mappings
       const guessedMappings = guessMappings(headers);
       setMappings(guessedMappings);
 
-      // Generate preview with the first few rows
       const previewData = parsedData.slice(1, Math.min(6, parsedData.length)).map(row => {
         const transaction: Partial<TransactionFormData> = {};
 
-        // Apply mappings to create transaction objects
         headers.forEach((header, index) => {
           const value = row[index]?.trim().replace(/^"|"$/g, '') || '';
           if (guessedMappings.description === header) transaction.description = value;
           if (guessedMappings.amount === header) transaction.amount = parseFloat(value.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
           if (guessedMappings.date === header) {
-            // Try to parse the date in various formats
+
             let date: Date | null = null;
             const dateParsers = [(str: string) => parse(str, 'dd/MM/yyyy', new Date()), (str: string) => parse(str, 'yyyy-MM-dd', new Date()), (str: string) => parse(str, 'MM/dd/yyyy', new Date()), (str: string) => new Date(str)];
             for (const parser of dateParsers) {
@@ -167,12 +153,12 @@ export function ImportCSV({
                 date = parser(value);
                 if (isValid(date)) break;
               } catch (e) {
-                // Continue to next parser
+
               }
             }
             transaction.date = date && isValid(date) ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
           }
-          if (guessedMappings.category === header) transaction.category_id = value; // Will need to be mapped to actual IDs later
+          if (guessedMappings.category === header) transaction.category_id = value;
           if (guessedMappings.type === header) {
             const lowerValue = value.toLowerCase();
             if (lowerValue.includes('receita') || lowerValue.includes('entrada') || lowerValue.includes('income') || lowerValue.includes('+')) {
@@ -180,7 +166,7 @@ export function ImportCSV({
             } else if (lowerValue.includes('despesa') || lowerValue.includes('saída') || lowerValue.includes('expense') || lowerValue.includes('-')) {
               transaction.type = 'expense';
             } else {
-              // Default to expense if unclear
+
               transaction.type = 'expense';
             }
           }
@@ -209,12 +195,11 @@ export function ImportCSV({
             } else if (lowerValue.includes('agendado') || lowerValue.includes('scheduled')) {
               transaction.status = 'scheduled';
             } else {
-              transaction.status = 'completed'; // Default status
+              transaction.status = 'completed';
             }
           }
         });
 
-        // Set defaults for any missing required fields
         if (!transaction.description) transaction.description = 'Importado do CSV';
         if (!transaction.amount) transaction.amount = 0;
         if (!transaction.date) transaction.date = format(new Date(), 'yyyy-MM-dd');
@@ -239,17 +224,15 @@ export function ImportCSV({
       const parsedData = parseCSV(text);
       const headers = parsedData[0].map(header => header.trim().replace(/^"|"$/g, ''));
 
-      // Process all rows except header
       const transactions = parsedData.slice(1).map(row => {
         const transaction: Partial<TransactionFormData> = {};
 
-        // Apply mappings to create transaction objects
         headers.forEach((header, index) => {
           const value = row[index]?.trim().replace(/^"|"$/g, '') || '';
           if (mappings.description === header) transaction.description = value;
           if (mappings.amount === header) transaction.amount = parseFloat(value.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
           if (mappings.date === header) {
-            // Try to parse the date in various formats
+
             let date: Date | null = null;
             const dateParsers = [(str: string) => parse(str, 'dd/MM/yyyy', new Date()), (str: string) => parse(str, 'yyyy-MM-dd', new Date()), (str: string) => parse(str, 'MM/dd/yyyy', new Date()), (str: string) => new Date(str)];
             for (const parser of dateParsers) {
@@ -257,12 +240,12 @@ export function ImportCSV({
                 date = parser(value);
                 if (isValid(date)) break;
               } catch (e) {
-                // Continue to next parser
+
               }
             }
             transaction.date = date && isValid(date) ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
           }
-          if (mappings.category === header) transaction.category_id = null; // Categories would need to be mapped to actual IDs
+          if (mappings.category === header) transaction.category_id = null;
           if (mappings.type === header) {
             const lowerValue = value.toLowerCase();
             if (lowerValue.includes('receita') || lowerValue.includes('entrada') || lowerValue.includes('income') || lowerValue.includes('+')) {
@@ -303,7 +286,6 @@ export function ImportCSV({
           }
         });
 
-        // Set defaults for any missing required fields
         if (!transaction.description) transaction.description = 'Importado do CSV';
         if (!transaction.amount) transaction.amount = 0;
         if (!transaction.date) transaction.date = format(new Date(), 'yyyy-MM-dd');
@@ -315,7 +297,6 @@ export function ImportCSV({
         throw new Error('Nenhuma transação encontrada no arquivo.');
       }
 
-      // Filter out transactions with amount 0 or empty description
       const validTransactions = transactions.filter(t => t.amount > 0 && t.description && t.description.trim() !== '');
       if (validTransactions.length === 0) {
         throw new Error('Nenhuma transação válida encontrada no arquivo.');
@@ -323,7 +304,6 @@ export function ImportCSV({
       await onImport(validTransactions);
       toast.success(`${validTransactions.length} transações importadas com sucesso!`);
 
-      // Reset state
       setFile(null);
       setPreview([]);
       setStep('upload');
@@ -349,12 +329,12 @@ export function ImportCSV({
             Importe suas transações de um arquivo CSV. Os dados serão analisados e adicionados à sua lista de transações.
           </DialogDescription>
         </DialogHeader>
-        
+
         {error && <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>}
-        
+
         {step === 'upload' && <div className="grid gap-4">
             <div className="border-2 border-dashed rounded-md p-10 text-center">
               <FileSpreadsheet className="mx-auto h-10 w-10 text-gray-400 mb-4" />
@@ -373,7 +353,7 @@ export function ImportCSV({
               </label>
             </div>
           </div>}
-        
+
         {step === 'preview' && <div className="grid gap-6">
             <div className="flex items-center justify-between">
               <div>
@@ -388,7 +368,7 @@ export function ImportCSV({
                 Alterar arquivo
               </Button>
             </div>
-            
+
             <div>
               <h3 className="text-md font-medium mb-2">Pré-visualização dos dados</h3>
               <div className="border rounded-md max-h-[300px] overflow-auto">
@@ -432,7 +412,7 @@ export function ImportCSV({
               </div>
             </div>
           </div>}
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
             Cancelar

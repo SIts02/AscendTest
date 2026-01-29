@@ -1,26 +1,26 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
   Tooltip,
-  Legend 
+  Legend
 } from 'recharts';
 import { PieChartIcon } from "lucide-react";
 import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
 import { useFormatters } from '@/hooks/useFormatters';
 
 const COLORS = [
-  'hsl(221, 83%, 53%)', // Blue
-  'hsl(217, 98%, 53%)', // Blue
-  'hsl(142, 76%, 36%)', // Green
-  'hsl(38, 92%, 50%)',  // Orange
-  'hsl(0, 84%, 60%)',   // Red
-  'hsl(199, 89%, 48%)', // Cyan
-  'hsl(340, 82%, 52%)', // Pink
-  'hsl(25, 95%, 53%)',  // Amber
+  'hsl(221, 83%, 53%)',
+  'hsl(217, 98%, 53%)',
+  'hsl(142, 76%, 36%)',
+  'hsl(38, 92%, 50%)',
+  'hsl(0, 84%, 60%)',
+  'hsl(199, 89%, 48%)',
+  'hsl(340, 82%, 52%)',
+  'hsl(25, 95%, 53%)',
 ];
 
 const CategoryDistributionChart = () => {
@@ -39,12 +39,12 @@ const CategoryDistributionChart = () => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const percentage = total > 0 ? (data.value / total) * 100 : 0;
-      
+
       return (
         <div className="bg-background border border-border p-3 rounded-lg shadow-lg">
           <div className="flex items-center gap-2 mb-1">
-            <div 
-              className="w-3 h-3 rounded-full" 
+            <div
+              className="w-3 h-3 rounded-full"
               style={{ backgroundColor: data.color }}
             />
             <span className="font-medium">{data.name}</span>
@@ -60,8 +60,8 @@ const CategoryDistributionChart = () => {
   };
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
-    if (percent < 0.05) return null; // Don't show label for slices < 5%
-    
+    if (percent < 0.05) return null;
+
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -116,13 +116,13 @@ const CategoryDistributionChart = () => {
                 <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
-            
-            {/* Legend */}
+
+            {}
             <div className="grid grid-cols-2 gap-2 w-full lg:w-auto">
               {chartData.map((item, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
-                  <div 
-                    className="w-3 h-3 rounded-full flex-shrink-0" 
+                  <div
+                    className="w-3 h-3 rounded-full flex-shrink-0"
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="truncate">{item.name}</span>
@@ -131,8 +131,8 @@ const CategoryDistributionChart = () => {
             </div>
           </div>
         )}
-        
-        {/* Total */}
+
+        {}
         {chartData.length > 0 && (
           <div className="mt-4 pt-4 border-t text-center">
             <p className="text-sm text-muted-foreground">Total de despesas</p>

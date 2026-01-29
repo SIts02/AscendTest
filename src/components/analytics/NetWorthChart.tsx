@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Area,
   AreaChart
@@ -19,10 +19,9 @@ const NetWorthChart = () => {
   const { summary } = useConvertedFinancialData();
   const { formatCurrency } = useFormatters();
 
-  // Calculate cumulative net worth over time
   const chartData = useMemo(() => {
     let cumulativeBalance = 0;
-    
+
     return summary.monthlyData.map((item) => {
       cumulativeBalance += item.balance;
       return {
@@ -36,8 +35,8 @@ const NetWorthChart = () => {
   const latestNetWorth = chartData[chartData.length - 1]?.netWorth || 0;
   const previousNetWorth = chartData[chartData.length - 2]?.netWorth || 0;
   const change = latestNetWorth - previousNetWorth;
-  const changePercent = previousNetWorth !== 0 
-    ? ((change / Math.abs(previousNetWorth)) * 100) 
+  const changePercent = previousNetWorth !== 0
+    ? ((change / Math.abs(previousNetWorth)) * 100)
     : 0;
   const isPositive = latestNetWorth >= 0;
   const isGrowing = change >= 0;
@@ -79,8 +78,8 @@ const NetWorthChart = () => {
             )}
             Evolução do Patrimônio
           </CardTitle>
-          
-          {/* Current Net Worth */}
+
+          {}
           <div className="text-right">
             <p className={`text-2xl font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
               {formatCurrency(latestNetWorth)}
@@ -101,25 +100,25 @@ const NetWorthChart = () => {
             <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <defs>
                 <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
-                  <stop 
-                    offset="5%" 
-                    stopColor={isPositive ? "hsl(142, 76%, 36%)" : "hsl(0, 84%, 60%)"} 
+                  <stop
+                    offset="5%"
+                    stopColor={isPositive ? "hsl(142, 76%, 36%)" : "hsl(0, 84%, 60%)"}
                     stopOpacity={0.3}
                   />
-                  <stop 
-                    offset="95%" 
-                    stopColor={isPositive ? "hsl(142, 76%, 36%)" : "hsl(0, 84%, 60%)"} 
+                  <stop
+                    offset="95%"
+                    stopColor={isPositive ? "hsl(142, 76%, 36%)" : "hsl(0, 84%, 60%)"}
                     stopOpacity={0}
                   />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis 
-                dataKey="name" 
+              <XAxis
+                dataKey="name"
                 className="text-xs"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
               />
-              <YAxis 
+              <YAxis
                 className="text-xs"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => {

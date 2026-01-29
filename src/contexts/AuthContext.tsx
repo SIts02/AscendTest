@@ -27,7 +27,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  // New methods for landing pages
+
   signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
   signUpWithEmail: (email: string, password: string) => Promise<AuthResult>;
   updatePassword: (newPassword: string) => Promise<AuthResult>;
@@ -41,7 +41,6 @@ const defaultSubscription: SubscriptionInfo = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Simple audit logging function (doesn't use hooks, can be called anywhere)
 const logAuthEvent = (action: string, userId: string | undefined, metadata?: Record<string, unknown>) => {
   console.debug('[Audit]', {
     userId: userId || 'anonymous',
@@ -120,17 +119,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      
-      // Log successful login
+
       logAuthEvent('login', data.user?.id, { method: 'email', success: true });
-      
+
       const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       const { data: factorsData } = await supabase.auth.mfa.listFactors();
       const verifiedFactors = factorsData?.totp?.filter(f => f.status === 'verified') || [];
       const needsMFA = aalData?.currentLevel === 'aal1' && aalData?.nextLevel === 'aal2' && verifiedFactors.length > 0;
-      
+
       toast.success('Login realizado com sucesso!');
-      
+
       setTimeout(() => {
         if (needsMFA) window.location.href = '/#/mfa-verify';
         else window.location.href = '/#/dashboard';
@@ -147,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
-      const { error, data } = await supabase.auth.signUp({ 
+      const { error, data } = await supabase.auth.signUp({
         email, password,
         options: { data: { name } }
       });
@@ -171,7 +169,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userId = user?.id;
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
+
+      try {
+        localStorage.removeItem('user_preferences');
+
+      } catch (storageError) {
+        console.warn('Error clearing localStorage on logout:', storageError);
+
+      }
+
       logAuthEvent('logout', userId, { success: true });
       setSubscription(defaultSubscription);
       navigate('/login');
@@ -186,10 +192,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password',
+        redirectTo: `${window.location.origin}/#/reset-password`,
       });
       if (error) throw error;
-      
+
       logAuthEvent('password_reset', undefined, { email, success: true });
       toast.success('Email de recuperação enviado!');
     } catch (error: any) {
@@ -201,20 +207,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
+
+      const state = crypto.randomUUID();
+      sessionStorage.setItem('oauth_state', state);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}/dashboard` },
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+            state: state,
+          },
+
+          skipBrowserRedirect: false,
+        },
       });
+
       if (error) throw error;
-      // Note: Can't log here as OAuth redirects immediately
     } catch (error: any) {
-      logAuthEvent('login', undefined, { method: 'google', success: false, error: error.message });
-      toast.error(error.message || 'Erro ao fazer login com Google');
+      console.error('Google sign-in error:', error);
       throw error;
     }
   };
 
-  // New methods for landing pages (return { error } instead of throwing)
   const signInWithEmail = async (email: string, password: string): Promise<AuthResult> => {
     const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     if (!error && data.user) {
@@ -246,7 +263,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ 
+    <AuthContext.Provider value={{
       session, user, loading, subscription, checkSubscription,
       signIn, signUp, signOut, resetPassword, signInWithGoogle,
       signInWithEmail, signUpWithEmail, updatePassword

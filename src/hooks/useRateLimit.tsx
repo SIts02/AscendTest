@@ -11,7 +11,6 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-// Client-side rate limiting using in-memory storage
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 export function useRateLimit() {
@@ -31,7 +30,7 @@ export function useRateLimit() {
     const entry = rateLimitStore.get(key);
 
     if (!entry || now > entry.resetTime) {
-      // New window or expired
+
       rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
       return true;
     }

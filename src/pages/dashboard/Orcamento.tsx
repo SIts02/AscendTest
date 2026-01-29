@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, BarChart } from "lucide-react";
-import { CategoryForm } from "@/components/transactions/CategoryForm"; 
+import { CategoryForm } from "@/components/transactions/CategoryForm";
 import { useCategories, CategoryFormData } from "@/hooks/useCategories";
 import { useBudget } from "@/hooks/useBudget";
 import { toast } from "sonner";
@@ -19,10 +18,9 @@ const Orcamento = () => {
   const [categoryFormOpen, setCategoryFormOpen] = useState(false);
   const { addCategory } = useCategories();
   const { budgetCategories: rawBudgetCategories, loading, error, updateBudgetLimit } = useBudget();
-  
-  // Usar o hook de conversão de moeda
+
   const { convertedBudget: budgetCategories } = useConvertedBudget(rawBudgetCategories);
-  
+
   useEffect(() => {
     document.title = "MoMoney | Orçamento";
   }, []);
@@ -40,14 +38,14 @@ const Orcamento = () => {
 
   return (
     <DashboardLayout activePage="Orçamento">
-      {/* Formulário para adicionar categoria */}
-      <CategoryForm 
-        open={categoryFormOpen} 
+      {}
+      <CategoryForm
+        open={categoryFormOpen}
         onOpenChange={setCategoryFormOpen}
         onSubmit={handleAddCategory}
         isEditing={false}
       />
-      
+
       <div className="grid gap-6">
         <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between">
           <div>
@@ -62,9 +60,9 @@ const Orcamento = () => {
           </div>
         </div>
 
-        {/* Main content grid */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Budget summary card */}
+          {}
           <div className="md:col-span-1">
             {loading ? (
               <Card>
@@ -76,8 +74,8 @@ const Orcamento = () => {
               <BudgetSummary budgetCategories={budgetCategories} />
             )}
           </div>
-          
-          {/* Budget chart card */}
+
+          {}
           <div className="md:col-span-2">
             {loading ? (
               <Card>
@@ -91,7 +89,7 @@ const Orcamento = () => {
           </div>
         </div>
 
-        {/* New budget performance chart */}
+        {}
         <div className="grid grid-cols-1 gap-6">
           {loading ? (
             <Card>
@@ -104,7 +102,7 @@ const Orcamento = () => {
           )}
         </div>
 
-        {/* Budget categories grid */}
+        {}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center">
@@ -134,9 +132,9 @@ const Orcamento = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {budgetCategories.map((category) => (
-                  <BudgetCategoryCard 
-                    key={category.id} 
-                    category={category} 
+                  <BudgetCategoryCard
+                    key={category.id}
+                    category={category}
                     onUpdateLimit={updateBudgetLimit}
                   />
                 ))}

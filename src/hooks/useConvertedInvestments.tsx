@@ -11,7 +11,7 @@ interface Investment {
   ticker: string | null;
   quantity: number | null;
   average_price: number;
-  // Calculated fields from useStockQuotes
+
   currentPrice: number;
   invested: number;
   currentValue: number;
@@ -19,7 +19,7 @@ interface Investment {
   gainLossPercent: number;
   change: number;
   changePercent: string;
-  // Optional fields that might be present
+
   purchase_date?: string;
   notes?: string | null;
 }
@@ -38,15 +38,13 @@ export function useConvertedInvestments() {
   const { isLoading: rateLoading, getExchangeRate } = useCurrencyConverter();
   const [converting, setConverting] = useState(false);
   const [cachedRate, setCachedRate] = useState<number | null>(null);
-  
+
   const targetCurrency = preferences.currency || 'BRL';
 
-  // Clear cache when currency changes
   useEffect(() => {
     clearConversionCache();
   }, [targetCurrency]);
 
-  // Fetch rate for sync conversions
   useEffect(() => {
     const fetchRate = async () => {
       if (targetCurrency === 'BRL') {
@@ -65,22 +63,20 @@ export function useConvertedInvestments() {
 
   const convertPortfolio = async (portfolio: Portfolio | null): Promise<Portfolio | null> => {
     if (!portfolio) return null;
-    
-    // If same currency, no conversion needed
+
     if (targetCurrency === 'BRL') {
       return portfolio;
     }
 
     setConverting(true);
     try {
-      // Convert all monetary values in the portfolio
+
       const [totalInvested, currentValue, totalGainLoss] = await Promise.all([
         convertAmount(portfolio.totalInvested, 'BRL'),
         convertAmount(portfolio.currentValue, 'BRL'),
         convertAmount(portfolio.totalGainLoss, 'BRL'),
       ]);
 
-      // Convert each investment's monetary values
       const convertedInvestments = await Promise.all(
         portfolio.investments.map(async (inv) => {
           const [averagePrice, currentPrice, invested, currentValueInv, gainLoss] = await Promise.all([
@@ -98,9 +94,9 @@ export function useConvertedInvestments() {
             invested: invested,
             currentValue: currentValueInv,
             gainLoss: gainLoss,
-            // Change value also needs conversion if it exists
+
             change: inv.change ? await convertAmount(inv.change, 'BRL') : inv.change,
-            // Percentage values don't need conversion
+
           };
         })
       );
@@ -110,22 +106,20 @@ export function useConvertedInvestments() {
         totalInvested,
         currentValue,
         totalGainLoss,
-        // Percentage doesn't need conversion
+
         investments: convertedInvestments,
       };
     } catch (error) {
       console.error('Error converting portfolio:', error);
-      return portfolio; // Return original on error
+      return portfolio;
     } finally {
       setConverting(false);
     }
   };
 
-  // Synchronous conversion using cached rate (faster but less accurate)
   const convertPortfolioSync = (portfolio: Portfolio | null): Portfolio | null => {
     if (!portfolio) return null;
-    
-    // If same currency or no rate, return as-is
+
     if (targetCurrency === 'BRL' || !cachedRate) {
       return portfolio;
     }
@@ -149,10 +143,10 @@ export function useConvertedInvestments() {
     };
   };
 
-  return { 
-    convertPortfolio, 
+  return {
+    convertPortfolio,
     convertPortfolioSync,
-    converting, 
+    converting,
     rateLoading,
     currentCurrency: targetCurrency,
     rate: cachedRate

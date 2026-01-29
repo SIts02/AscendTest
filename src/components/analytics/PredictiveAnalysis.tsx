@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
-import { 
+import {
   Sparkles,
   TrendingUp,
   TrendingDown,
@@ -50,8 +50,8 @@ const PredictiveAnalysis = () => {
       value: predictiveAnalysis.projectedSavings,
       icon: Target,
       color: predictiveAnalysis.projectedSavings >= 0 ? "text-green-600" : "text-red-600",
-      bgColor: predictiveAnalysis.projectedSavings >= 0 ? 
-        "bg-green-50 dark:bg-green-900/20" : 
+      bgColor: predictiveAnalysis.projectedSavings >= 0 ?
+        "bg-green-50 dark:bg-green-900/20" :
         "bg-red-50 dark:bg-red-900/20"
     }
   ];
@@ -64,8 +64,8 @@ const PredictiveAnalysis = () => {
             <Sparkles className="h-5 w-5 text-blue-600" />
             <span>Análise Preditiva</span>
           </div>
-          <Badge 
-            variant="outline" 
+          <Badge
+            variant="outline"
             className={`${getConfidenceColor(predictiveAnalysis.confidence)} border-current`}
           >
             Confiança: {getConfidenceLabel(predictiveAnalysis.confidence)}
@@ -73,7 +73,7 @@ const PredictiveAnalysis = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Confidence Indicator */}
+        {}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium text-foreground">Nível de Confiança</span>
@@ -87,13 +87,13 @@ const PredictiveAnalysis = () => {
           </p>
         </div>
 
-        {/* Next Month Predictions */}
+        {}
         <div className="space-y-4">
           <div className="flex items-center space-x-2 mb-4">
             <Calendar className="h-4 w-4 text-blue-600" />
             <h4 className="font-semibold">Previsões para o Próximo Mês</h4>
           </div>
-          
+
           <div className="grid grid-cols-1 gap-4">
             {predictions.map((prediction, index) => (
               <motion.div
@@ -113,7 +113,7 @@ const PredictiveAnalysis = () => {
                         {prediction.label}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {prediction.label === "Poupança Projetada" ? 
+                        {prediction.label === "Poupança Projetada" ?
                           (prediction.value >= 0 ? "Economia esperada" : "Déficit previsto") :
                           "Baseado no histórico recente"
                         }
@@ -131,7 +131,7 @@ const PredictiveAnalysis = () => {
           </div>
         </div>
 
-        {/* Insights and Recommendations */}
+        {}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
           <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-3 flex items-center">
             <Sparkles className="h-4 w-4 mr-2" />
@@ -161,7 +161,7 @@ const PredictiveAnalysis = () => {
                 </p>
               </div>
             )}
-            
+
             {predictiveAnalysis.confidence < 50 && (
               <div className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full mt-1.5 flex-shrink-0" />
@@ -170,7 +170,7 @@ const PredictiveAnalysis = () => {
                 </p>
               </div>
             )}
-            
+
             <div className="flex items-start space-x-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
               <p>
@@ -180,7 +180,7 @@ const PredictiveAnalysis = () => {
           </div>
         </div>
 
-        {/* Action Items */}
+        {}
         {predictiveAnalysis.projectedSavings <= 0 && (
           <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
             <h5 className="font-medium text-red-900 dark:text-red-100 mb-2">

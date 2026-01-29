@@ -1,14 +1,14 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
-  Legend 
+  Legend
 } from 'recharts';
 import { BarChart3 } from "lucide-react";
 import { useConvertedFinancialData } from '@/hooks/useConvertedFinancialData';
@@ -32,8 +32,8 @@ const MonthlyBreakdownChart = () => {
           <p className="font-medium mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center gap-2 text-sm">
-              <div 
-                className="w-3 h-3 rounded-full" 
+              <div
+                className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
               <span>{entry.name}:</span>
@@ -63,26 +63,26 @@ const MonthlyBreakdownChart = () => {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis 
-                dataKey="name" 
+              <XAxis
+                dataKey="name"
                 className="text-xs"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
               />
-              <YAxis 
+              <YAxis
                 className="text-xs"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar 
-                dataKey="Receita" 
-                fill="hsl(142, 76%, 36%)" 
+              <Bar
+                dataKey="Receita"
+                fill="hsl(142, 76%, 36%)"
                 radius={[4, 4, 0, 0]}
               />
-              <Bar 
-                dataKey="Despesas" 
-                fill="hsl(0, 84%, 60%)" 
+              <Bar
+                dataKey="Despesas"
+                fill="hsl(0, 84%, 60%)"
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

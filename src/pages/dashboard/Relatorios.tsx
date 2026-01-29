@@ -13,13 +13,13 @@ import { useFormatters } from "@/hooks/useFormatters";
 const Relatorios = () => {
   const { t } = useTranslation();
   const { formatDate } = useFormatters();
-  const { 
-    generateReportData, 
-    exportToCSV, 
+  const {
+    generateReportData,
+    exportToCSV,
     savedReports,
     deleteSavedReport,
     saveReport,
-    loading 
+    loading
   } = useReports();
 
   const [filters, setFilters] = useState<ReportFiltersType>({
@@ -73,7 +73,7 @@ const Relatorios = () => {
   const handleExportPDF = async () => {
     if (reportData) {
       try {
-        // TODO: Implement PDF export with @react-pdf/renderer
+
         await saveReport({
           name: `Relatório ${formatDate(new Date().toISOString())}`,
           description: 'Relatório gerado automaticamente',
@@ -103,7 +103,7 @@ const Relatorios = () => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Filters Sidebar */}
+          {}
           <div className="lg:col-span-1">
             <ReportFilters
               filters={filters}
@@ -112,7 +112,7 @@ const Relatorios = () => {
               onClearFilters={handleClearFilters}
             />
 
-            {/* Saved Reports */}
+            {}
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -164,7 +164,7 @@ const Relatorios = () => {
             </Card>
           </div>
 
-          {/* Report Content */}
+          {}
           <div className="lg:col-span-2">
             {generatingReport ? (
               <Card>

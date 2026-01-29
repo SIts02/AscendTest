@@ -20,26 +20,22 @@ import { toast } from 'sonner';
 import { CategoryForm } from './CategoryForm';
 import { transactionFormSchema, sanitizeString, VALIDATION_LIMITS } from '@/lib/validators';
 
-/**
- * Transaction form schema with strict validation
- * Following OWASP best practices for input validation
- */
 const transactionSchema = transactionFormSchema;
 
 interface TransactionFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: TransactionFormData) => Promise<void>;
-  initialData?: Partial<TransactionFormData> & { id?: string }; // Add optional id here
+  initialData?: Partial<TransactionFormData> & { id?: string };
   isEditing?: boolean;
 }
 
-export function TransactionForm({ 
-  open, 
-  onOpenChange, 
-  onSubmit, 
-  initialData, 
-  isEditing = false 
+export function TransactionForm({
+  open,
+  onOpenChange,
+  onSubmit,
+  initialData,
+  isEditing = false
 }: TransactionFormProps) {
   const { categories, loading: loadingCategories } = useCategories();
   const { refetch: refetchFinancialData } = useFinancialData();
@@ -47,7 +43,6 @@ export function TransactionForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
 
-  // Filtered categories by type
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
 
   const form = useForm<z.infer<typeof transactionSchema>>({
@@ -63,7 +58,6 @@ export function TransactionForm({
     }
   });
 
-  // Update filtered categories when type changes
   useEffect(() => {
     const type = form.watch('type');
     if (categories.length > 0) {
@@ -74,7 +68,7 @@ export function TransactionForm({
   const handleSubmit = async (values: z.infer<typeof transactionSchema>) => {
     setIsSubmitting(true);
     try {
-      // Make sure all required fields are present when editing
+
       const completeData: TransactionFormData = {
         description: values.description,
         amount: values.amount,
@@ -84,17 +78,16 @@ export function TransactionForm({
         payment_method: values.payment_method,
         status: values.status
       };
-      
-      // Handle different cases: editing (with id) or creating new
+
       let result;
       if (isEditing && initialData?.id) {
         result = await updateTransaction(initialData.id, completeData);
       } else {
         result = await addTransaction(completeData);
       }
-      
+
       if (result) {
-        refetchFinancialData(); 
+        refetchFinancialData();
         toast.success(
           isEditing ? 'Transação atualizada com sucesso!' : 'Transação criada com sucesso!'
         );
@@ -143,7 +136,7 @@ export function TransactionForm({
                   </FormItem>
                 )}
               />
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -161,7 +154,7 @@ export function TransactionForm({
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="date"
@@ -207,7 +200,7 @@ export function TransactionForm({
                   )}
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -215,12 +208,12 @@ export function TransactionForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tipo</FormLabel>
-                      <Select 
+                      <Select
                         onValueChange={(value) => {
                           field.onChange(value);
-                          // Reset category when type changes
+
                           form.setValue('category_id', null);
-                        }} 
+                        }}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -237,7 +230,7 @@ export function TransactionForm({
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="status"
@@ -261,20 +254,20 @@ export function TransactionForm({
                   )}
                 />
               </div>
-              
+
               <div className="grid gap-4">
                 <div className="flex items-center justify-between">
                   <FormLabel>Categoria</FormLabel>
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
+                  <Button
+                    type="button"
+                    variant="ghost"
                     onClick={() => setShowCategoryForm(true)}
                     className="text-xs h-6 px-2 text-blue-600"
                   >
                     + Nova categoria
                   </Button>
                 </div>
-                
+
                 <FormField
                   control={form.control}
                   name="category_id"
@@ -310,7 +303,7 @@ export function TransactionForm({
                   )}
                 />
               </div>
-              
+
               <FormField
                 control={form.control}
                 name="payment_method"
@@ -335,11 +328,11 @@ export function TransactionForm({
                   </FormItem>
                 )}
               />
-              
+
               <DialogFooter>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => onOpenChange(false)}
                 >
                   Cancelar
@@ -360,10 +353,10 @@ export function TransactionForm({
         </DialogContent>
       </Dialog>
 
-      {/* Form para adicionar nova categoria */}
-      <CategoryForm 
-        open={showCategoryForm} 
-        onOpenChange={setShowCategoryForm} 
+      {}
+      <CategoryForm
+        open={showCategoryForm}
+        onOpenChange={setShowCategoryForm}
         onSubmit={handleAddCategory}
         isEditing={false}
       />

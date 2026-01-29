@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { 
-  CheckCircle, 
-  AlertTriangle, 
-  XCircle, 
+import {
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
   Lightbulb,
   TrendingUp,
   TrendingDown,
@@ -67,7 +67,7 @@ const FinancialInsights = () => {
 
   return (
     <div className="space-y-6">
-      {/* Trend Analysis */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -91,7 +91,7 @@ const FinancialInsights = () => {
                 {trendAnalysis.income.percentage}%
               </div>
               <div className="text-sm text-muted-foreground">
-                {trendAnalysis.income.trend === 'up' ? 'Crescimento' : 
+                {trendAnalysis.income.trend === 'up' ? 'Crescimento' :
                  trendAnalysis.income.trend === 'down' ? 'Redução' : 'Estável'}
               </div>
             </motion.div>
@@ -110,7 +110,7 @@ const FinancialInsights = () => {
                 {trendAnalysis.expenses.percentage}%
               </div>
               <div className="text-sm text-muted-foreground">
-                {trendAnalysis.expenses.trend === 'up' ? 'Aumento' : 
+                {trendAnalysis.expenses.trend === 'up' ? 'Aumento' :
                  trendAnalysis.expenses.trend === 'down' ? 'Redução' : 'Estável'}
               </div>
             </motion.div>
@@ -129,7 +129,7 @@ const FinancialInsights = () => {
                 {trendAnalysis.savings.percentage}%
               </div>
               <div className="text-sm text-muted-foreground">
-                {trendAnalysis.savings.trend === 'up' ? 'Crescimento' : 
+                {trendAnalysis.savings.trend === 'up' ? 'Crescimento' :
                  trendAnalysis.savings.trend === 'down' ? 'Redução' : 'Estável'}
               </div>
             </motion.div>
@@ -137,7 +137,7 @@ const FinancialInsights = () => {
         </CardContent>
       </Card>
 
-      {/* Financial Insights */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -168,7 +168,7 @@ const FinancialInsights = () => {
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center justify-between">
                           <h4 className="font-semibold">{insight.title}</h4>
-                          <Badge 
+                          <Badge
                             variant="outline"
                             className={
                               insight.type === 'positive' ? 'border-green-500 text-green-700' :

@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { AvatarDropdown } from "@/components/ui/avatar-dropdown";
 import { motion } from "framer-motion";
-import { 
+import {
   Home,
   PiggyBank,
   ArrowLeftRight,
@@ -15,7 +15,8 @@ import {
   FileText,
   Zap,
   Wallet,
-  LogOut
+  LogOut,
+  MessageCircle
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -46,7 +47,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     navigate("/");
   };
 
-  // Navigation links
   const links = [
     {
       label: t("sidebar.dashboard"),
@@ -89,6 +89,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       icon: <MessageSquarePlus className="w-5 h-5" />,
     },
     {
+      label: t("sidebar.feedback"),
+      href: "/dashboard/feedback",
+      icon: <MessageCircle className="w-5 h-5" />,
+    },
+    {
       label: t("sidebar.settings"),
       href: "/dashboard/configuracoes",
       icon: <Settings className="w-5 h-5" />,
@@ -107,10 +112,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               ))}
             </nav>
           </div>
-          
-          {/* Bottom section */}
+
+          {}
           <div className="flex flex-col gap-3 pt-4 border-t border-sidebar-border/30">
-            {/* Logout button */}
+            {}
             <button
               onClick={handleLogout}
               className="sidebar-link group text-red-400/70 hover:text-red-400 hover:bg-red-500/10"
@@ -127,8 +132,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 {t("sidebar.logout")}
               </motion.span>
             </button>
-            
-            {/* Theme switcher and avatar */}
+
+            {}
             <div className="flex items-center justify-between px-1 pointer-events-auto">
               <AvatarDropdown />
               {open && <ThemeSwitcher />}
@@ -137,7 +142,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </SidebarBody>
       </SidebarAceternity>
 
-      {/* Main content area with glassmorphism */}
+      {}
       <div className="flex flex-1 flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <motion.div

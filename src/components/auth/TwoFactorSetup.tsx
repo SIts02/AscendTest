@@ -6,11 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Shield, 
-  ShieldCheck, 
-  ShieldOff, 
-  Loader2, 
+import {
+  Shield,
+  ShieldCheck,
+  ShieldOff,
+  Loader2,
   Smartphone,
   Copy,
   Check,
@@ -19,8 +19,8 @@ import {
   X
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { cn } from '@/lib/utils';
 
 export function TwoFactorSetup() {
   const {
@@ -38,35 +38,45 @@ export function TwoFactorSetup() {
   } = useMFA();
 
   const [verificationCode, setVerificationCode] = useState('');
-  const [disableCode, setDisableCode] = useState('');
   const [showSetup, setShowSetup] = useState(false);
   const [showDisableConfirm, setShowDisableConfirm] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
+  const [isDisabling, setIsDisabling] = useState(false);
 
   const handleStartSetup = async () => {
-    const result = await startEnrollment();
-    if (result.success) {
-      setShowSetup(true);
+    try {
+      const result = await startEnrollment();
+      if (result.success) {
+        setShowSetup(true);
+      }
+    } catch (error: any) {
+
+      setShowSetup(false);
     }
   };
 
   const handleVerify = async () => {
     if (verificationCode.length !== 6) return;
-    
+
     const result = await verifyEnrollment(verificationCode);
     if (result.success) {
       setShowSetup(false);
+      setVerificationCode('');
+
+    } else {
+
       setVerificationCode('');
     }
   };
 
   const handleDisable = async () => {
-    if (disableCode.length !== 6) return;
     if (verifiedFactors.length > 0) {
-      const result = await unenrollFactor(verifiedFactors[0].id, disableCode);
+      setIsDisabling(true);
+      const result = await unenrollFactor(verifiedFactors[0].id);
+      setIsDisabling(false);
       if (result.success) {
         setShowDisableConfirm(false);
-        setDisableCode('');
+
       }
     }
   };
@@ -77,11 +87,9 @@ export function TwoFactorSetup() {
     setVerificationCode('');
   };
 
-  const handleDialogOpenChange = async (open: boolean) => {
-    // Only cancel enrollment when explicitly closing the dialog (not on visibility change)
-    if (!open && document.visibilityState === 'visible') {
-      await handleCancelSetup();
-    }
+  const handleDialogOpenChange = (open: boolean) => {
+
+    setShowSetup(open);
   };
 
   const copySecret = () => {
@@ -102,11 +110,11 @@ export function TwoFactorSetup() {
 
   return (
     <div className="space-y-6">
-      {/* Status Card */}
+      {}
       <Card className={cn(
         "border-2 transition-colors",
-        hasMFAEnabled 
-          ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20" 
+        hasMFAEnabled
+          ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
           : "border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/20"
       )}>
         <CardContent className="flex items-center gap-4 py-4">
@@ -148,8 +156,11 @@ export function TwoFactorSetup() {
         </CardContent>
       </Card>
 
-      {/* Setup Dialog */}
-      <Dialog open={showSetup} onOpenChange={handleDialogOpenChange}>
+      {}
+      <Dialog
+        open={showSetup}
+        onOpenChange={handleDialogOpenChange}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="relative">
             <DialogTitle className="flex items-center gap-2">
@@ -169,22 +180,29 @@ export function TwoFactorSetup() {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            {/* Step 1: QR Code */}
+            {}
             <div className="space-y-3">
               <Label className="flex items-center gap-2">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">1</span>
                 Escaneie o QR Code com seu aplicativo
               </Label>
-              
+
               {qrCode ? (
                 <div className="flex justify-center p-6 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 w-fit mx-auto">
                   {qrCode.startsWith('data:image') ? (
                     <img src={qrCode} alt="QR Code para 2FA" className="w-56 h-56" />
                   ) : qrCode.includes('<svg') ? (
-                    <div 
-                      dangerouslySetInnerHTML={{ __html: qrCode }} 
-                      className="w-56 h-56 [&>svg]:w-56 [&>svg]:h-56"
-                    />
+
+                    qrCode.match(/^<svg[\s\S]*<\/svg>$/i) ? (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: qrCode }}
+                        className="w-56 h-56 [&>svg]:w-56 [&>svg]:h-56"
+                      />
+                    ) : (
+                      <div className="w-56 h-56 flex items-center justify-center bg-muted rounded-lg">
+                        <AlertTriangle className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )
                   ) : (
                     <img src={qrCode} alt="QR Code para 2FA" className="w-56 h-56" />
                   )}
@@ -196,7 +214,7 @@ export function TwoFactorSetup() {
               )}
             </div>
 
-            {/* Manual entry */}
+            {}
             {secret && (
               <div className="space-y-2 pt-4 border-t border-muted">
                 <Label className="text-xs text-muted-foreground">
@@ -206,8 +224,8 @@ export function TwoFactorSetup() {
                   <code className="flex-1 px-3 py-2 bg-muted rounded text-sm font-mono break-all">
                     {secret}
                   </code>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="icon"
                     onClick={copySecret}
                   >
@@ -221,16 +239,16 @@ export function TwoFactorSetup() {
               </div>
             )}
 
-            {/* Step 2: Verification */}
+            {}
             <div className="space-y-3">
               <Label className="flex items-center gap-2">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">2</span>
                 Digite o código de 6 dígitos
               </Label>
-              
+
               <div className="flex justify-center p-6 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                <InputOTP 
-                  maxLength={6} 
+                <InputOTP
+                  maxLength={6}
                   value={verificationCode}
                   onChange={setVerificationCode}
                 >
@@ -251,7 +269,7 @@ export function TwoFactorSetup() {
             <Button variant="outline" onClick={handleCancelSetup}>
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handleVerify}
               disabled={verificationCode.length !== 6 || isVerifying}
             >
@@ -262,7 +280,7 @@ export function TwoFactorSetup() {
         </DialogContent>
       </Dialog>
 
-      {/* Disable Confirmation Dialog */}
+      {}
       <Dialog open={showDisableConfirm} onOpenChange={setShowDisableConfirm}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -274,62 +292,48 @@ export function TwoFactorSetup() {
               Isso removerá a proteção adicional da sua conta. Você terá que configurar novamente se quiser reativar.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <Alert variant="default" className="border-destructive/50 bg-destructive/10">
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Confirmação de Segurança</AlertTitle>
+              <AlertTitle>Atenção</AlertTitle>
               <AlertDescription>
-                Para desativar o 2FA, insira o código do seu autenticador:
+                Tem certeza que deseja desativar a autenticação de dois fatores?
+                Sua conta ficará menos segura sem esta proteção adicional.
               </AlertDescription>
             </Alert>
-            
-            <div className="space-y-3">
-              <Label className="flex items-center gap-2">
-                <span className="text-sm">Código de 6 dígitos</span>
-              </Label>
-              
-              <div className="flex justify-center p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-800">
-                <InputOTP 
-                  maxLength={6} 
-                  value={disableCode}
-                  onChange={setDisableCode}
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-            </div>
           </div>
-          
+
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => {
-              setShowDisableConfirm(false);
-              setDisableCode('');
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDisableConfirm(false)}
+              disabled={isDisabling}
+            >
               Cancelar
             </Button>
-            <Button 
+            <Button
               variant="destructive"
               onClick={handleDisable}
-              disabled={disableCode.length !== 6}
+              disabled={isDisabling}
             >
-              Desativar 2FA
+              {isDisabling ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Desativando...
+                </>
+              ) : (
+                'Sim, Desativar 2FA'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Action Buttons */}
+      {}
       <div className="flex flex-col gap-4">
         {!hasMFAEnabled ? (
-          <Button 
+          <Button
             onClick={handleStartSetup}
             disabled={isEnrolling}
             className="w-full gap-2"
@@ -342,7 +346,7 @@ export function TwoFactorSetup() {
             Configurar Autenticação de Dois Fatores
           </Button>
         ) : (
-          <Button 
+          <Button
             variant="outline"
             onClick={() => setShowDisableConfirm(true)}
             className="w-full gap-2 border-destructive/50 text-destructive hover:bg-destructive/10"
@@ -353,13 +357,13 @@ export function TwoFactorSetup() {
         )}
       </div>
 
-      {/* Info Alert */}
+      {}
       <Alert>
         <Smartphone className="h-4 w-4" />
         <AlertTitle>Como funciona?</AlertTitle>
         <AlertDescription className="mt-2 space-y-2">
           <p>
-            A autenticação de dois fatores adiciona uma camada extra de segurança à sua conta. 
+            A autenticação de dois fatores adiciona uma camada extra de segurança à sua conta.
             Além da sua senha, você precisará de um código gerado pelo seu aplicativo autenticador.
           </p>
           <p className="text-xs text-muted-foreground">

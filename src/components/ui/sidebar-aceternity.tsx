@@ -182,7 +182,7 @@ export const SidebarLink = ({
   const { open, animate } = useSidebarAceternity();
   const location = useLocation();
   const isActive = location.pathname === link.href;
-  
+
   return (
     <Link
       to={link.href}
@@ -216,15 +216,14 @@ export const SidebarLink = ({
   );
 };
 
-// Logo components for the sidebar
 export const Logo = () => {
   const { open, animate } = useSidebarAceternity();
   return (
     <div className="relative px-1 py-3 mb-2">
-      {/* Barra decorativa superior */}
+      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-primary/40 rounded-full" />
-      
-      {/* Container */}
+
+      {}
       <Link
         to="/dashboard"
         className="flex items-center gap-3 p-3 transition-colors"
@@ -247,9 +246,9 @@ export const Logo = () => {
 export const LogoIcon = () => {
   return (
     <div className="relative px-1 py-3 mb-2">
-      {/* Barra decorativa superior */}
+      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary/40 rounded-full" />
-      
+
       <Link
         to="/dashboard"
         className="flex items-center justify-center p-2 transition-colors"

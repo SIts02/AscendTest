@@ -11,10 +11,9 @@ export function useConvertedGoals(goals: Goal[]) {
   const [convertedGoals, setConvertedGoals] = useState<Goal[]>(goals);
   const [converting, setConverting] = useState(false);
   const [cachedRate, setCachedRate] = useState<number | null>(null);
-  
+
   const targetCurrency = preferences.currency || 'BRL';
 
-  // Fetch rate for sync conversions
   useEffect(() => {
     const fetchRate = async () => {
       if (targetCurrency === 'BRL') {
@@ -33,7 +32,7 @@ export function useConvertedGoals(goals: Goal[]) {
 
   useEffect(() => {
     const convertGoals = async () => {
-      // If same currency, no conversion needed
+
       if (targetCurrency === 'BRL') {
         setConvertedGoals(goals);
         return;
@@ -59,7 +58,7 @@ export function useConvertedGoals(goals: Goal[]) {
         setConvertedGoals(converted);
       } catch (error) {
         console.error('Error converting goals:', error);
-        setConvertedGoals(goals); // Fallback
+        setConvertedGoals(goals);
       } finally {
         setConverting(false);
       }
@@ -68,7 +67,6 @@ export function useConvertedGoals(goals: Goal[]) {
     convertGoals();
   }, [goals, targetCurrency, convertAmount]);
 
-  // Synchronous conversion using cached rate
   const convertGoalsSync = (goalsList: Goal[]): Goal[] => {
     if (targetCurrency === 'BRL' || !cachedRate) {
       return goalsList;
@@ -81,10 +79,10 @@ export function useConvertedGoals(goals: Goal[]) {
     }));
   };
 
-  return { 
-    convertedGoals, 
+  return {
+    convertedGoals,
     convertGoalsSync,
-    converting, 
+    converting,
     rateLoading,
     currentCurrency: targetCurrency,
     rate: cachedRate

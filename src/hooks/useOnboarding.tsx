@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,7 +26,7 @@ export function useOnboarding() {
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') { // Record not found
+      if (error.code === 'PGRST116') {
         setIsFirstLogin(true);
         return null;
       }

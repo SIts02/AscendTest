@@ -1,4 +1,3 @@
-
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ const NotFound = () => {
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      
+
       <div className="glass-card p-8 md:p-12 max-w-md text-center dark:bg-gray-800/50 dark:border-gray-700">
         <h1 className="text-6xl font-bold mb-4 gradient-text">404</h1>
         <p className="text-xl text-gray-700 dark:text-gray-300 mb-8">Oops! Página não encontrada</p>

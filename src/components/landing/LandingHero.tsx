@@ -23,7 +23,7 @@ const LandingHero = () => {
       id="home"
       className="relative h-screen overflow-hidden"
     >
-      {/* Parallax Background */}
+      {}
       <motion.div
         className="absolute inset-0 z-0"
         style={{ y: backgroundY }}
@@ -37,10 +37,10 @@ const LandingHero = () => {
         />
       </motion.div>
 
-      {/* Gradient Overlay - Seamless fade to black */}
+      {}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-black/20 via-40% to-black" />
 
-      {/* Content */}
+      {}
       <motion.div
         className="relative z-20 flex flex-col items-center justify-center h-full px-4 text-center"
         style={{ y: textY, opacity }}
@@ -93,7 +93,7 @@ const LandingHero = () => {
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
+      {}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
         initial={{ opacity: 0 }}

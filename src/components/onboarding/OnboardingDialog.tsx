@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -13,13 +12,11 @@ const OnboardingDialog: React.FC = () => {
   const [step, setStep] = useState(0);
   const [open, setOpen] = useState(isFirstLogin);
 
-  // Close dialog and mark onboarding as completed
   const handleFinish = () => {
     completeOnboarding();
     setOpen(false);
   };
 
-  // Define the onboarding steps
   const steps = [
     {
       title: "Bem-vindo ao MoMoney",
@@ -48,12 +45,10 @@ const OnboardingDialog: React.FC = () => {
     },
   ];
 
-  // Function to go to the previous step
   const prevStep = () => {
     setStep((current) => Math.max(0, current - 1));
   };
 
-  // Function to go to the next step
   const nextStep = () => {
     if (step < steps.length - 1) {
       setStep((current) => current + 1);
@@ -62,16 +57,15 @@ const OnboardingDialog: React.FC = () => {
     }
   };
 
-  // If it's not the first login, don't show the dialog
   if (!isFirstLogin && !open) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md md:max-w-xl p-0 overflow-hidden bg-white dark:bg-gray-900 rounded-2xl">
         <div className="relative">
-          {/* Progress indicator */}
+          {}
           <div className="absolute top-0 left-0 w-full h-1 bg-gray-100 dark:bg-gray-800">
-            <motion.div 
+            <motion.div
               className="h-full bg-blue-500"
               initial={{ width: `${(step / (steps.length - 1)) * 100}%` }}
               animate={{ width: `${(step / (steps.length - 1)) * 100}%` }}
@@ -98,7 +92,7 @@ const OnboardingDialog: React.FC = () => {
           </DialogHeader>
 
           <div className="p-6">
-            {/* Step indicators */}
+            {}
             <div className="flex justify-center space-x-2 mt-4 mb-6">
               {steps.map((_, index) => (
                 <motion.div
@@ -126,7 +120,7 @@ const OnboardingDialog: React.FC = () => {
                 <ChevronLeft className="mr-2 h-4 w-4" />
                 {t('common.previous')}
               </Button>
-              
+
               <Button onClick={nextStep}>
                 {step < steps.length - 1 ? (
                   <>

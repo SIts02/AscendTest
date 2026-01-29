@@ -14,7 +14,6 @@ interface ConversionResult {
   timestamp: number;
 }
 
-// Supported currencies
 const SUPPORTED_CURRENCIES = {
   BRL: 'Real Brasileiro',
   USD: 'Dólar Americano',
@@ -28,8 +27,6 @@ const SUPPORTED_CURRENCIES = {
   INR: 'Rúpia Indiana',
 };
 
-// Mock exchange rates (in production, use a real API like fixer.io or exchangerate-api.com)
-// These are relative to USD as base
 const MOCK_RATES: ExchangeRates = {
   USD: 1,
   BRL: 5.15,
@@ -43,8 +40,7 @@ const MOCK_RATES: ExchangeRates = {
   INR: 83.12,
 };
 
-// Rate limiting configuration
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_WINDOW = 60000;
 const MAX_REQUESTS_PER_WINDOW = 100;
 
 interface RateLimitStore {
@@ -57,7 +53,6 @@ export function useCurrencyConverter() {
   const [isLoading, setIsLoading] = useState(false);
   const [lastConversion, setLastConversion] = useState<ConversionResult | null>(null);
 
-  // Check rate limiting
   const checkRateLimit = useCallback((userId: string): boolean => {
     const now = Date.now();
     const userLimit = rateLimitStore[userId];
@@ -80,21 +75,18 @@ export function useCurrencyConverter() {
     return true;
   }, []);
 
-  // Validate currency code
   const validateCurrency = useCallback((currency: string): boolean => {
     return currency in SUPPORTED_CURRENCIES;
   }, []);
 
-  // Validate amount
   const validateAmount = useCallback((amount: number): boolean => {
     return amount > 0 && amount < 1000000 && !isNaN(amount);
   }, []);
 
-  // Get exchange rate
   const getExchangeRate = useCallback(
     async (from: string, to: string): Promise<number | null> => {
       try {
-        // Validate inputs
+
         if (!validateCurrency(from) || !validateCurrency(to)) {
           throw new Error('Moeda inválida');
         }
@@ -102,12 +94,6 @@ export function useCurrencyConverter() {
         if (from === to) {
           return 1;
         }
-
-        // Use mock rates for now (in production, fetch from real API)
-        // Example API call:
-        // const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
-        // const data = await response.json();
-        // return data.rates[to];
 
         const fromRate = MOCK_RATES[from] || 1;
         const toRate = MOCK_RATES[to] || 1;
@@ -122,7 +108,6 @@ export function useCurrencyConverter() {
     [validateCurrency]
   );
 
-  // Convert currency
   const convertCurrency = useCallback(
     async (
       from: string,
@@ -131,12 +116,11 @@ export function useCurrencyConverter() {
       userId?: string
     ): Promise<ConversionResult | null> => {
       try {
-        // Rate limiting check
+
         if (userId && !checkRateLimit(userId)) {
           throw new Error('Muitas requisições. Tente novamente em alguns momentos.');
         }
 
-        // Validate inputs
         if (!validateCurrency(from) || !validateCurrency(to)) {
           throw new Error('Moeda inválida. Moedas suportadas: ' + Object.keys(SUPPORTED_CURRENCIES).join(', '));
         }
@@ -147,13 +131,11 @@ export function useCurrencyConverter() {
 
         setIsLoading(true);
 
-        // Get exchange rate
         const rate = await getExchangeRate(from, to);
         if (rate === null) {
           throw new Error('Erro ao obter taxa de câmbio');
         }
 
-        // Perform conversion
         const convertedAmount = Number((amount * rate).toFixed(2));
 
         const result: ConversionResult = {
@@ -178,12 +160,10 @@ export function useCurrencyConverter() {
     [validateCurrency, validateAmount, getExchangeRate, checkRateLimit]
   );
 
-  // Get all supported currencies
   const getSupportedCurrencies = useCallback(() => {
     return SUPPORTED_CURRENCIES;
   }, []);
 
-  // Get currency symbol
   const getCurrencySymbol = useCallback((currency: string): string => {
     const symbols: { [key: string]: string } = {
       BRL: 'R$',
@@ -200,7 +180,6 @@ export function useCurrencyConverter() {
     return symbols[currency] || currency;
   }, []);
 
-  // Format currency value
   const formatCurrency = useCallback(
     (value: number, currency: string): string => {
       const symbol = getCurrencySymbol(currency);

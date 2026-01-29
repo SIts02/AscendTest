@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
@@ -14,7 +13,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { Loader2 } from "lucide-react";
 
-// Define form schema with zod
 const formSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
@@ -36,18 +34,17 @@ const Perfil = () => {
   }, []);
 
   const { user } = useAuth();
-  const { 
-    profile, 
-    isLoading, 
-    updateProfile, 
-    uploadAvatar, 
+  const {
+    profile,
+    isLoading,
+    updateProfile,
+    uploadAvatar,
     isUpdating,
-    isUploading 
+    isUploading
   } = useProfile();
-  
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Initialize form with react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,7 +55,6 @@ const Perfil = () => {
     },
   });
 
-  // Update form values when profile data is loaded
   useEffect(() => {
     if (profile) {
       form.reset({
@@ -84,10 +80,8 @@ const Perfil = () => {
       email: values.email,
     });
 
-    // Handle password change if provided
     if (values.password) {
-      // This would need to be handled through supabase.auth.updateUser
-      // but that's beyond the scope of this example
+
       toast.info("Funcionalidade de troca de senha será implementada em breve");
     }
   };
@@ -138,15 +132,14 @@ const Perfil = () => {
                     onChange={handleAvatarUpload}
                     accept="image/*"
                   />
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
                     onClick={() => document.getElementById('avatar')?.click()}
                     disabled={isUploading}
                   >
                     {isUploading ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Enviando...
                       </>
                     ) : (
@@ -155,8 +148,8 @@ const Perfil = () => {
                   </Button>
                 </div>
               </div>
-              
-              <div className="w-full max-w-md space-y-6">
+
+              <div className="flex-1 w-full">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-4">
                     <FormField
@@ -164,15 +157,15 @@ const Perfil = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome completo</FormLabel>
+                          <FormLabel>Nome</FormLabel>
                           <FormControl>
-                            <Input placeholder="Seu nome" {...field} />
+                            <Input placeholder="Seu nome completo" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="email"
@@ -180,37 +173,30 @@ const Perfil = () => {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="seu@email.com" {...field} />
+                            <Input placeholder="seu@email.com" {...field} disabled />
                           </FormControl>
                           <FormDescription>
-                            Este email será usado para login e recuperação de senha.
+                            O email não pode ser alterado
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nova senha</FormLabel>
+                          <FormLabel>Nova senha (opcional)</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="password" 
-                              placeholder="••••••••" 
-                              {...field}
-                            />
+                            <Input type="password" placeholder="••••••••" {...field} />
                           </FormControl>
-                          <FormDescription>
-                            Deixe em branco para manter a senha atual.
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="confirmPassword"
@@ -218,26 +204,22 @@ const Perfil = () => {
                         <FormItem>
                           <FormLabel>Confirmar nova senha</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="password" 
-                              placeholder="••••••••" 
-                              {...field}
-                            />
+                            <Input type="password" placeholder="••••••••" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
-                    <div className="pt-4">
-                      <Button 
-                        type="submit" 
-                        className="w-full sm:w-auto"
+
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button
+                        type="submit"
                         disabled={isUpdating}
+                        className="bg-momoney-600 hover:bg-momoney-700"
                       >
                         {isUpdating ? (
                           <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Salvando...
                           </>
                         ) : (

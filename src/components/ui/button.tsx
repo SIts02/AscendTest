@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -6,8 +5,7 @@ import { motion, type TargetAndTransition, type Variants, type HTMLMotionProps }
 
 import { cn } from "@/lib/utils";
 
-// Define the MotionButtonProps type correctly
-type MotionButtonProps = Omit<HTMLMotionProps<"button">, "animate" | "initial" | "transition" | "whileHover" | "whileTap"> & 
+type MotionButtonProps = Omit<HTMLMotionProps<"button">, "animate" | "initial" | "transition" | "whileHover" | "whileTap"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
     isLoading?: boolean;
@@ -60,7 +58,7 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, isLoading, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -73,31 +71,29 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 
-// Define specific motion animation variants for enhanced interactions
 const buttonAnimationVariants: Variants = {
   initial: { scale: 1, y: 0 },
   hover: { scale: 1.03, y: -1 },
   tap: { scale: 0.97 }
 };
 
-// Create a proper typed motion button version that works with both React and Framer Motion
 const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
-  ({ 
-    className, 
-    variant, 
-    size, 
-    asChild = false, 
-    whileHover = "hover", 
-    whileTap = "tap", 
-    transition = { duration: 0.15 }, 
-    animate = "initial", 
-    initial = "initial", 
-    isLoading, 
+  ({
+    className,
+    variant,
+    size,
+    asChild = false,
+    whileHover = "hover",
+    whileTap = "tap",
+    transition = { duration: 0.15 },
+    animate = "initial",
+    initial = "initial",
+    isLoading,
     children,
-    ...props 
+    ...props
   }, ref) => {
     const buttonClasses = cn(buttonVariants({ variant, size, className }));
-    
+
     return (
       <motion.button
         className={buttonClasses}

@@ -1,39 +1,48 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
+import "https:
+import { serve } from "https:
+import { createClient } from 'https:
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+function getCorsHeaders(request: Request) {
+  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS')?.split(',').map(o => o.trim()) || [];
+  const requestOrigin = request.headers.get('Origin');
+
+  let corsOrigin: string;
+
+  if (allowedOrigins.length === 0) {
+
+    corsOrigin = '*';
+    console.warn('⚠️ ALLOWED_ORIGINS not configured, using permissive CORS (development mode)');
+  } else if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+
+    corsOrigin = requestOrigin;
+  } else {
+
+    corsOrigin = allowedOrigins[0] || '*';
+  }
+
+  return {
+    'Access-Control-Allow-Origin': corsOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  };
+}
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { question } = await req.json();
-    
-    // Input validation
+
     const MAX_QUESTION_LENGTH = 2000;
-    
+
     if (!question || typeof question !== 'string') {
       console.error('Invalid input: question is required and must be a string');
       return new Response(
-        JSON.stringify({ error: 'A pergunta é obrigatória e deve ser um texto válido' }), 
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-    
-    if (question.length > MAX_QUESTION_LENGTH) {
-      console.error('Input too long:', question.length);
-      return new Response(
-        JSON.stringify({ error: `Pergunta muito longa. Máximo de ${MAX_QUESTION_LENGTH} caracteres.` }), 
+        JSON.stringify({ error: 'A pergunta é obrigatória e deve ser um texto válido' }),
         {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -41,12 +50,22 @@ serve(async (req) => {
       );
     }
 
-    // Obter o token de autenticação do header
+    if (question.length > MAX_QUESTION_LENGTH) {
+      console.error('Input too long:', question.length);
+      return new Response(
+        JSON.stringify({ error: `Pergunta muito longa. Máximo de ${MAX_QUESTION_LENGTH} caracteres.` }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       console.error('Authorization header missing');
       return new Response(
-        JSON.stringify({ error: 'Token de autenticação não fornecido' }), 
+        JSON.stringify({ error: 'Token de autenticação não fornecido' }),
         {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -54,7 +73,6 @@ serve(async (req) => {
       );
     }
 
-    // Criar cliente Supabase com o token do usuário
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -63,12 +81,11 @@ serve(async (req) => {
       },
     });
 
-    // Verificar usuário autenticado
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       console.error('Authentication error:', authError);
       return new Response(
-        JSON.stringify({ error: 'Usuário não autenticado' }), 
+        JSON.stringify({ error: 'Usuário não autenticado' }),
         {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -76,13 +93,32 @@ serve(async (req) => {
       );
     }
 
+    const { data: rateLimitAllowed, error: rateLimitError } = await supabase
+      .rpc('check_rate_limit', {
+        p_user_id: user.id,
+        p_endpoint: 'assistente-geral',
+        p_max_requests: 10,
+        p_window_minutes: 1
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError);
+
+    } else if (rateLimitAllowed === false) {
+      return new Response(
+        JSON.stringify({ error: 'Muitas requisições. Aguarde um momento antes de tentar novamente.' }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     console.log('Fetching financial data for user:', user.id);
 
-    // Buscar dados financeiros do usuário
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // 1. Buscar transações dos últimos 30 dias
     const { data: transactions, error: transactionsError } = await supabase
       .from('transactions')
       .select('type, amount, category, description, date')
@@ -95,20 +131,17 @@ serve(async (req) => {
       console.error('Error fetching transactions:', transactionsError);
     }
 
-    // Calcular soma de rendas e despesas
     const income = transactions?.filter(t => t.type === 'income')
       .reduce((sum, t) => sum + Number(t.amount), 0) || 0;
     const expenses = transactions?.filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + Number(t.amount), 0) || 0;
 
-    // Agrupar despesas por categoria
     const expensesByCategory: Record<string, number> = {};
     transactions?.filter(t => t.type === 'expense').forEach(t => {
       const category = t.category || 'Outros';
       expensesByCategory[category] = (expensesByCategory[category] || 0) + Number(t.amount);
     });
 
-    // 2. Buscar metas e investimentos em paralelo
     const [goalsResult, investmentsResult] = await Promise.all([
       supabase
         .from('goals')
@@ -132,13 +165,11 @@ serve(async (req) => {
       console.error('Error fetching investments:', investmentsError);
     }
 
-    // Calcular valor total dos investimentos
     const totalInvestments = investments?.reduce((sum, inv) => {
       const currentValue = Number(inv.current_price || inv.price) * Number(inv.quantity || 1);
       return sum + currentValue;
     }, 0) || 0;
 
-    // Montar contexto financeiro
     const financialContext = {
       transacoes_ultimos_30_dias: {
         rendas: income,
@@ -175,11 +206,11 @@ serve(async (req) => {
     console.log('Financial context prepared for user:', user.id);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    
+
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
       return new Response(
-        JSON.stringify({ error: 'Chave de API não configurada' }), 
+        JSON.stringify({ error: 'Chave de API não configurada' }),
         {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -188,8 +219,7 @@ serve(async (req) => {
     }
 
     console.log('Sending request to Lovable AI Gateway...');
-    
-    // Sistema de prompt expandido para ser mais conversacional e responder mais perguntas
+
     const systemPrompt = `Você é o Assistente Ascend, um parceiro financeiro inteligente, amigável e prestativo.
 
 ## SUAS CAPACIDADES:
@@ -250,7 +280,7 @@ ${JSON.stringify(financialContext, null, 2)}
 ## NOTA SOBRE O BETA:
 Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend está em fase beta e agradeça o feedback.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https:
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -267,14 +297,13 @@ Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend est
       }),
     });
 
-    // Handle rate limiting
     if (response.status === 429) {
       console.error('Rate limit exceeded');
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Muitas requisições. Por favor, aguarde alguns segundos e tente novamente.',
           code: 'RATE_LIMIT'
-        }), 
+        }),
         {
           status: 429,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -282,14 +311,13 @@ Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend est
       );
     }
 
-    // Handle payment required
     if (response.status === 402) {
       console.error('Payment required - credits exhausted');
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'O assistente está temporariamente indisponível. Tente novamente mais tarde.',
           code: 'PAYMENT_REQUIRED'
-        }), 
+        }),
         {
           status: 402,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -301,9 +329,9 @@ Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend est
       const errorText = await response.text();
       console.error('Lovable AI Gateway error:', response.status, errorText);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Erro ao processar sua solicitação. Tente novamente.'
-        }), 
+        }),
         {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -313,15 +341,14 @@ Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend est
 
     const data = await response.json();
     console.log('Lovable AI Gateway response received successfully');
-    
-    // Extrair o texto da resposta
+
     const generatedText = data.choices?.[0]?.message?.content || 'Desculpe, não consegui gerar uma resposta.';
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         answer: generatedText,
         model: 'google/gemini-3-flash-preview'
-      }), 
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
@@ -329,9 +356,9 @@ Se perguntarem sobre bugs ou funcionalidades faltando, explique que o Ascend est
   } catch (error) {
     console.error('Error in assistente-geral function:', error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Erro interno do servidor. Tente novamente.'
-      }), 
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

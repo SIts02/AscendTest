@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
@@ -10,61 +10,129 @@ import GoogleIcon from '@/components/auth/GoogleIcon';
 import { toast } from 'sonner';
 import { loginFormSchema, getFirstError, VALIDATION_LIMITS } from '@/lib/validators';
 
-/**
- * Login page component with secure input validation
- * Following OWASP best practices for authentication
- */
+const FAILED_ATTEMPTS_KEY = 'login_failed_attempts';
+const FAILED_ATTEMPTS_TIMESTAMP_KEY = 'login_failed_timestamp';
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+
 const LandingLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [isLockedOut, setIsLockedOut] = useState(false);
+  const [lockoutTimeRemaining, setLockoutTimeRemaining] = useState(0);
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  /**
-   * Validate form inputs before submission
-   * Uses schema-based validation for security
-   */
+  useEffect(() => {
+    const checkLockout = () => {
+      try {
+        const attempts = parseInt(localStorage.getItem(FAILED_ATTEMPTS_KEY) || '0', 10);
+        const timestamp = parseInt(localStorage.getItem(FAILED_ATTEMPTS_TIMESTAMP_KEY) || '0', 10);
+        const now = Date.now();
+        const timeSinceLastAttempt = now - timestamp;
+
+        if (attempts >= MAX_FAILED_ATTEMPTS && timeSinceLastAttempt < LOCKOUT_DURATION_MS) {
+          const remaining = Math.ceil((LOCKOUT_DURATION_MS - timeSinceLastAttempt) / 1000);
+          setIsLockedOut(true);
+          setLockoutTimeRemaining(remaining);
+
+          const interval = setInterval(() => {
+            const newRemaining = Math.ceil((LOCKOUT_DURATION_MS - (Date.now() - timestamp)) / 1000);
+            if (newRemaining <= 0) {
+              setIsLockedOut(false);
+              localStorage.removeItem(FAILED_ATTEMPTS_KEY);
+              localStorage.removeItem(FAILED_ATTEMPTS_TIMESTAMP_KEY);
+              clearInterval(interval);
+            } else {
+              setLockoutTimeRemaining(newRemaining);
+            }
+          }, 1000);
+
+          return () => clearInterval(interval);
+        } else if (timeSinceLastAttempt >= LOCKOUT_DURATION_MS) {
+
+          localStorage.removeItem(FAILED_ATTEMPTS_KEY);
+          localStorage.removeItem(FAILED_ATTEMPTS_TIMESTAMP_KEY);
+        }
+      } catch (error) {
+        console.warn('Error checking lockout:', error);
+      }
+    };
+
+    checkLockout();
+  }, []);
+
   const validateForm = (): boolean => {
     const result = loginFormSchema.safeParse({ email, password });
-    
+
     if (!result.success) {
       const fieldErrors: { email?: string; password?: string } = {};
-      
+
       result.error.errors.forEach(err => {
         const field = err.path[0] as 'email' | 'password';
         if (!fieldErrors[field]) {
           fieldErrors[field] = err.message;
         }
       });
-      
+
       setErrors(fieldErrors);
       toast.error(getFirstError(result.error));
       return false;
     }
-    
+
     setErrors({});
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate inputs before processing
+
+    if (isLockedOut) {
+      const minutes = Math.floor(lockoutTimeRemaining / 60);
+      const seconds = lockoutTimeRemaining % 60;
+      toast.error(`Muitas tentativas falhas. Tente novamente em ${minutes}:${seconds.toString().padStart(2, '0')}`);
+      return;
+    }
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     const { error } = await signInWithEmail(email.trim().toLowerCase(), password);
     setLoading(false);
-    
-    if (error) { 
-      // Generic error message to prevent user enumeration
-      toast.error('Email ou senha incorretos'); 
-    } else { 
-      toast.success('Login realizado com sucesso!'); 
-      navigate('/dashboard'); 
+
+    if (error) {
+
+      try {
+        const attempts = parseInt(localStorage.getItem(FAILED_ATTEMPTS_KEY) || '0', 10) + 1;
+        localStorage.setItem(FAILED_ATTEMPTS_KEY, attempts.toString());
+        localStorage.setItem(FAILED_ATTEMPTS_TIMESTAMP_KEY, Date.now().toString());
+
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+          setIsLockedOut(true);
+          setLockoutTimeRemaining(Math.ceil(LOCKOUT_DURATION_MS / 1000));
+          toast.error(`Muitas tentativas falhas. Conta bloqueada por 15 minutos.`);
+        } else {
+
+          if (attempts >= 3) {
+            const delayMs = (attempts - 2) * 1000;
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+          }
+
+          toast.error('Email ou senha incorretos');
+        }
+      } catch (storageError) {
+        console.warn('Error tracking failed attempts:', storageError);
+        toast.error('Email ou senha incorretos');
+      }
+    } else {
+
+      localStorage.removeItem(FAILED_ATTEMPTS_KEY);
+      localStorage.removeItem(FAILED_ATTEMPTS_TIMESTAMP_KEY);
+      toast.success('Login realizado com sucesso!');
+      navigate('/dashboard');
     }
   };
 
@@ -73,14 +141,14 @@ const LandingLogin = () => {
     try {
       await signInWithGoogle();
     } catch {
-      // Error handled in context
+
     }
     setGoogleLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Back to Landing Button */}
+      {}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -101,11 +169,11 @@ const LandingLogin = () => {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/20 rounded-full blur-[120px]" />
       </div>
-      
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.5 }} 
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
         <div className="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
@@ -113,19 +181,19 @@ const LandingLogin = () => {
             <h1 className="text-2xl font-bold text-white mb-2">Entrar na sua conta</h1>
             <p className="text-gray-400">Bem-vindo de volta! Digite seus dados abaixo.</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-300">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="seu@email.com" 
-                  value={email} 
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
                   onChange={(e) => {
-                    // Limit input length for security
+
                     const value = e.target.value.slice(0, VALIDATION_LIMITS.EMAIL_MAX);
                     setEmail(value);
                     if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
@@ -143,18 +211,18 @@ const LandingLogin = () => {
                 <p id="email-error" className="text-sm text-red-400">{errors.email}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-300">Senha</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={password} 
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
                   onChange={(e) => {
-                    // Limit input length for security
+
                     const value = e.target.value.slice(0, VALIDATION_LIMITS.PASSWORD_MAX);
                     setPassword(value);
                     if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
@@ -172,16 +240,16 @@ const LandingLogin = () => {
                 <p id="password-error" className="text-sm text-red-400">{errors.password}</p>
               )}
             </div>
-            
+
             <div className="flex justify-end">
               <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
                 Esqueceu a senha?
               </Link>
             </div>
-            
-            <Button 
-              type="submit" 
-              disabled={loading} 
+
+            <Button
+              type="submit"
+              disabled={loading}
               className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
             >
               {loading ? (
@@ -194,7 +262,7 @@ const LandingLogin = () => {
               )}
             </Button>
           </form>
-          
+
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10" />
@@ -203,12 +271,12 @@ const LandingLogin = () => {
               <span className="px-4 bg-transparent text-gray-500">ou continue com</span>
             </div>
           </div>
-          
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleGoogleLogin} 
-            disabled={googleLoading} 
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading}
             className="w-full bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
           >
             {googleLoading ? (
@@ -218,7 +286,7 @@ const LandingLogin = () => {
             )}
             Continuar com Google
           </Button>
-          
+
           <p className="text-center text-gray-400 mt-6">
             Não tem uma conta?{' '}
             <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium">

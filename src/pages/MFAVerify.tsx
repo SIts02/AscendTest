@@ -14,7 +14,6 @@ export default function MFAVerify() {
   const { verifiedFactors, challengeAndVerify, isVerifying, needsMFAVerification, isLoading } = useMFA();
   const [code, setCode] = useState('');
 
-  // Redirect if no MFA verification needed
   useEffect(() => {
     if (!isLoading && !needsMFAVerification && verifiedFactors.length === 0) {
       navigate('/dashboard');
@@ -38,7 +37,6 @@ export default function MFAVerify() {
     navigate('/login');
   };
 
-  // Auto-submit when code is complete
   useEffect(() => {
     if (code.length === 6) {
       handleVerify();
@@ -73,8 +71,8 @@ export default function MFAVerify() {
 
         <CardContent className="space-y-6">
           <div className="flex justify-center">
-            <InputOTP 
-              maxLength={6} 
+            <InputOTP
+              maxLength={6}
               value={code}
               onChange={setCode}
               disabled={isVerifying}
@@ -90,7 +88,7 @@ export default function MFAVerify() {
             </InputOTP>
           </div>
 
-          <Button 
+          <Button
             onClick={handleVerify}
             disabled={code.length !== 6 || isVerifying}
             className="w-full"
@@ -106,8 +104,8 @@ export default function MFAVerify() {
           </Button>
 
           <div className="text-center">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={handleSignOut}
               className="text-muted-foreground"
             >

@@ -35,30 +35,28 @@ const Investimentos = () => {
   const { formatCurrency, formatPercentage } = useFormatters();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   useEffect(() => {
     document.title = "MoMoney | Investimentos";
   }, []);
 
-  // Fetch investments
   const { data: investments, isLoading, error } = useQuery({
     queryKey: ['investments'],
     queryFn: async () => {
       if (!user?.id) throw new Error("Usuário não autenticado");
-      
+
       const { data, error } = await supabase
         .from('investments')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return (data || []) as unknown as Investment[];
     },
     enabled: !!user?.id,
   });
 
-  // Get stock tickers for quote fetching
   const stockTickers = useMemo(() => {
     if (!investments) return [];
     return investments
@@ -66,28 +64,23 @@ const Investimentos = () => {
       .map(inv => inv.ticker);
   }, [investments]);
 
-  // Fetch stock quotes
-  const { 
-    data: quotes = {}, 
-    isLoading: quotesLoading, 
-    refetch: refetchQuotes 
+  const {
+    data: quotes = {},
+    isLoading: quotesLoading,
+    refetch: refetchQuotes
   } = useMultipleStockQuotes(stockTickers);
 
-  // Hook para conversão de moeda
   const { convertPortfolioSync, currentCurrency, rateLoading } = useConvertedInvestments();
 
-  // Calculate portfolio with real-time quotes
   const rawPortfolio = useMemo(() => {
     if (!investments) return null;
     return calculatePortfolioWithQuotes(investments, quotes);
   }, [investments, quotes]);
 
-  // Apply currency conversion
   const portfolio = useMemo(() => {
     return convertPortfolioSync(rawPortfolio);
   }, [rawPortfolio, convertPortfolioSync, currentCurrency]);
 
-  // Add investment mutation
   const addInvestmentMutation = useMutation({
     mutationFn: async (newInvestment: {
       name: string;
@@ -99,7 +92,7 @@ const Investimentos = () => {
       notes?: string | null;
     }) => {
       if (!user?.id) throw new Error("Usuário não autenticado");
-      
+
       const { data, error } = await supabase
         .from('investments')
         .insert([{
@@ -114,7 +107,7 @@ const Investimentos = () => {
         } as any])
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -144,12 +137,12 @@ const Investimentos = () => {
 
   return (
     <DashboardLayout activePage="Investimentos">
-      <NewInvestmentModal 
+      <NewInvestmentModal
         open={isNewInvestmentModalOpen}
         onOpenChange={setIsNewInvestmentModalOpen}
         onAddInvestment={handleAddInvestment}
       />
-      
+
       <div className="grid gap-6">
         <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between">
           <div>
@@ -158,8 +151,8 @@ const Investimentos = () => {
           </div>
           <div className="flex gap-3">
             {hasQuotesForStocks && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => refetchQuotes()}
                 disabled={quotesLoading}
               >
@@ -174,7 +167,7 @@ const Investimentos = () => {
           </div>
         </div>
 
-        {/* Summary cards */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-100 dark:border-blue-900/30">
             <CardContent className="pt-6">
@@ -186,7 +179,7 @@ const Investimentos = () => {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-100 dark:border-green-900/30">
             <CardContent className="pt-6">
               <div className="text-sm font-medium text-green-700 dark:text-green-400 flex items-center gap-2">
@@ -204,17 +197,17 @@ const Investimentos = () => {
               </div>
             </CardContent>
           </Card>
-          
-          <Card className={`bg-gradient-to-br ${(portfolio?.totalGainLossPercent || 0) >= 0 
-            ? "from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-100 dark:border-green-900/30" 
+
+          <Card className={`bg-gradient-to-br ${(portfolio?.totalGainLossPercent || 0) >= 0
+            ? "from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-100 dark:border-green-900/30"
             : "from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-100 dark:border-red-900/30"}`}>
             <CardContent className="pt-6">
-              <div className={`text-sm font-medium ${(portfolio?.totalGainLossPercent || 0) >= 0 
+              <div className={`text-sm font-medium ${(portfolio?.totalGainLossPercent || 0) >= 0
                 ? "text-green-700 dark:text-green-400"
                 : "text-red-700 dark:text-red-400"}`}>
                 Retorno Total
               </div>
-              <div className={`text-2xl font-bold flex items-center mt-2 ${(portfolio?.totalGainLossPercent || 0) >= 0 
+              <div className={`text-2xl font-bold flex items-center mt-2 ${(portfolio?.totalGainLossPercent || 0) >= 0
                 ? "text-green-700 dark:text-green-400"
                 : "text-red-700 dark:text-red-400"}`}>
                 {quotesLoading && hasQuotesForStocks ? (
@@ -239,7 +232,7 @@ const Investimentos = () => {
           </Card>
         </div>
 
-        {/* Investment list */}
+        {}
         <Card>
           <CardHeader>
             <CardTitle>Meus Investimentos</CardTitle>
@@ -252,19 +245,19 @@ const Investimentos = () => {
                 <TabsTrigger value="fixed_income">Renda Fixa</TabsTrigger>
                 <TabsTrigger value="crypto">Criptomoedas</TabsTrigger>
               </TabsList>
-              
+
               {['all', 'stocks', 'fixed_income', 'crypto'].map((tabValue) => (
                 <TabsContent key={tabValue} value={tabValue}>
                   <div className="overflow-x-auto">
                     {(() => {
-                      const filteredInvestments = tabValue === 'all' 
-                        ? portfolio?.investments 
+                      const filteredInvestments = tabValue === 'all'
+                        ? portfolio?.investments
                         : portfolio?.investments.filter(inv => inv.type === tabValue);
-                      
+
                       if (!filteredInvestments || filteredInvestments.length === 0) {
                         return (
                           <div className="text-center text-muted-foreground py-10">
-                            {tabValue === 'all' 
+                            {tabValue === 'all'
                               ? 'Nenhum investimento cadastrado. Clique em "Novo Investimento" para começar!'
                               : `Nenhum investimento de ${tabValue === 'stocks' ? 'ações' : tabValue === 'fixed_income' ? 'renda fixa' : 'criptomoedas'} cadastrado`
                             }

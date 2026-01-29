@@ -1,6 +1,4 @@
--- Create tables for automation features
 
--- Recurring transactions
 CREATE TABLE public.recurring_transactions (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -20,7 +18,6 @@ CREATE TABLE public.recurring_transactions (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Transaction templates
 CREATE TABLE public.transaction_templates (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -35,7 +32,6 @@ CREATE TABLE public.transaction_templates (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Auto categorization rules
 CREATE TABLE public.categorization_rules (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -48,7 +44,6 @@ CREATE TABLE public.categorization_rules (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- User alerts and notifications
 CREATE TABLE public.user_alerts (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -64,7 +59,6 @@ CREATE TABLE public.user_alerts (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Alert history
 CREATE TABLE public.alert_history (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   alert_id UUID NOT NULL REFERENCES public.user_alerts(id) ON DELETE CASCADE,
@@ -75,114 +69,107 @@ CREATE TABLE public.alert_history (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Enable RLS on all tables
 ALTER TABLE public.recurring_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transaction_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categorization_rules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.alert_history ENABLE ROW LEVEL SECURITY;
 
--- Create policies for recurring_transactions
-CREATE POLICY "Users can view their own recurring transactions" 
-ON public.recurring_transactions 
-FOR SELECT 
+CREATE POLICY "Users can view their own recurring transactions"
+ON public.recurring_transactions
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own recurring transactions" 
-ON public.recurring_transactions 
-FOR INSERT 
+CREATE POLICY "Users can create their own recurring transactions"
+ON public.recurring_transactions
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own recurring transactions" 
-ON public.recurring_transactions 
-FOR UPDATE 
+CREATE POLICY "Users can update their own recurring transactions"
+ON public.recurring_transactions
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own recurring transactions" 
-ON public.recurring_transactions 
-FOR DELETE 
+CREATE POLICY "Users can delete their own recurring transactions"
+ON public.recurring_transactions
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create policies for transaction_templates
-CREATE POLICY "Users can view their own transaction templates" 
-ON public.transaction_templates 
-FOR SELECT 
+CREATE POLICY "Users can view their own transaction templates"
+ON public.transaction_templates
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own transaction templates" 
-ON public.transaction_templates 
-FOR INSERT 
+CREATE POLICY "Users can create their own transaction templates"
+ON public.transaction_templates
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own transaction templates" 
-ON public.transaction_templates 
-FOR UPDATE 
+CREATE POLICY "Users can update their own transaction templates"
+ON public.transaction_templates
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own transaction templates" 
-ON public.transaction_templates 
-FOR DELETE 
+CREATE POLICY "Users can delete their own transaction templates"
+ON public.transaction_templates
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create policies for categorization_rules
-CREATE POLICY "Users can view their own categorization rules" 
-ON public.categorization_rules 
-FOR SELECT 
+CREATE POLICY "Users can view their own categorization rules"
+ON public.categorization_rules
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own categorization rules" 
-ON public.categorization_rules 
-FOR INSERT 
+CREATE POLICY "Users can create their own categorization rules"
+ON public.categorization_rules
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own categorization rules" 
-ON public.categorization_rules 
-FOR UPDATE 
+CREATE POLICY "Users can update their own categorization rules"
+ON public.categorization_rules
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own categorization rules" 
-ON public.categorization_rules 
-FOR DELETE 
+CREATE POLICY "Users can delete their own categorization rules"
+ON public.categorization_rules
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create policies for user_alerts
-CREATE POLICY "Users can view their own alerts" 
-ON public.user_alerts 
-FOR SELECT 
+CREATE POLICY "Users can view their own alerts"
+ON public.user_alerts
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own alerts" 
-ON public.user_alerts 
-FOR INSERT 
+CREATE POLICY "Users can create their own alerts"
+ON public.user_alerts
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own alerts" 
-ON public.user_alerts 
-FOR UPDATE 
+CREATE POLICY "Users can update their own alerts"
+ON public.user_alerts
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own alerts" 
-ON public.user_alerts 
-FOR DELETE 
+CREATE POLICY "Users can delete their own alerts"
+ON public.user_alerts
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create policies for alert_history
-CREATE POLICY "Users can view their own alert history" 
-ON public.alert_history 
-FOR SELECT 
+CREATE POLICY "Users can view their own alert history"
+ON public.alert_history
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own alert history" 
-ON public.alert_history 
-FOR INSERT 
+CREATE POLICY "Users can create their own alert history"
+ON public.alert_history
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own alert history" 
-ON public.alert_history 
-FOR UPDATE 
+CREATE POLICY "Users can update their own alert history"
+ON public.alert_history
+FOR UPDATE
 USING (auth.uid() = user_id);
 
--- Create function to update timestamps
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -191,7 +178,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create triggers for automatic timestamp updates
 CREATE TRIGGER update_recurring_transactions_updated_at
 BEFORE UPDATE ON public.recurring_transactions
 FOR EACH ROW

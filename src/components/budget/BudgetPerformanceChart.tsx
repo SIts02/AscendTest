@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BudgetCategory } from '@/hooks/useBudget';
@@ -13,11 +12,10 @@ interface BudgetPerformanceChartProps {
 const BudgetPerformanceChart: React.FC<BudgetPerformanceChartProps> = ({ budgetCategories }) => {
   const { formatCurrency } = useFormatters();
   const { resolvedTheme } = useTheme();
-  
+
   const isDark = resolvedTheme === 'dark';
   const textColor = isDark ? 'hsl(215, 20%, 65%)' : 'hsl(215, 16%, 47%)';
-  
-  // Prepare data for bar chart comparing current spending vs budget limit
+
   const chartData = budgetCategories.map(category => ({
     name: category.name,
     gasto: category.current_amount,
@@ -26,7 +24,6 @@ const BudgetPerformanceChart: React.FC<BudgetPerformanceChartProps> = ({ budgetC
     color: category.color
   }));
 
-  // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -70,8 +67,8 @@ const BudgetPerformanceChart: React.FC<BudgetPerformanceChartProps> = ({ budgetC
                   <stop offset="100%" stopColor="#22c55e" stopOpacity={0.7}/>
                 </linearGradient>
               </defs>
-              <XAxis 
-                dataKey="name" 
+              <XAxis
+                dataKey="name"
                 fontSize={11}
                 angle={-45}
                 textAnchor="end"
@@ -80,7 +77,7 @@ const BudgetPerformanceChart: React.FC<BudgetPerformanceChartProps> = ({ budgetC
                 tickLine={false}
                 axisLine={false}
               />
-              <YAxis 
+              <YAxis
                 fontSize={11}
                 tickFormatter={(value) => formatCurrency(value, { notation: 'compact' })}
                 stroke={textColor}
@@ -88,21 +85,21 @@ const BudgetPerformanceChart: React.FC<BudgetPerformanceChartProps> = ({ budgetC
                 axisLine={false}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend 
+              <Legend
                 wrapperStyle={{ paddingTop: '16px', fontSize: '12px' }}
                 iconType="circle"
                 iconSize={8}
               />
-              <Bar 
-                dataKey="gasto" 
+              <Bar
+                dataKey="gasto"
                 name="Gasto Atual"
-                fill="url(#gastoGradient)" 
+                fill="url(#gastoGradient)"
                 radius={[8, 8, 0, 0]}
               />
-              <Bar 
-                dataKey="disponivel" 
+              <Bar
+                dataKey="disponivel"
                 name="Disponível"
-                fill="url(#disponivelGradient)" 
+                fill="url(#disponivelGradient)"
                 radius={[8, 8, 0, 0]}
               />
             </BarChart>

@@ -35,7 +35,7 @@ export const RecurringTransactions = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.template_name || !formData.amount || !formData.description) {
       toast({
         title: 'Erro',
@@ -57,7 +57,7 @@ export const RecurringTransactions = () => {
 
     const startDate = new Date(formData.start_date);
     const nextExecutionDate = new Date(startDate);
-    
+
     switch (formData.frequency) {
       case 'daily':
         nextExecutionDate.setDate(startDate.getDate() + formData.frequency_interval);
@@ -151,7 +151,7 @@ export const RecurringTransactions = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="description">Descrição</Label>
                   <Textarea
@@ -162,7 +162,7 @@ export const RecurringTransactions = () => {
                     rows={3}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="type">Tipo</Label>
@@ -192,7 +192,7 @@ export const RecurringTransactions = () => {
                     </Select>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancelar

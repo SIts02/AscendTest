@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -38,7 +37,7 @@ export function useTransactions() {
 
   const fetchTransactions = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -62,7 +61,6 @@ export function useTransactions() {
     fetchTransactions();
   }, [fetchTransactions]);
 
-  // Real-time subscription for cross-tab sync
   useEffect(() => {
     if (!user) return;
 
@@ -80,7 +78,7 @@ export function useTransactions() {
           if (payload.eventType === 'INSERT') {
             const newTransaction = payload.new as Transaction;
             setTransactions(prev => {
-              // Check if already exists (from optimistic update)
+
               if (prev.some(t => t.id === newTransaction.id)) return prev;
               const updated = [newTransaction, ...prev];
               return updated.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -106,8 +104,7 @@ export function useTransactions() {
 
   const addTransaction = async (transactionData: TransactionFormData) => {
     if (!user) return null;
-    
-    // Create optimistic transaction with temporary ID
+
     const tempId = `temp-${Date.now()}`;
     const optimisticTransaction: Transaction = {
       id: tempId,
@@ -122,20 +119,19 @@ export function useTransactions() {
       created_at: new Date().toISOString()
     };
 
-    // Optimistic update - add immediately to UI
     setTransactions(prev => {
       const updated = [optimisticTransaction, ...prev];
-      // Sort by date descending
+
       return updated.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     });
 
     const result = await executeSecurely(
-      { 
-        endpoint: 'transactions/create', 
-        action: 'transaction_create', 
+      {
+        endpoint: 'transactions/create',
+        action: 'transaction_create',
         resource: 'transaction',
         maxRequests: 30,
-        windowMinutes: 1 
+        windowMinutes: 1
       },
       async () => {
         const newTransaction = {
@@ -155,10 +151,9 @@ export function useTransactions() {
           .select();
 
         if (error) throw error;
-        
-        // Replace optimistic transaction with real one
+
         const realTransaction = data[0] as unknown as Transaction;
-        setTransactions(prev => 
+        setTransactions(prev =>
           prev.map(t => t.id === tempId ? realTransaction : t)
         );
 
@@ -169,7 +164,7 @@ export function useTransactions() {
     );
 
     if (result === null) {
-      // Rate limited or error - rollback optimistic update
+
       setTransactions(prev => prev.filter(t => t.id !== tempId));
     }
 
@@ -178,12 +173,10 @@ export function useTransactions() {
 
   const updateTransaction = async (id: string, transactionData: Partial<TransactionFormData>) => {
     if (!user) return false;
-    
-    // Store previous state for rollback
+
     const previousTransactions = [...transactions];
-    
-    // Optimistic update
-    setTransactions(prev => 
+
+    setTransactions(prev =>
       prev.map(t => {
         if (t.id === id) {
           return {
@@ -202,15 +195,15 @@ export function useTransactions() {
     );
 
     const result = await executeSecurely(
-      { 
-        endpoint: 'transactions/update', 
-        action: 'transaction_update', 
+      {
+        endpoint: 'transactions/update',
+        action: 'transaction_update',
         resource: 'transaction',
         maxRequests: 30,
-        windowMinutes: 1 
+        windowMinutes: 1
       },
       async () => {
-        const updateData: { 
+        const updateData: {
           description?: string;
           amount?: number;
           category_id?: string | null;
@@ -219,7 +212,7 @@ export function useTransactions() {
           payment_method?: string | null;
           status?: string;
         } = {};
-        
+
         if (transactionData.description !== undefined) updateData.description = transactionData.description;
         if (transactionData.amount !== undefined) updateData.amount = transactionData.amount;
         if (transactionData.category_id !== undefined) updateData.category_id = transactionData.category_id;
@@ -234,7 +227,7 @@ export function useTransactions() {
           .eq('id', id as any);
 
         if (error) throw error;
-        
+
         toast.success('Transação atualizada com sucesso!');
         return true;
       },
@@ -242,7 +235,7 @@ export function useTransactions() {
     );
 
     if (result === null) {
-      // Rollback on rate limit or error
+
       setTransactions(previousTransactions);
       return false;
     }
@@ -252,20 +245,18 @@ export function useTransactions() {
 
   const deleteTransaction = async (id: string) => {
     if (!user) return false;
-    
-    // Store previous state for rollback
+
     const previousTransactions = [...transactions];
-    
-    // Optimistic update - remove immediately
+
     setTransactions(prev => prev.filter(t => t.id !== id));
 
     const result = await executeSecurely(
-      { 
-        endpoint: 'transactions/delete', 
-        action: 'transaction_delete', 
+      {
+        endpoint: 'transactions/delete',
+        action: 'transaction_delete',
         resource: 'transaction',
         maxRequests: 20,
-        windowMinutes: 1 
+        windowMinutes: 1
       },
       async () => {
         const { error } = await supabase
@@ -274,7 +265,7 @@ export function useTransactions() {
           .eq('id', id as any);
 
         if (error) throw error;
-        
+
         toast.success('Transação excluída com sucesso!');
         return true;
       },
@@ -282,7 +273,7 @@ export function useTransactions() {
     );
 
     if (result === null) {
-      // Rollback on rate limit or error
+
       setTransactions(previousTransactions);
       return false;
     }
@@ -297,18 +288,18 @@ export function useTransactions() {
     }
 
     await executeSecurely(
-      { 
-        endpoint: 'transactions/export', 
-        action: 'export_data', 
+      {
+        endpoint: 'transactions/export',
+        action: 'export_data',
         resource: 'transactions',
         maxRequests: 5,
-        windowMinutes: 1 
+        windowMinutes: 1
       },
       async () => {
         if (format === 'csv') {
           const headers = ['Data', 'Descrição', 'Valor', 'Categoria', 'Tipo', 'Status', 'Método de Pagamento'];
           const csvRows = [headers.join(',')];
-          
+
           transactions.forEach(t => {
             const row = [
               t.date,
@@ -321,12 +312,12 @@ export function useTransactions() {
             ];
             csvRows.push(row.join(','));
           });
-          
+
           const csvString = csvRows.join('\n');
           const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
-          
+
           link.setAttribute('href', url);
           link.setAttribute('download', `transacoes_${new Date().toISOString().split('T')[0]}.csv`);
           link.style.visibility = 'hidden';
@@ -339,7 +330,7 @@ export function useTransactions() {
           const blob = new Blob([dataStr], { type: 'application/json' });
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
-          
+
           link.setAttribute('href', url);
           link.setAttribute('download', `transacoes_${new Date().toISOString().split('T')[0]}.json`);
           link.style.visibility = 'hidden';

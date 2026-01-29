@@ -35,8 +35,8 @@ const Dashboard = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: 0.4,
@@ -48,14 +48,14 @@ const Dashboard = () => {
   return (
     <DashboardLayout activePage="Dashboard">
       <DeveloperLetterDialog />
-      
+
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 gap-5 md:gap-6"
       >
-        {/* Welcome Banner */}
+        {}
         <motion.div variants={itemVariants} className="mb-1">
           <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
             {t('dashboard.welcome')}, {userName}
@@ -65,7 +65,7 @@ const Dashboard = () => {
           </p>
         </motion.div>
 
-        {/* Top Row - Two widgets like in reference image */}
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
           <motion.div variants={itemVariants}>
             <div className="glass-card p-5 h-full min-h-[140px]">
@@ -79,14 +79,14 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        {/* Main Content Area - Large panel like reference */}
+        {}
         <motion.div variants={itemVariants}>
           <div className="glass-card p-6">
             <FinancialOverview />
           </div>
         </motion.div>
 
-        {/* Bottom Row - Two widgets */}
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
           <motion.div variants={itemVariants}>
             <div className="glass-card p-5 h-full">
@@ -100,7 +100,7 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        {/* AI Assistant Card */}
+        {}
         <motion.div variants={itemVariants}>
           <div className="glass-card p-6 border-l-4 border-l-primary overflow-hidden">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
@@ -113,7 +113,7 @@ const Dashboard = () => {
                   {t('dashboard.ai_assistant.description')}
                 </p>
               </div>
-              <MotionButton 
+              <MotionButton
                 className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 py-2.5 whitespace-nowrap shadow-lg shadow-primary/20"
                 onClick={() => navigate('/dashboard/assistente')}
                 whileHover={{ scale: 1.02 }}

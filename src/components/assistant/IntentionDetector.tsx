@@ -1,4 +1,3 @@
-
 import { type Assistant } from "@/types/assistant";
 
 interface IntentionMatch {
@@ -80,13 +79,13 @@ const intentionPatterns: Record<string, IntentionMatch[]> = {
 export const detectIntention = (message: string, assistantId: string): IntentionMatch | null => {
   const lowerMessage = message.toLowerCase();
   const patterns = intentionPatterns[assistantId] || [];
-  
+
   for (const pattern of patterns) {
     const regex = new RegExp(pattern.intention, 'i');
     if (regex.test(lowerMessage)) {
       return pattern;
     }
   }
-  
+
   return null;
 };

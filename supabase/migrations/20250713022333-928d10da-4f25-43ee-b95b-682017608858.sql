@@ -1,4 +1,4 @@
--- Create table for report templates
+
 CREATE TABLE public.report_templates (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -10,7 +10,6 @@ CREATE TABLE public.report_templates (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Create table for saved reports
 CREATE TABLE public.saved_reports (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -26,7 +25,6 @@ CREATE TABLE public.saved_reports (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Create table for report schedules
 CREATE TABLE public.report_schedules (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL,
@@ -42,75 +40,70 @@ CREATE TABLE public.report_schedules (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Enable RLS on all new tables
 ALTER TABLE public.report_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.saved_reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.report_schedules ENABLE ROW LEVEL SECURITY;
 
--- Create RLS policies for report_templates
-CREATE POLICY "Users can view their own templates and public ones" 
-ON public.report_templates 
-FOR SELECT 
+CREATE POLICY "Users can view their own templates and public ones"
+ON public.report_templates
+FOR SELECT
 USING (auth.uid() = user_id OR is_public = true);
 
-CREATE POLICY "Users can create their own templates" 
-ON public.report_templates 
-FOR INSERT 
+CREATE POLICY "Users can create their own templates"
+ON public.report_templates
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own templates" 
-ON public.report_templates 
-FOR UPDATE 
+CREATE POLICY "Users can update their own templates"
+ON public.report_templates
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own templates" 
-ON public.report_templates 
-FOR DELETE 
+CREATE POLICY "Users can delete their own templates"
+ON public.report_templates
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create RLS policies for saved_reports
-CREATE POLICY "Users can view their own saved reports" 
-ON public.saved_reports 
-FOR SELECT 
+CREATE POLICY "Users can view their own saved reports"
+ON public.saved_reports
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own saved reports" 
-ON public.saved_reports 
-FOR INSERT 
+CREATE POLICY "Users can create their own saved reports"
+ON public.saved_reports
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own saved reports" 
-ON public.saved_reports 
-FOR UPDATE 
+CREATE POLICY "Users can update their own saved reports"
+ON public.saved_reports
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own saved reports" 
-ON public.saved_reports 
-FOR DELETE 
+CREATE POLICY "Users can delete their own saved reports"
+ON public.saved_reports
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create RLS policies for report_schedules
-CREATE POLICY "Users can view their own report schedules" 
-ON public.report_schedules 
-FOR SELECT 
+CREATE POLICY "Users can view their own report schedules"
+ON public.report_schedules
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own report schedules" 
-ON public.report_schedules 
-FOR INSERT 
+CREATE POLICY "Users can create their own report schedules"
+ON public.report_schedules
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own report schedules" 
-ON public.report_schedules 
-FOR UPDATE 
+CREATE POLICY "Users can update their own report schedules"
+ON public.report_schedules
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own report schedules" 
-ON public.report_schedules 
-FOR DELETE 
+CREATE POLICY "Users can delete their own report schedules"
+ON public.report_schedules
+FOR DELETE
 USING (auth.uid() = user_id);
 
--- Create triggers for updated_at timestamps
 CREATE TRIGGER update_report_templates_updated_at
 BEFORE UPDATE ON public.report_templates
 FOR EACH ROW
