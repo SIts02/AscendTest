@@ -199,37 +199,13 @@ const LandingSignup = () => {
                 <p className="text-sm text-red-400">{errors.password}</p>
               )}
 
-              { }
+              {/* Password strength checks */}
               {password.length > 0 && (
-                <div className="space-y-2 mt-2">
-                  <div className="grid grid-cols-2 gap-2 p-3 bg-white/5 rounded-lg">
-                    <PasswordCheck passed={passwordChecks.length} label="8+ caracteres" />
-                    <PasswordCheck passed={passwordChecks.lowercase} label="Letra minúscula" />
-                    <PasswordCheck passed={passwordChecks.uppercase} label="Letra maiúscula" />
-                    <PasswordCheck passed={passwordChecks.number} label="Número" />
-                  </div>
-
-                  { }
-                  {isChecking && (
-                    <div className="flex items-center gap-2 p-2 bg-blue-500/10 rounded-lg text-xs text-blue-400">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Verificando segurança da senha...
-                    </div>
-                  )}
-                  {leakCheckResult?.isPwned && (
-                    <div className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
-                      <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
-                      <p className="text-xs text-red-400">
-                        <strong>Atenção:</strong> {leakCheckResult.message}
-                      </p>
-                    </div>
-                  )}
-                  {leakCheckResult && !leakCheckResult.isPwned && debouncedPassword.length >= 8 && (
-                    <div className="flex items-center gap-2 p-2 bg-green-500/10 rounded-lg text-xs text-green-400">
-                      <Check className="h-3 w-3" />
-                      {leakCheckResult.message}
-                    </div>
-                  )}
+                <div className="grid grid-cols-2 gap-2 p-3 bg-white/5 rounded-lg mt-2">
+                  <PasswordCheck passed={passwordChecks.length} label="8+ caracteres" />
+                  <PasswordCheck passed={passwordChecks.lowercase} label="Letra minúscula" />
+                  <PasswordCheck passed={passwordChecks.uppercase} label="Letra maiúscula" />
+                  <PasswordCheck passed={passwordChecks.number} label="Número" />
                 </div>
               )}
             </div>
