@@ -265,7 +265,7 @@ const OnboardingWizard: React.FC = () => {
                         id="avatar"
                         value={avatarUrl}
                         onChange={(e) => setAvatarUrl(e.target.value)}
-                        placeholder="https:
+                        placeholder="https://exemplo.com/avatar.jpg"
                       />
                     </div>
                   </>
